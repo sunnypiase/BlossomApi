@@ -1,0 +1,33 @@
+version: '3.4'
+
+networks:
+  blossomapinetwork:
+
+services:
+  demoappdb:
+    container_name: app-db
+    image: mcr.microsoft.com/mssql/server:2019-latest
+    ports:
+      - 8002:1433
+    environment:
+      ACCEPT_EULA: "Y"
+      SA_PASSWORD: "password@12345#"
+    networks:
+      - blossomapinetwork
+
+  blossomapi:
+    container_name: blossom-api
+    image: ${DOCKER_REGISTRY-}blossomapi
+    build:
+      context: .
+      dockerfile: BlossomApi/Dockerfile
+    ports:
+      - 8001:80
+    depends_on:
+      - demoappdb
+    environment:
+      - DB_HOST=demoappdb
+      - DB_NAME=BlossomApi
+      - DB_SA_PASSWORD=password@12345#
+    networks:
+      - blossomapinetwork
