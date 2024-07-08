@@ -7,23 +7,33 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-// Load environment-specific appsettings
-var dbHost = Environment.GetEnvironmentVariable("DB_HOST");
-var dbName = Environment.GetEnvironmentVariable("DB_NAME");
-var dbPassword = Environment.GetEnvironmentVariable("DB_SA_PASSWORD");
+// Determine the environment and set the connection string accordingly
+string connectionString;
 
-// Log the connection string for debugging
-builder.Logging.ClearProviders();
-builder.Logging.AddConsole();
-builder.Services.AddSingleton<ILoggerFactory, LoggerFactory>();
-var logger = builder.Services.BuildServiceProvider().GetRequiredService<ILoggerFactory>().CreateLogger<Program>();
-logger.LogInformation($"DB_HOST: {dbHost}");
-logger.LogInformation($"DB_NAME: {dbName}");
-logger.LogInformation($"DB_SA_PASSWORD: {dbPassword}");
+if (builder.Environment.IsDevelopment())
+{
+    // Local development connection string
+    connectionString = "Server=localhost;Database=BlossomDb;Trusted_Connection=True;TrustServerCertificate=True;";
+}
+else
+{
+    // Load environment-specific appsettings
+    var dbHost = Environment.GetEnvironmentVariable("DB_HOST");
+    var dbName = Environment.GetEnvironmentVariable("DB_NAME");
+    var dbPassword = Environment.GetEnvironmentVariable("DB_SA_PASSWORD");
 
-// Connection string
-var connectionString = $"Data Source={dbHost};Initial Catalog={dbName};User ID=sa;Password={dbPassword};TrustServerCertificate=True";
-logger.LogInformation($"Connection String: {connectionString}");
+    // Log the connection string for debugging
+    builder.Logging.ClearProviders();
+    builder.Logging.AddConsole();
+    builder.Services.AddSingleton<ILoggerFactory, LoggerFactory>();
+    var logger = builder.Services.BuildServiceProvider().GetRequiredService<ILoggerFactory>().CreateLogger<Program>();
+    logger.LogInformation($"DB_HOST: {dbHost}");
+    logger.LogInformation($"DB_NAME: {dbName}");
+    logger.LogInformation($"DB_SA_PASSWORD: {dbPassword}");
+
+    connectionString = $"Data Source={dbHost};Initial Catalog={dbName};User ID=sa;Password={dbPassword};TrustServerCertificate=True";
+    logger.LogInformation($"Connection String: {connectionString}");
+}
 
 // Add services to the container.
 builder.Services.AddDbContext<BlossomContext>(opt => opt.UseSqlServer(connectionString));
@@ -35,8 +45,8 @@ builder.Services.AddCors(options =>
     options.AddPolicy("AllowAll", builder =>
     {
         builder.AllowAnyOrigin()
-            .AllowAnyMethod()
-            .AllowAnyHeader();
+               .AllowAnyMethod()
+               .AllowAnyHeader();
     });
 });
 
@@ -62,4 +72,4 @@ app.UseAuthorization();
 
 app.MapControllers();
 
-app.Run("http://0.0.0.0:80");
+app.Run("http://0.0.0.0:8001");

@@ -33,7 +33,7 @@ namespace BlossomApi.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     NameEng = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Image = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Images = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Brand = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Price = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     Discount = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
@@ -41,6 +41,12 @@ namespace BlossomApi.Migrations
                     Rating = table.Column<double>(type: "float", nullable: false),
                     InStock = table.Column<bool>(type: "bit", nullable: false),
                     AvailableAmount = table.Column<int>(type: "int", nullable: false),
+                    NumberOfReviews = table.Column<int>(type: "int", nullable: false),
+                    NumberOfPurchases = table.Column<int>(type: "int", nullable: false),
+                    NumberOfViews = table.Column<int>(type: "int", nullable: false),
+                    Article = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Options = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    DieNumbers = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Description = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
@@ -62,6 +68,27 @@ namespace BlossomApi.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Characteristics",
+                columns: table => new
+                {
+                    CharacteristicId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Title = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Desc = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    CategoryId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Characteristics", x => x.CharacteristicId);
+                    table.ForeignKey(
+                        name: "FK_Characteristics_Categories_CategoryId",
+                        column: x => x.CategoryId,
+                        principalTable: "Categories",
+                        principalColumn: "CategoryId",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "ProductCategory",
                 columns: table => new
                 {
@@ -79,6 +106,29 @@ namespace BlossomApi.Migrations
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_ProductCategory_Products_ProductId",
+                        column: x => x.ProductId,
+                        principalTable: "Products",
+                        principalColumn: "ProductId",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Reviews",
+                columns: table => new
+                {
+                    ReviewId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    ReviewText = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Rating = table.Column<int>(type: "int", nullable: false),
+                    Date = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    ProductId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Reviews", x => x.ReviewId);
+                    table.ForeignKey(
+                        name: "FK_Reviews_Products_ProductId",
                         column: x => x.ProductId,
                         principalTable: "Products",
                         principalColumn: "ProductId",
@@ -123,6 +173,30 @@ namespace BlossomApi.Migrations
                         column: x => x.UserId,
                         principalTable: "Users",
                         principalColumn: "UserId",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ProductCharacteristic",
+                columns: table => new
+                {
+                    CharacteristicId = table.Column<int>(type: "int", nullable: false),
+                    ProductId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ProductCharacteristic", x => new { x.CharacteristicId, x.ProductId });
+                    table.ForeignKey(
+                        name: "FK_ProductCharacteristic_Characteristics_CharacteristicId",
+                        column: x => x.CharacteristicId,
+                        principalTable: "Characteristics",
+                        principalColumn: "CharacteristicId",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_ProductCharacteristic_Products_ProductId",
+                        column: x => x.ProductId,
+                        principalTable: "Products",
+                        principalColumn: "ProductId",
                         onDelete: ReferentialAction.Cascade);
                 });
 
@@ -196,6 +270,11 @@ namespace BlossomApi.Migrations
                 });
 
             migrationBuilder.CreateIndex(
+                name: "IX_Characteristics_CategoryId",
+                table: "Characteristics",
+                column: "CategoryId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_DeliveryInfos_OrderId",
                 table: "DeliveryInfos",
                 column: "OrderId",
@@ -210,6 +289,16 @@ namespace BlossomApi.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_ProductCategory_ProductId",
                 table: "ProductCategory",
+                column: "ProductId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ProductCharacteristic_ProductId",
+                table: "ProductCharacteristic",
+                column: "ProductId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Reviews_ProductId",
+                table: "Reviews",
                 column: "ProductId");
 
             migrationBuilder.CreateIndex(
@@ -244,6 +333,12 @@ namespace BlossomApi.Migrations
                 name: "ProductCategory");
 
             migrationBuilder.DropTable(
+                name: "ProductCharacteristic");
+
+            migrationBuilder.DropTable(
+                name: "Reviews");
+
+            migrationBuilder.DropTable(
                 name: "ShoppingCartProducts");
 
             migrationBuilder.DropTable(
@@ -253,13 +348,16 @@ namespace BlossomApi.Migrations
                 name: "Orders");
 
             migrationBuilder.DropTable(
-                name: "Categories");
+                name: "Characteristics");
 
             migrationBuilder.DropTable(
                 name: "Products");
 
             migrationBuilder.DropTable(
                 name: "ShoppingCarts");
+
+            migrationBuilder.DropTable(
+                name: "Categories");
 
             migrationBuilder.DropTable(
                 name: "Users");

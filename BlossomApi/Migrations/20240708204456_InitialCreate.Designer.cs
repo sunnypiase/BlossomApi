@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BlossomApi.Migrations
 {
     [DbContext(typeof(BlossomContext))]
-    [Migration("20240627173046_InitialCreate")]
+    [Migration("20240708204456_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -43,6 +43,32 @@ namespace BlossomApi.Migrations
                     b.HasKey("CategoryId");
 
                     b.ToTable("Categories");
+                });
+
+            modelBuilder.Entity("BlossomApi.Models.Characteristic", b =>
+                {
+                    b.Property<int>("CharacteristicId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("CharacteristicId"));
+
+                    b.Property<int>("CategoryId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Desc")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("CharacteristicId");
+
+                    b.HasIndex("CategoryId");
+
+                    b.ToTable("Characteristics");
                 });
 
             modelBuilder.Entity("BlossomApi.Models.DeliveryInfo", b =>
@@ -105,6 +131,10 @@ namespace BlossomApi.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ProductId"));
 
+                    b.Property<string>("Article")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<int>("AvailableAmount")
                         .HasColumnType("int");
 
@@ -116,12 +146,18 @@ namespace BlossomApi.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("DieNumbersSerialized")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("DieNumbers");
+
                     b.Property<decimal>("Discount")
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<string>("Image")
+                    b.Property<string>("ImagesSerialized")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("Images");
 
                     b.Property<bool>("InStock")
                         .HasColumnType("bit");
@@ -137,6 +173,20 @@ namespace BlossomApi.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int>("NumberOfPurchases")
+                        .HasColumnType("int");
+
+                    b.Property<int>("NumberOfReviews")
+                        .HasColumnType("int");
+
+                    b.Property<int>("NumberOfViews")
+                        .HasColumnType("int");
+
+                    b.Property<string>("OptionsSerialized")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("Options");
+
                     b.Property<decimal>("Price")
                         .HasColumnType("decimal(18,2)");
 
@@ -146,6 +196,38 @@ namespace BlossomApi.Migrations
                     b.HasKey("ProductId");
 
                     b.ToTable("Products");
+                });
+
+            modelBuilder.Entity("BlossomApi.Models.Review", b =>
+                {
+                    b.Property<int>("ReviewId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ReviewId"));
+
+                    b.Property<DateTime>("Date")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("ProductId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Rating")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ReviewText")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("ReviewId");
+
+                    b.HasIndex("ProductId");
+
+                    b.ToTable("Reviews");
                 });
 
             modelBuilder.Entity("BlossomApi.Models.ShoppingCart", b =>
@@ -254,6 +336,32 @@ namespace BlossomApi.Migrations
                     b.ToTable("ProductCategory");
                 });
 
+            modelBuilder.Entity("ProductCharacteristic", b =>
+                {
+                    b.Property<int>("CharacteristicId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ProductId")
+                        .HasColumnType("int");
+
+                    b.HasKey("CharacteristicId", "ProductId");
+
+                    b.HasIndex("ProductId");
+
+                    b.ToTable("ProductCharacteristic");
+                });
+
+            modelBuilder.Entity("BlossomApi.Models.Characteristic", b =>
+                {
+                    b.HasOne("BlossomApi.Models.Category", "Category")
+                        .WithMany("Characteristics")
+                        .HasForeignKey("CategoryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Category");
+                });
+
             modelBuilder.Entity("BlossomApi.Models.DeliveryInfo", b =>
                 {
                     b.HasOne("BlossomApi.Models.Order", "Order")
@@ -274,6 +382,17 @@ namespace BlossomApi.Migrations
                         .IsRequired();
 
                     b.Navigation("ShoppingCart");
+                });
+
+            modelBuilder.Entity("BlossomApi.Models.Review", b =>
+                {
+                    b.HasOne("BlossomApi.Models.Product", "Product")
+                        .WithMany("Reviews")
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Product");
                 });
 
             modelBuilder.Entity("BlossomApi.Models.ShoppingCart", b =>
@@ -332,6 +451,26 @@ namespace BlossomApi.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("ProductCharacteristic", b =>
+                {
+                    b.HasOne("BlossomApi.Models.Characteristic", null)
+                        .WithMany()
+                        .HasForeignKey("CharacteristicId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("BlossomApi.Models.Product", null)
+                        .WithMany()
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("BlossomApi.Models.Category", b =>
+                {
+                    b.Navigation("Characteristics");
+                });
+
             modelBuilder.Entity("BlossomApi.Models.Order", b =>
                 {
                     b.Navigation("DeliveryInfo")
@@ -340,6 +479,8 @@ namespace BlossomApi.Migrations
 
             modelBuilder.Entity("BlossomApi.Models.Product", b =>
                 {
+                    b.Navigation("Reviews");
+
                     b.Navigation("ShoppingCartProducts");
                 });
 

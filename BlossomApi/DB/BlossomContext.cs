@@ -3,17 +3,18 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Storage;
 using System;
+using BlossomApi.Seeders;
 
 namespace BlossomApi.DB
 {
     public sealed class BlossomContext : DbContext
     {
-        public BlossomContext(DbContextOptions<BlossomContext> options) : base(options) 
+        public BlossomContext(DbContextOptions<BlossomContext> options) : base(options)
         {
             try
             {
                 if (Database.GetService<IDatabaseCreator>() is not RelationalDatabaseCreator databaseCreator) return;
-                if (!databaseCreator.CanConnect()) 
+                if (!databaseCreator.CanConnect())
                 {
                     databaseCreator.Create();
                 }
@@ -36,10 +37,12 @@ namespace BlossomApi.DB
         public DbSet<Category> Categories { get; set; }
         public DbSet<Order> Orders { get; set; }
         public DbSet<DeliveryInfo> DeliveryInfos { get; set; }
+        public DbSet<Review> Reviews { get; set; }
+        public DbSet<Characteristic> Characteristics { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-           // One-to-one relationship between User and SiteUser
+            // One-to-one relationship between User and SiteUser
             modelBuilder.Entity<User>()
                 .HasOne(u => u.SiteUser)
                 .WithOne(su => su.User)
@@ -59,7 +62,8 @@ namespace BlossomApi.DB
                 .UsingEntity<Dictionary<string, object>>(
                     "ProductCategory",
                     j => j.HasOne<Category>().WithMany().HasForeignKey("CategoryId"),
-                    j => j.HasOne<Product>().WithMany().HasForeignKey("ProductId"));
+                    j => j.HasOne<Product>().WithMany().HasForeignKey("ProductId"))
+                .HasData(DatabaseProductCategorySeeder.GetProductCategoryConnections());
 
             // Configure decimal property precision and scale
             modelBuilder.Entity<Product>()
@@ -69,6 +73,19 @@ namespace BlossomApi.DB
             modelBuilder.Entity<Product>()
                 .Property(p => p.Discount)
                 .HasColumnType("decimal(18,2)");
+
+            // Map serialized properties to specific column names
+            modelBuilder.Entity<Product>()
+                .Property(p => p.ImagesSerialized)
+                .HasColumnName("Images");
+
+            modelBuilder.Entity<Product>()
+                .Property(p => p.OptionsSerialized)
+                .HasColumnName("Options");
+
+            modelBuilder.Entity<Product>()
+                .Property(p => p.DieNumbersSerialized)
+                .HasColumnName("DieNumbers");
 
             // Many-to-one relationship between ShoppingCartProduct and ShoppingCart
             modelBuilder.Entity<ShoppingCartProduct>()
@@ -97,6 +114,24 @@ namespace BlossomApi.DB
                 .WithOne(di => di.Order)
                 .HasForeignKey<DeliveryInfo>(di => di.OrderId)
                 .OnDelete(DeleteBehavior.Cascade); // Default behavior
+
+            // One-to-many relationship between Product and Review
+            modelBuilder.Entity<Review>()
+                .HasOne(r => r.Product)
+                .WithMany(p => p.Reviews)
+                .HasForeignKey(r => r.ProductId)
+                .OnDelete(DeleteBehavior.Cascade); // Default behavior
+
+            // Many-to-many relationship between Product and Characteristic using a join table
+            modelBuilder.Entity<Characteristic>()
+                .HasMany(c => c.Products)
+                .WithMany(p => p.Characteristics)
+                .UsingEntity<Dictionary<string, object>>(
+                    "ProductCharacteristic",
+                    j => j.HasOne<Product>().WithMany().HasForeignKey("ProductId"),
+                    j => j.HasOne<Characteristic>().WithMany().HasForeignKey("CharacteristicId"));
+            modelBuilder.Entity<Category>().HasData(DatabaseCategorySeeder.GetCategories());
+            modelBuilder.Entity<Product>().HasData(DatabaseProductSeeder.GetProducts());
         }
     }
 }
