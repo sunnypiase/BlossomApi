@@ -27,8 +27,18 @@ logger.LogInformation($"Connection String: {connectionString}");
 
 // Add services to the container.
 builder.Services.AddDbContext<BlossomContext>(opt => opt.UseSqlServer(connectionString));
-
 builder.Services.AddControllers();
+
+// Add CORS services
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAll", builder =>
+    {
+        builder.AllowAnyOrigin()
+            .AllowAnyMethod()
+            .AllowAnyHeader();
+    });
+});
 
 var app = builder.Build();
 
@@ -44,6 +54,9 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 app.UseRouting();
+
+// Enable CORS
+app.UseCors("AllowAll");
 
 app.UseAuthorization();
 
