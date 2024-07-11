@@ -1,9 +1,11 @@
+using System.Linq.Expressions;
 using BlossomApi.DB;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using BlossomApi.Models;
 using BlossomApi.Dtos;
 using System.Text.Json;
+using BlossomApi.Services;
 
 namespace BlossomApi.Controllers
 {
@@ -12,10 +14,12 @@ namespace BlossomApi.Controllers
     public class ProductController : ControllerBase
     {
         private readonly BlossomContext _context;
+        private readonly CategoryService _categoryService;
 
-        public ProductController(BlossomContext context)
+        public ProductController(BlossomContext context, CategoryService categoryService)
         {
             _context = context;
+            _categoryService = categoryService;
         }
 
         // GET: api/Product
@@ -266,25 +270,40 @@ namespace BlossomApi.Controllers
         {
             var query = _context.Products.AsQueryable();
 
-            if (request.Categories is { Count: > 0 })
+            if (!string.IsNullOrEmpty(request.CategoryName))
             {
-                query = query.Where(p => p.Categories.Any(c => request.Categories.Contains(c.Name)));
+                var rootCategory = await _context.Categories
+                    .FirstOrDefaultAsync(c => c.Name.ToLower() == request.CategoryName.ToLower());
+
+                if (rootCategory != null)
+                {
+                    var allCategories = new List<Category> { rootCategory };
+                    allCategories.AddRange(await _categoryService.GetAllChildCategoriesAsync(rootCategory.CategoryId));
+
+                    var categoryNames = allCategories.Select(c => c.Name).ToList();
+                    query = query.Where(p => p.Categories.Any(c => categoryNames.Contains(c.Name)));
+                }
             }
 
-            if (request.MinPrice.HasValue)
+            if (request.SelectedCharacteristics != null && request.SelectedCharacteristics.Count != 0)
+            {
+                Expression<Func<Product, bool>> predicate = p => false;
+
+                predicate = request
+                    .SelectedCharacteristics
+                    .Aggregate(predicate, (current, temp) => current.Or(p => p.Characteristics.Any(c => c.Desc == temp)));
+
+                query = query.Where(predicate);
+            }
+
+            if (request.MinPrice.HasValue && request.MinPrice.Value != 0)
             {
                 query = query.Where(p => p.Price >= request.MinPrice.Value);
             }
 
-            if (request.MaxPrice.HasValue)
+            if (request.MaxPrice.HasValue && request.MaxPrice.Value != 0)
             {
                 query = query.Where(p => p.Price <= request.MaxPrice.Value);
-            }
-
-            if (!string.IsNullOrEmpty(request.Search))
-            {
-                var searchPattern = $"%{request.Search}%";
-                query = query.Where(p => EF.Functions.Like(p.Name, searchPattern));
             }
 
             query = request.SortBy switch

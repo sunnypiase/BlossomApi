@@ -89,23 +89,6 @@ namespace BlossomApi.Controllers
             };
         }
 
-        private async Task<List<Category>> GetAllChildCategoriesAsync(int parentId)
-        {
-            var categories = await _context.Categories
-                .Where(c => c.ParentCategoryId == parentId)
-                .ToListAsync();
-
-            var allChildCategories = new List<Category>();
-
-            foreach (var category in categories)
-            {
-                allChildCategories.Add(category);
-                allChildCategories.AddRange(await GetAllChildCategoriesAsync(category.CategoryId));
-            }
-
-            return allChildCategories;
-        }
-
         private async Task<int> CountProductsByFilters(FilterRequestDto request)
         {
             var query = _context.Products.AsQueryable();
@@ -118,7 +101,7 @@ namespace BlossomApi.Controllers
                 if (rootCategory != null)
                 {
                     var allCategories = new List<Category> { rootCategory };
-                    allCategories.AddRange(await GetAllChildCategoriesAsync(rootCategory.CategoryId));
+                    allCategories.AddRange(await _categoryService.GetAllChildCategoriesAsync(rootCategory.CategoryId));
 
                     var categoryNames = allCategories.Select(c => c.Name).ToList();
                     query = query.Where(p => p.Categories.Any(c => categoryNames.Contains(c.Name)));

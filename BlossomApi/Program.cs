@@ -8,7 +8,10 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddScoped<CategoryService>();
-
+builder.Logging.ClearProviders();
+builder.Logging.AddConsole();
+builder.Services.AddSingleton<ILoggerFactory, LoggerFactory>();
+var logger = builder.Services.BuildServiceProvider().GetRequiredService<ILoggerFactory>().CreateLogger<Program>();
 // Determine the environment and set the connection string accordingly
 string connectionString;
 
@@ -25,10 +28,6 @@ else
     var dbPassword = Environment.GetEnvironmentVariable("DB_SA_PASSWORD");
 
     // Log the connection string for debugging
-    builder.Logging.ClearProviders();
-    builder.Logging.AddConsole();
-    builder.Services.AddSingleton<ILoggerFactory, LoggerFactory>();
-    var logger = builder.Services.BuildServiceProvider().GetRequiredService<ILoggerFactory>().CreateLogger<Program>();
     logger.LogInformation($"DB_HOST: {dbHost}");
     logger.LogInformation($"DB_NAME: {dbName}");
     logger.LogInformation($"DB_SA_PASSWORD: {dbPassword}");
@@ -78,5 +77,6 @@ if (app.Environment.IsDevelopment())
 {
     app.Run("http://0.0.0.0:8001");
 }
+logger.LogInformation("Version 1.4");
 
 app.Run("http://0.0.0.0:80");

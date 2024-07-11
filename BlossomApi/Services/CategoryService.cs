@@ -38,6 +38,23 @@ namespace BlossomApi.Services
             return names;
         }
 
+        public async Task<List<Category>> GetAllChildCategoriesAsync(int parentId)
+        {
+            var categories = await _context.Categories
+                .Where(c => c.ParentCategoryId == parentId)
+                .ToListAsync();
+
+            var allChildCategories = new List<Category>();
+
+            foreach (var category in categories)
+            {
+                allChildCategories.Add(category);
+                allChildCategories.AddRange(await GetAllChildCategoriesAsync(category.CategoryId));
+            }
+
+            return allChildCategories;
+        }
+
         private void TraverseCategoryTree(CategoryNode node, List<string> names)
         {
             if (node == null) return;
