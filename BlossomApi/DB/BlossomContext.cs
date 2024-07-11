@@ -129,9 +129,12 @@ namespace BlossomApi.DB
                 .UsingEntity<Dictionary<string, object>>(
                     "ProductCharacteristic",
                     j => j.HasOne<Product>().WithMany().HasForeignKey("ProductId"),
-                    j => j.HasOne<Characteristic>().WithMany().HasForeignKey("CharacteristicId"));
+                    j => j.HasOne<Characteristic>().WithMany().HasForeignKey("CharacteristicId"))
+                .HasData(DatabaseProductCharacteristicSeeder.GetProductCharacteristicConnections());
+
             modelBuilder.Entity<Category>().HasData(DatabaseCategorySeeder.GetCategories());
             modelBuilder.Entity<Product>().HasData(DatabaseProductSeeder.GetProducts());
+            modelBuilder.Entity<Characteristic>().HasData(DatabaseCharacteristicSeeder.GetCharacteristics());
         }
     }
 }

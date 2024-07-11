@@ -1,11 +1,9 @@
 using BlossomApi.DB;
 using BlossomApi.Dtos;
+using BlossomApi.Models;
+using BlossomApi.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using BlossomApi.Models;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace BlossomApi.Controllers
 {
@@ -14,10 +12,12 @@ namespace BlossomApi.Controllers
     public class CategoryController : ControllerBase
     {
         private readonly BlossomContext _context;
+        private readonly CategoryService _categoryService;
 
-        public CategoryController(BlossomContext context)
+        public CategoryController(BlossomContext context, CategoryService categoryService)
         {
             _context = context;
+            _categoryService = categoryService;
         }
 
         // GET: api/Category
@@ -142,43 +142,13 @@ namespace BlossomApi.Controllers
         [HttpGet("GetCategoryTree")]
         public async Task<ActionResult<CategoryNode>> GetCategoryTree(string categoryName)
         {
-            var allCategories = await _context.Categories.ToListAsync();
-
-            var rootCategory = allCategories.FirstOrDefault(c => c.Name == categoryName);
-            if (rootCategory == null)
+            var categoryTree = await _categoryService.GetCategoryTreeAsync(categoryName);
+            if (categoryTree == null)
             {
                 return NotFound("Category not found");
             }
 
-            var categoryTree = BuildCategoryTree(rootCategory, allCategories);
-
             return Ok(categoryTree);
         }
-
-        private CategoryNode BuildCategoryTree(Category root, List<Category> allCategories)
-        {
-            var rootNode = new CategoryNode
-            {
-                CategoryId = root.CategoryId,
-                Name = root.Name,
-                Children = new List<CategoryNode>()
-            };
-
-            var childCategories = allCategories.Where(c => c.ParentCategoryId == root.CategoryId).ToList();
-
-            foreach (var child in childCategories)
-            {
-                rootNode.Children.Add(BuildCategoryTree(child, allCategories));
-            }
-
-            return rootNode;
-        }
-    }
-
-    public class CategoryNode
-    {
-        public int CategoryId { get; set; }
-        public string Name { get; set; }
-        public List<CategoryNode> Children { get; set; }
     }
 }

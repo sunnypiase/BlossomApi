@@ -1,8 +1,10 @@
+using System.Linq.Expressions;
 using BlossomApi.DB;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using BlossomApi.Dtos.FilterPanel;
 using BlossomApi.Models;
+using BlossomApi.Services;
 
 namespace BlossomApi.Controllers
 {
@@ -11,10 +13,12 @@ namespace BlossomApi.Controllers
     public class FilterPanelController : ControllerBase
     {
         private readonly BlossomContext _context;
+        private readonly CategoryService _categoryService;
 
-        public FilterPanelController(BlossomContext context)
+        public FilterPanelController(BlossomContext context, CategoryService categoryService)
         {
             _context = context;
+            _categoryService = categoryService;
         }
 
         // GET: api/FilterPanel/{categoryName}
@@ -48,13 +52,12 @@ namespace BlossomApi.Controllers
             {
                 return null;
             }
-
-            var allCategories = new List<Category> { rootCategory };
-            allCategories.AddRange(await GetAllChildCategoriesAsync(rootCategory.CategoryId));
-
-            var categoryNames = allCategories.Select(c => c.Name).ToList();
+            var categoryTree = await _categoryService.GetCategoryTreeAsync(categoryName);
+            var categoryNames = _categoryService.GetAllCategoryNames(categoryTree);
 
             var products = await _context.Products
+                .Include(p => p.Characteristics)
+                .Include(p => p.Categories)
                 .Where(p => p.Categories.Any(c => categoryNames.Contains(c.Name)))
                 .ToListAsync();
 
@@ -79,7 +82,7 @@ namespace BlossomApi.Controllers
 
             return new FilterPanelResponseDto
             {
-                Categories = categoryNames,
+                Categories = await _categoryService.GetCategoryTreeAsync(categoryName),
                 Characteristics = characteristics,
                 MinPrice = minPrice,
                 MaxPrice = maxPrice,
@@ -124,10 +127,15 @@ namespace BlossomApi.Controllers
 
             if (request.SelectedCharacteristics != null && request.SelectedCharacteristics.Any())
             {
+                Expression<Func<Product, bool>> predicate = p => false;
+
                 foreach (var characteristic in request.SelectedCharacteristics)
                 {
-                    query = query.Where(p => p.Characteristics.Any(c => c.Desc == characteristic));
+                    var temp = characteristic;
+                    predicate = predicate.Or(p => p.Characteristics.Any(c => c.Desc == temp));
                 }
+
+                query = query.Where(predicate);
             }
 
             if (request.MinPrice.HasValue)

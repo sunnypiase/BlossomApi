@@ -124,8 +124,6 @@ namespace BlossomApi.Models
         public string Desc { get; set; }
 
         public ICollection<Product> Products { get; set; } = new List<Product>();
-        public int CategoryId { get; set; }
-        public Category Category { get; set; }
     }
 
     public class Category
@@ -136,7 +134,6 @@ namespace BlossomApi.Models
 
         // Navigation properties
         public ICollection<Product> Products { get; set; } = new List<Product>();
-        public ICollection<Characteristic> Characteristics { get; set; } = new List<Characteristic>();
     }
 
     public class Order
