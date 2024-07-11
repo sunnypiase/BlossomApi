@@ -135,6 +135,7 @@ namespace BlossomApi.DB
             modelBuilder.Entity<Category>().HasData(DatabaseCategorySeeder.GetCategories());
             modelBuilder.Entity<Product>().HasData(DatabaseProductSeeder.GetProducts());
             modelBuilder.Entity<Characteristic>().HasData(DatabaseCharacteristicSeeder.GetCharacteristics());
+            modelBuilder.Entity<Review>().HasData(DatabaseReviewSeeder.GetReviews());
         }
     }
 }
