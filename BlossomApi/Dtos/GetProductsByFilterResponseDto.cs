@@ -38,4 +38,10 @@ namespace BlossomApi.Dtos
         public string Title { get; set; }
         public string Desc { get; set; }
     }
+
+    public class GetProductsByFilterResponse
+    {
+        public List<GetProductsByFilterResponseDto> Products { get; set; }
+        public int TotalCount { get; set; }
+    }
 }

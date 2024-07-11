@@ -3,6 +3,9 @@ using BlossomApi.Dtos;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using BlossomApi.Models;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace BlossomApi.Controllers
 {
@@ -134,5 +137,48 @@ namespace BlossomApi.Controllers
         {
             return _context.Categories.Any(e => e.CategoryId == id);
         }
+
+        // GET: api/Category/GetCategoryTree
+        [HttpGet("GetCategoryTree")]
+        public async Task<ActionResult<CategoryNode>> GetCategoryTree(string categoryName)
+        {
+            var allCategories = await _context.Categories.ToListAsync();
+
+            var rootCategory = allCategories.FirstOrDefault(c => c.Name == categoryName);
+            if (rootCategory == null)
+            {
+                return NotFound("Category not found");
+            }
+
+            var categoryTree = BuildCategoryTree(rootCategory, allCategories);
+
+            return Ok(categoryTree);
+        }
+
+        private CategoryNode BuildCategoryTree(Category root, List<Category> allCategories)
+        {
+            var rootNode = new CategoryNode
+            {
+                CategoryId = root.CategoryId,
+                Name = root.Name,
+                Children = new List<CategoryNode>()
+            };
+
+            var childCategories = allCategories.Where(c => c.ParentCategoryId == root.CategoryId).ToList();
+
+            foreach (var child in childCategories)
+            {
+                rootNode.Children.Add(BuildCategoryTree(child, allCategories));
+            }
+
+            return rootNode;
+        }
+    }
+
+    public class CategoryNode
+    {
+        public int CategoryId { get; set; }
+        public string Name { get; set; }
+        public List<CategoryNode> Children { get; set; }
     }
 }

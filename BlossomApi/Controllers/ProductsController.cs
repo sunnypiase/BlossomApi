@@ -262,7 +262,7 @@ namespace BlossomApi.Controllers
 
         // POST: api/Product/GetProductsByFilter
         [HttpPost("GetProductsByFilter")]
-        public async Task<ActionResult<IEnumerable<GetProductsByFilterResponseDto>>> GetProductsByFilter(GetProductsByFilterRequestDto request)
+        public async Task<ActionResult<GetProductsByFilterResponse>> GetProductsByFilter(GetProductsByFilterRequestDto request)
         {
             var query = _context.Products.AsQueryable();
 
@@ -294,6 +294,8 @@ namespace BlossomApi.Controllers
                 "price_desc" => query.OrderByDescending(p => p.Price),
                 _ => query.OrderBy(p => p.Name)
             };
+
+            var totalCount = await query.CountAsync();
 
             var products = await query
                 .Skip(request.Start)
@@ -334,7 +336,13 @@ namespace BlossomApi.Controllers
                 })
                 .ToListAsync();
 
-            return Ok(products);
+            var response = new GetProductsByFilterResponse
+            {
+                Products = products,
+                TotalCount = totalCount
+            };
+
+            return Ok(response);
         }
 
         private bool ProductExists(int id)
