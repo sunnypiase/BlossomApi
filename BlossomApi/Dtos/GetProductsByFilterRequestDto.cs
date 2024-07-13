@@ -2,7 +2,7 @@ namespace BlossomApi.Dtos
 {
     public class GetProductsByFilterRequestDto
     {
-        public string? CategoryName { get; set; }
+        public int? CategoryId { get; set; }
         public string? SortBy { get; set; }
         public int Amount { get; set; }
         public int Start { get; set; }

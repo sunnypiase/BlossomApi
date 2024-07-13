@@ -140,9 +140,9 @@ namespace BlossomApi.Controllers
 
         // GET: api/Category/GetCategoryTree
         [HttpGet("GetCategoryTree")]
-        public async Task<ActionResult<CategoryNode>> GetCategoryTree(string categoryName)
+        public async Task<ActionResult<CategoryNode>> GetCategoryTree(int categoryId)
         {
-            var categoryTree = await _categoryService.GetCategoryTreeAsync(categoryName);
+            var categoryTree = await _categoryService.GetCategoryTreeAsync(categoryId);
             if (categoryTree == null)
             {
                 return NotFound("Category not found");

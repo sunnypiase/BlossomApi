@@ -118,18 +118,18 @@ namespace BlossomApi.Controllers
         {
             var query = _context.Products.AsQueryable();
 
-            if (!string.IsNullOrEmpty(request.CategoryName))
+            if (request.CategoryId != null)
             {
                 var rootCategory = await _context.Categories
-                    .FirstOrDefaultAsync(c => c.Name.ToLower() == request.CategoryName.ToLower());
+                    .FirstOrDefaultAsync(c => c.CategoryId == request.CategoryId);
 
                 if (rootCategory != null)
                 {
                     var allCategories = new List<Category> { rootCategory };
                     allCategories.AddRange(await _categoryService.GetAllChildCategoriesAsync(rootCategory.CategoryId));
 
-                    var categoryNames = allCategories.Select(c => c.Name.ToLower()).ToList();
-                    query = query.Where(p => p.Categories.Any(c => categoryNames.Contains(c.Name.ToLower())));
+                    var categoryIds = allCategories.Select(c => c.CategoryId).ToList();
+                    query = query.Where(p => p.Categories.Any(c => categoryIds.Contains(c.CategoryId)));
                 }
             }
 

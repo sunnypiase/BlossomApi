@@ -17,11 +17,11 @@ namespace BlossomApi.Services
             _context = context;
         }
 
-        public async Task<CategoryNode> GetCategoryTreeAsync(string categoryName)
+        public async Task<CategoryNode> GetCategoryTreeAsync(int categoryId)
         {
             var allCategories = await _context.Categories.ToListAsync();
 
-            var rootCategory = allCategories.FirstOrDefault(c => c.Name.ToLower() == categoryName.ToLower());
+            var rootCategory = allCategories.FirstOrDefault(c => c.CategoryId == categoryId);
             if (rootCategory == null)
             {
                 return null;

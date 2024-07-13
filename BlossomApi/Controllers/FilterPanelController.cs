@@ -19,11 +19,11 @@ namespace BlossomApi.Controllers
             _categoryService = categoryService;
         }
 
-        // GET: api/FilterPanel/{categoryName}
-        [HttpGet("{categoryName}")]
-        public async Task<ActionResult<FilterPanelResponseDto>> GetFilterPanel(string categoryName)
+        // GET: api/FilterPanel/{categoryId}
+        [HttpGet("{categoryId}")]
+        public async Task<ActionResult<FilterPanelResponseDto>> GetFilterPanel(int categoryId)
         {
-            var filterPanelData = await FetchFilterPanelData(categoryName);
+            var filterPanelData = await FetchFilterPanelData(categoryId);
             if (filterPanelData == null)
             {
                 return NotFound();
@@ -31,19 +31,18 @@ namespace BlossomApi.Controllers
             return Ok(filterPanelData);
         }
 
-        private async Task<FilterPanelResponseDto> FetchFilterPanelData(string categoryName)
+        private async Task<FilterPanelResponseDto> FetchFilterPanelData(int categoryId)
         {
-            categoryName = categoryName.ToLower();
 
             var rootCategory = await _context.Categories
-                .FirstOrDefaultAsync(c => c.Name.ToLower() == categoryName);
+                .FirstOrDefaultAsync(c => c.CategoryId == categoryId);
 
             if (rootCategory == null)
             {
                 return null;
             }
 
-            var categoryTree = await _categoryService.GetCategoryTreeAsync(categoryName);
+            var categoryTree = await _categoryService.GetCategoryTreeAsync(categoryId);
             var categoryNames = _categoryService.GetAllCategoryNames(categoryTree);
 
             var products = await _context.Products
@@ -74,7 +73,7 @@ namespace BlossomApi.Controllers
 
             return new FilterPanelResponseDto
             {
-                Categories = await _categoryService.GetCategoryTreeAsync(categoryName),
+                Categories = categoryTree,
                 Characteristics = characteristics,
                 MinPrice = minPrice,
                 MaxPrice = maxPrice,
