@@ -35,15 +35,14 @@ namespace BlossomApi.Controllers
         public async Task<ActionResult<ProductResponseDto>> GetProduct(int id)
         {
             var product = await _context.Products
-                .Select(p => MapToProductResponseDto(p))
-                .FirstOrDefaultAsync(p => p.Id == id);
+                    .FirstOrDefaultAsync(p => p.ProductId == id);
 
             if (product == null)
             {
                 return NotFound();
             }
 
-            return Ok(product);
+            return Ok(MapToProductResponseDto(product));
         }
 
         // PUT: api/Product/5
