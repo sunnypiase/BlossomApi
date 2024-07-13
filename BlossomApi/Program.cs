@@ -77,6 +77,6 @@ if (app.Environment.IsDevelopment())
 {
     app.Run("http://0.0.0.0:8001");
 }
-logger.LogInformation("Version 1.6");
+logger.LogInformation("Version 1.7");
 
 app.Run("http://0.0.0.0:80");

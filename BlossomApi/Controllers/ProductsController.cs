@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using BlossomApi.Models;
 using BlossomApi.Dtos;
-using System.Text.Json;
 using BlossomApi.Services;
 
 namespace BlossomApi.Controllers
@@ -27,40 +26,7 @@ namespace BlossomApi.Controllers
         public async Task<ActionResult<IEnumerable<ProductResponseDto>>> GetProducts()
         {
             return await _context.Products
-                .Select(p => new ProductResponseDto
-                {
-                    Id = p.ProductId,
-                    Name = p.Name,
-                    NameEng = p.NameEng,
-                    Amount = p.AvailableAmount,
-                    Images = p.Images,
-                    Brand = p.Brand,
-                    Price = p.Price,
-                    Discount = p.Discount,
-                    IsNew = p.IsNew,
-                    Rating = p.Rating,
-                    NumberOfReviews = p.NumberOfReviews,
-                    NumberOfPurchases = p.NumberOfPurchases,
-                    NumberOfViews = p.NumberOfViews,
-                    Article = p.Article,
-                    Options = p.Options,
-                    Categories = p.Categories.Select(c => c.Name).ToList(),
-                    DieNumbers = p.DieNumbers,
-                    Reviews = p.Reviews.Select(r => new ReviewDto
-                    {
-                        Name = r.Name,
-                        Review = r.ReviewText,
-                        Rating = r.Rating,
-                        Date = r.Date.ToString("dd.MM.yyyy")
-                    }).ToList(),
-                    Characteristics = p.Characteristics.Select(c => new CharacteristicDto
-                    {
-                        Title = c.Title,
-                        Desc = c.Desc
-                    }).ToList(),
-                    Description = p.Description,
-                    InStock = p.InStock
-                })
+                .Select(p => MapToProductResponseDto(p))
                 .ToListAsync();
         }
 
@@ -69,40 +35,7 @@ namespace BlossomApi.Controllers
         public async Task<ActionResult<ProductResponseDto>> GetProduct(int id)
         {
             var product = await _context.Products
-                .Select(p => new ProductResponseDto
-                {
-                    Id = p.ProductId,
-                    Name = p.Name,
-                    NameEng = p.NameEng,
-                    Amount = p.AvailableAmount,
-                    Images = p.Images,
-                    Brand = p.Brand,
-                    Price = p.Price,
-                    Discount = p.Discount,
-                    IsNew = p.IsNew,
-                    Rating = p.Rating,
-                    NumberOfReviews = p.NumberOfReviews,
-                    NumberOfPurchases = p.NumberOfPurchases,
-                    NumberOfViews = p.NumberOfViews,
-                    Article = p.Article,
-                    Options = p.Options,
-                    Categories = p.Categories.Select(c => c.Name).ToList(),
-                    DieNumbers = p.DieNumbers,
-                    Reviews = p.Reviews.Select(r => new ReviewDto
-                    {
-                        Name = r.Name,
-                        Review = r.ReviewText,
-                        Rating = r.Rating,
-                        Date = r.Date.ToString("dd.MM.yyyy")
-                    }).ToList(),
-                    Characteristics = p.Characteristics.Select(c => new CharacteristicDto
-                    {
-                        Title = c.Title,
-                        Desc = c.Desc
-                    }).ToList(),
-                    Description = p.Description,
-                    InStock = p.InStock
-                })
+                .Select(p => MapToProductResponseDto(p))
                 .FirstOrDefaultAsync(p => p.Id == id);
 
             if (product == null)
@@ -110,7 +43,7 @@ namespace BlossomApi.Controllers
                 return NotFound();
             }
 
-            return product;
+            return Ok(product);
         }
 
         // PUT: api/Product/5
@@ -123,34 +56,7 @@ namespace BlossomApi.Controllers
                 return NotFound();
             }
 
-            product.Name = productDto.Name;
-            product.NameEng = productDto.NameEng;
-            product.Images = productDto.Images;
-            product.Brand = productDto.Brand;
-            product.Price = productDto.Price;
-            product.Discount = productDto.Discount;
-            product.IsNew = productDto.IsNew;
-            product.Rating = productDto.Rating;
-            product.InStock = productDto.InStock;
-            product.AvailableAmount = productDto.AvailableAmount;
-            product.NumberOfReviews = productDto.NumberOfReviews;
-            product.NumberOfPurchases = productDto.NumberOfPurchases;
-            product.NumberOfViews = productDto.NumberOfViews;
-            product.Article = productDto.Article;
-            product.Options = productDto.Options;
-            product.DieNumbers = productDto.DieNumbers;
-            product.Description = productDto.Description;
-
-            // Update categories
-            product.Categories.Clear();
-            foreach (var categoryId in productDto.CategoryIds)
-            {
-                var category = await _context.Categories.FindAsync(categoryId);
-                if (category != null)
-                {
-                    product.Categories.Add(category);
-                }
-            }
+            UpdateProduct(product, productDto);
 
             _context.Entry(product).State = EntityState.Modified;
 
@@ -177,73 +83,13 @@ namespace BlossomApi.Controllers
         [HttpPost]
         public async Task<ActionResult<ProductResponseDto>> PostProduct(ProductCreateDto productDto)
         {
-            var product = new Product
-            {
-                Name = productDto.Name,
-                NameEng = productDto.NameEng,
-                ImagesSerialized = JsonSerializer.Serialize(productDto.Images),
-                Brand = productDto.Brand,
-                Price = productDto.Price,
-                Discount = productDto.Discount,
-                IsNew = productDto.IsNew,
-                Rating = productDto.Rating,
-                InStock = productDto.InStock,
-                AvailableAmount = productDto.AvailableAmount,
-                NumberOfReviews = productDto.NumberOfReviews,
-                NumberOfPurchases = productDto.NumberOfPurchases,
-                NumberOfViews = productDto.NumberOfViews,
-                Article = productDto.Article,
-                OptionsSerialized = JsonSerializer.Serialize(productDto.Options),
-                DieNumbersSerialized = JsonSerializer.Serialize(productDto.DieNumbers),
-                Description = productDto.Description,
-            };
-
-            foreach (var categoryId in productDto.CategoryIds)
-            {
-                var category = await _context.Categories.FindAsync(categoryId);
-                if (category != null)
-                {
-                    product.Categories.Add(category);
-                }
-            }
+            var product = new Product();
+            UpdateProduct(product, productDto);
 
             _context.Products.Add(product);
             await _context.SaveChangesAsync();
 
-            var productResponse = new ProductResponseDto
-            {
-                Id = product.ProductId,
-                Name = product.Name,
-                NameEng = product.NameEng,
-                Amount = product.AvailableAmount,
-                Images = JsonSerializer.Deserialize<List<string>>(product.ImagesSerialized) ?? new List<string>(),
-                Brand = product.Brand,
-                Price = product.Price,
-                Discount = product.Discount,
-                IsNew = product.IsNew,
-                Rating = product.Rating,
-                NumberOfReviews = product.NumberOfReviews,
-                NumberOfPurchases = product.NumberOfPurchases,
-                NumberOfViews = product.NumberOfViews,
-                Article = product.Article,
-                Options = JsonSerializer.Deserialize<List<string>>(product.OptionsSerialized) ?? new List<string>(),
-                Categories = product.Categories.Select(c => c.Name).ToList(),
-                DieNumbers = JsonSerializer.Deserialize<List<int>>(product.DieNumbersSerialized) ?? new List<int>(),
-                Reviews = product.Reviews.Select(r => new ReviewDto
-                {
-                    Name = r.Name,
-                    Review = r.ReviewText,
-                    Rating = r.Rating,
-                    Date = r.Date.ToString("dd.MM.yyyy")
-                }).ToList(),
-                Characteristics = product.Characteristics.Select(c => new CharacteristicDto
-                {
-                    Title = c.Title,
-                    Desc = c.Desc
-                }).ToList(),
-                Description = product.Description,
-                InStock = product.InStock
-            };
+            var productResponse = MapToProductResponseDto(product);
 
             return CreatedAtAction(nameof(GetProduct), new { id = product.ProductId }, productResponse);
         }
@@ -319,40 +165,7 @@ namespace BlossomApi.Controllers
             var products = await query
                 .Skip(request.Start)
                 .Take(request.Amount)
-                .Select(p => new GetProductsByFilterResponseDto
-                {
-                    Id = p.ProductId,
-                    Name = p.Name,
-                    NameEng = p.NameEng,
-                    Amount = p.AvailableAmount,
-                    Images = p.Images,
-                    Brand = p.Brand,
-                    Price = p.Price,
-                    Discount = p.Discount,
-                    IsNew = p.IsNew,
-                    Rating = p.Rating,
-                    NumberOfReviews = p.NumberOfReviews,
-                    NumberOfPurchases = p.NumberOfPurchases,
-                    NumberOfViews = p.NumberOfViews,
-                    Article = p.Article,
-                    Options = p.Options,
-                    Categories = p.Categories.Select(c => c.Name).ToList(),
-                    DieNumbers = p.DieNumbers,
-                    Reviews = p.Reviews.Select(r => new ReviewDto
-                    {
-                        Name = r.Name,
-                        Review = r.ReviewText,
-                        Rating = r.Rating,
-                        Date = r.Date.ToString("dd.MM.yyyy")
-                    }).ToList(),
-                    Characteristics = p.Characteristics.Select(c => new CharacteristicDto
-                    {
-                        Title = c.Title,
-                        Desc = c.Desc
-                    }).ToList(),
-                    Description = p.Description,
-                    InStock = p.InStock
-                })
+                .Select(p => MapToProductResponseDto(p))
                 .ToListAsync();
 
             var response = new GetProductsByFilterResponse
@@ -364,9 +177,93 @@ namespace BlossomApi.Controllers
             return Ok(response);
         }
 
+        // GET: api/Product/AlsoBought/{id}
+        [HttpGet("AlsoBought/{id}")]
+        public async Task<ActionResult<IEnumerable<ProductResponseDto>>> GetAlsoBoughtProducts(int id)
+        {
+            var products = await _context.Products
+                .Where(p => p.ProductId != id) // Exclude the current product
+                .OrderBy(r => EF.Functions.Random()) // Order by random to simulate "also bought" products
+                .Take(10)
+                .Select(p => MapToProductResponseDto(p))
+                .ToListAsync();
+
+            return Ok(products);
+        }
+
         private bool ProductExists(int id)
         {
             return _context.Products.Any(e => e.ProductId == id);
+        }
+
+        private static ProductResponseDto MapToProductResponseDto(Product p)
+        {
+            return new ProductResponseDto
+            {
+                Id = p.ProductId,
+                Name = p.Name,
+                NameEng = p.NameEng,
+                Amount = p.AvailableAmount,
+                Images = p.Images,
+                Brand = p.Brand,
+                Price = p.Price,
+                Discount = p.Discount,
+                IsNew = p.IsNew,
+                Rating = p.Rating,
+                NumberOfReviews = p.NumberOfReviews,
+                NumberOfPurchases = p.NumberOfPurchases,
+                NumberOfViews = p.NumberOfViews,
+                Article = p.Article,
+                Options = p.Options,
+                Categories = p.Categories.Select(c => c.Name).ToList(),
+                DieNumbers = p.DieNumbers,
+                Reviews = p.Reviews.Select(r => new ReviewDto
+                {
+                    Name = r.Name,
+                    Review = r.ReviewText,
+                    Rating = r.Rating,
+                    Date = r.Date.ToString("dd.MM.yyyy")
+                }).ToList(),
+                Characteristics = p.Characteristics.Select(c => new CharacteristicDto
+                {
+                    Title = c.Title,
+                    Desc = c.Desc
+                }).ToList(),
+                Description = p.Description,
+                InStock = p.InStock
+            };
+        }
+
+        private void UpdateProduct(Product product, ProductCreateDto productDto)
+        {
+            product.Name = productDto.Name;
+            product.NameEng = productDto.NameEng;
+            product.Images = productDto.Images;
+            product.Brand = productDto.Brand;
+            product.Price = productDto.Price;
+            product.Discount = productDto.Discount;
+            product.IsNew = productDto.IsNew;
+            product.Rating = productDto.Rating;
+            product.InStock = productDto.InStock;
+            product.AvailableAmount = productDto.AvailableAmount;
+            product.NumberOfReviews = productDto.NumberOfReviews;
+            product.NumberOfPurchases = productDto.NumberOfPurchases;
+            product.NumberOfViews = productDto.NumberOfViews;
+            product.Article = productDto.Article;
+            product.Options = productDto.Options;
+            product.DieNumbers = productDto.DieNumbers;
+            product.Description = productDto.Description;
+
+            // Update categories
+            product.Categories.Clear();
+            foreach (var categoryId in productDto.CategoryIds)
+            {
+                var category = _context.Categories.Find(categoryId);
+                if (category != null)
+                {
+                    product.Categories.Add(category);
+                }
+            }
         }
     }
 }
