@@ -217,7 +217,7 @@ namespace BlossomApi.Controllers
                 NumberOfViews = p.NumberOfViews,
                 Article = p.Article,
                 Options = p.Options,
-                Categories = p.Categories.Select(c => c.Name).ToList(),
+                Categories = p.Categories.Select(c => new CategoryResponseDto() { CategoryId = c.CategoryId, Name = c.Name, ParentCategoryId = c.ParentCategoryId }).ToList(),
                 DieNumbers = p.DieNumbers,
                 Reviews = p.Reviews.Select(r => new ReviewDto
                 {
