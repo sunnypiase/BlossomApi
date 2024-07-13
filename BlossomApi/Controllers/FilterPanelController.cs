@@ -1,9 +1,7 @@
-using System.Linq.Expressions;
 using BlossomApi.DB;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using BlossomApi.Dtos.FilterPanel;
-using BlossomApi.Models;
 using BlossomApi.Services;
 
 namespace BlossomApi.Controllers
@@ -33,14 +31,6 @@ namespace BlossomApi.Controllers
             return Ok(filterPanelData);
         }
 
-        // POST: api/FilterPanel/GetProductCountByFilters
-        [HttpPost("GetProductCountByFilters")]
-        public async Task<ActionResult<ProductCountResponseDto>> GetProductCountByFilters(FilterRequestDto request)
-        {
-            var totalProductCount = await CountProductsByFilters(request);
-            return Ok(new ProductCountResponseDto { TotalProductCount = totalProductCount });
-        }
-
         private async Task<FilterPanelResponseDto> FetchFilterPanelData(string categoryName)
         {
             categoryName = categoryName.ToLower();
@@ -52,13 +42,14 @@ namespace BlossomApi.Controllers
             {
                 return null;
             }
+
             var categoryTree = await _categoryService.GetCategoryTreeAsync(categoryName);
             var categoryNames = _categoryService.GetAllCategoryNames(categoryTree);
 
             var products = await _context.Products
                 .Include(p => p.Characteristics)
                 .Include(p => p.Categories)
-                .Where(p => p.Categories.Any(c => categoryNames.Contains(c.Name)))
+                .Where(p => p.Categories.Any(c => categoryNames.Contains(c.Name.ToLower())))
                 .ToListAsync();
 
             var characteristics = products
@@ -67,11 +58,12 @@ namespace BlossomApi.Controllers
                 .Select(g => new FilterPanelCharacteristicDto
                 {
                     CharacteristicName = g.Key,
-                    Options = g.GroupBy(c => c.Desc)
+                    Options = g.GroupBy(c => new { c.CharacteristicId, c.Desc })
                         .Select(og => new FilterPanelOptionDto
                         {
-                            Option = og.Key,
-                            ProductsAmount = og.Count()
+                            Id = og.Key.CharacteristicId,
+                            Option = og.Key.Desc,
+                            ProductsAmount = products.Count(p => p.Characteristics.Any(c => c.CharacteristicId == og.Key.CharacteristicId))
                         })
                         .ToList()
                 })
@@ -87,51 +79,6 @@ namespace BlossomApi.Controllers
                 MinPrice = minPrice,
                 MaxPrice = maxPrice,
             };
-        }
-
-        private async Task<int> CountProductsByFilters(FilterRequestDto request)
-        {
-            var query = _context.Products.AsQueryable();
-
-            if (!string.IsNullOrEmpty(request.CategoryName))
-            {
-                var rootCategory = await _context.Categories
-                    .FirstOrDefaultAsync(c => c.Name.ToLower() == request.CategoryName.ToLower());
-
-                if (rootCategory != null)
-                {
-                    var allCategories = new List<Category> { rootCategory };
-                    allCategories.AddRange(await _categoryService.GetAllChildCategoriesAsync(rootCategory.CategoryId));
-
-                    var categoryNames = allCategories.Select(c => c.Name).ToList();
-                    query = query.Where(p => p.Categories.Any(c => categoryNames.Contains(c.Name)));
-                }
-            }
-
-            if (request.SelectedCharacteristics != null && request.SelectedCharacteristics.Any())
-            {
-                Expression<Func<Product, bool>> predicate = p => false;
-
-                foreach (var characteristic in request.SelectedCharacteristics)
-                {
-                    var temp = characteristic;
-                    predicate = predicate.Or(p => p.Characteristics.Any(c => c.Desc == temp));
-                }
-
-                query = query.Where(predicate);
-            }
-
-            if (request.MinPrice.HasValue)
-            {
-                query = query.Where(p => p.Price >= request.MinPrice.Value);
-            }
-
-            if (request.MaxPrice.HasValue)
-            {
-                query = query.Where(p => p.Price <= request.MaxPrice.Value);
-            }
-
-            return await query.CountAsync();
         }
     }
 }

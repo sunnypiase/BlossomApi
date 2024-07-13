@@ -280,18 +280,18 @@ namespace BlossomApi.Controllers
                     var allCategories = new List<Category> { rootCategory };
                     allCategories.AddRange(await _categoryService.GetAllChildCategoriesAsync(rootCategory.CategoryId));
 
-                    var categoryNames = allCategories.Select(c => c.Name).ToList();
-                    query = query.Where(p => p.Categories.Any(c => categoryNames.Contains(c.Name)));
+                    var categoryNames = allCategories.Select(c => c.Name.ToLower()).ToList();
+                    query = query.Where(p => p.Categories.Any(c => categoryNames.Contains(c.Name.ToLower())));
                 }
             }
 
             if (request.SelectedCharacteristics != null && request.SelectedCharacteristics.Count != 0)
             {
+                var characteristicIds = request.SelectedCharacteristics;
                 Expression<Func<Product, bool>> predicate = p => false;
 
-                predicate = request
-                    .SelectedCharacteristics
-                    .Aggregate(predicate, (current, temp) => current.Or(p => p.Characteristics.Any(c => c.Desc == temp)));
+                predicate = characteristicIds
+                    .Aggregate(predicate, (current, temp) => current.Or(p => p.Characteristics.Any(c => c.CharacteristicId == temp)));
 
                 query = query.Where(predicate);
             }
