@@ -1,29 +1,21 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json;
+using Microsoft.AspNetCore.Identity;
 
 namespace BlossomApi.Models
 {
     public class SiteUser
     {
-        [Key] public int SiteUserId { get; set; }
-        public string Email { get; set; }
-        public string Password { get; set; }
-
-        // Foreign key for User
-        public int UserId { get; set; }
-
-        // Navigation property
-        public User User { get; set; }
-    }
-
-    public class User
-    {
         [Key] public int UserId { get; set; }
         public string Username { get; set; }
 
         // Navigation properties
-        public SiteUser SiteUser { get; set; }
+        public string IdentityUserId { get; set; }
+
+        // Navigation properties
+        [ForeignKey("IdentityUserId")]
+        public IdentityUser IdentityUser { get; set; }
         public ICollection<ShoppingCart> ShoppingCarts { get; set; } = new List<ShoppingCart>();
     }
 
@@ -35,7 +27,7 @@ namespace BlossomApi.Models
         public int UserId { get; set; }
 
         // Navigation properties
-        public User User { get; set; }
+        public SiteUser SiteUser { get; set; }
         public ICollection<ShoppingCartProduct> ShoppingCartProducts { get; set; } = new List<ShoppingCartProduct>();
 
         // Navigation property for the relationship with Order

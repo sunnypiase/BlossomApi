@@ -1,12 +1,24 @@
 using BlossomApi.DB;
 using BlossomApi.Services;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.OpenApi.Models;
+using Swashbuckle.AspNetCore.Filters;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(options =>
+{
+    options.AddSecurityDefinition("oauth2", new OpenApiSecurityScheme
+    {
+        In = ParameterLocation.Header,
+        Name = "Authorization",
+        Type = SecuritySchemeType.ApiKey
+    });
+    options.OperationFilter<SecurityRequirementsOperationFilter>();
+});
 builder.Services.AddScoped<CategoryService>();
 builder.Logging.ClearProviders();
 builder.Logging.AddConsole();
@@ -38,6 +50,9 @@ else
 
 // Add services to the container.
 builder.Services.AddDbContext<BlossomContext>(opt => opt.UseSqlServer(connectionString));
+builder.Services.AddAuthorization();
+builder.Services.AddIdentityApiEndpoints<IdentityUser>()
+    .AddEntityFrameworkStores<BlossomContext>();
 builder.Services.AddControllers();
 
 // Add CORS services
@@ -62,6 +77,8 @@ if (app.Environment.IsDevelopment())
     app.UseDeveloperExceptionPage();
 }
 
+app.MapIdentityApi<IdentityUser>();
+
 app.UseHttpsRedirection();
 
 app.UseRouting();
@@ -77,6 +94,6 @@ if (app.Environment.IsDevelopment())
 {
     app.Run("http://0.0.0.0:8001");
 }
-logger.LogInformation("Version 1.9");
+logger.LogInformation("Version 2.1");
 
 app.Run("http://0.0.0.0:80");

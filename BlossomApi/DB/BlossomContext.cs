@@ -4,10 +4,12 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Storage;
 using System;
 using BlossomApi.Seeders;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 
 namespace BlossomApi.DB
 {
-    public sealed class BlossomContext : DbContext
+    public sealed class BlossomContext : IdentityDbContext<IdentityUser>
     {
         public BlossomContext(DbContextOptions<BlossomContext> options) : base(options)
         {
@@ -29,7 +31,6 @@ namespace BlossomApi.DB
             }
         }
 
-        public DbSet<User> Users { get; set; }
         public DbSet<SiteUser> SiteUsers { get; set; }
         public DbSet<ShoppingCart> ShoppingCarts { get; set; }
         public DbSet<ShoppingCartProduct> ShoppingCartProducts { get; set; }
@@ -42,15 +43,17 @@ namespace BlossomApi.DB
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            // One-to-one relationship between User and SiteUser
-            modelBuilder.Entity<User>()
-                .HasOne(u => u.SiteUser)
-                .WithOne(su => su.User)
-                .HasForeignKey<SiteUser>(su => su.UserId);
+            base.OnModelCreating(modelBuilder);
+
+            // One-to-one relationship between User and IdentityUser
+            modelBuilder.Entity<SiteUser>()
+                .HasOne(u => u.IdentityUser)
+                .WithOne()
+                .HasForeignKey<SiteUser>(u => u.IdentityUserId);
 
             // Many-to-one relationship between ShoppingCart and User
             modelBuilder.Entity<ShoppingCart>()
-                .HasOne(sc => sc.User)
+                .HasOne(sc => sc.SiteUser)
                 .WithMany(u => u.ShoppingCarts)
                 .HasForeignKey(sc => sc.UserId)
                 .OnDelete(DeleteBehavior.Restrict); // Avoid cascade delete
