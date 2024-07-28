@@ -14,18 +14,12 @@ namespace BlossomApi.Controllers
     public class ShoppingCartOrderController : ControllerBase
     {
         private readonly BlossomContext _context;
-
         private readonly UserManager<IdentityUser> _userManager;
-        // private readonly ILogger<ShoppingCartOrderController> _logger;
 
-        public ShoppingCartOrderController(
-            BlossomContext context,
-            UserManager<IdentityUser> userManager /*,
-            ILogger<ShoppingCartOrderController> logger*/)
+        public ShoppingCartOrderController(BlossomContext context, UserManager<IdentityUser> userManager)
         {
             _context = context;
             _userManager = userManager;
-            // _logger = logger;
         }
 
         [HttpPost("CreateOrderForGuest")]
@@ -36,45 +30,7 @@ namespace BlossomApi.Controllers
                 return BadRequest(ModelState);
             }
 
-            await using var transaction = await _context.Database.BeginTransactionAsync();
-            try
-            {
-                var shoppingCart = await AddProductsToShoppingCart(
-                    new ShoppingCart
-                    {
-                        CreatedDate = DateTime.UtcNow
-                    },
-                    request.Products);
-
-                var order = CreateOrderFromRequest(request, shoppingCart.ShoppingCartId);
-
-                var promocodeError = await ValidateAndApplyPromocode(request.UsedPromocode, order);
-                if (!string.IsNullOrEmpty(promocodeError))
-                {
-                    return BadRequest(promocodeError);
-                }
-
-                CalculateTotalPrice(order, shoppingCart, order.Promocode);
-
-                _context.Orders.Add(order);
-                await _context.SaveChangesAsync();
-
-                await transaction.CommitAsync();
-
-                return Ok(new { OrderId = order.OrderId });
-            }
-            catch (InvalidOperationException ex)
-            {
-                await transaction.RollbackAsync();
-                // _logger.LogError(ex, "Error occurred while creating the order.");
-                return BadRequest(ex.Message);
-            }
-            catch (Exception ex)
-            {
-                await transaction.RollbackAsync();
-                // _logger.LogError(ex, "An error occurred while creating the order.");
-                return StatusCode(500, "An error occurred while creating the order.");
-            }
+            return await CreateOrderAsync(request, null);
         }
 
         [Authorize]
@@ -86,23 +42,38 @@ namespace BlossomApi.Controllers
                 return BadRequest(ModelState);
             }
 
+            var siteUser = await GetCurrentUserAsync();
+            if (siteUser == null)
+            {
+                return Unauthorized();
+            }
+
+            return await CreateOrderAsync(request, siteUser);
+        }
+
+        private async Task<IActionResult> CreateOrderAsync(OrderBaseRequest request, SiteUser? siteUser)
+        {
             await using var transaction = await _context.Database.BeginTransactionAsync();
             try
             {
-                var siteUser = await GetCurrentUserAsync();
-                if (siteUser == null)
+                ShoppingCart? shoppingCart;
+                if (siteUser == null && request is GuestOrderRequest guestRequest)
                 {
-                    return Unauthorized();
+                    shoppingCart = await AddProductsToShoppingCart(new ShoppingCart { CreatedDate = DateTime.UtcNow }, guestRequest.Products);
+                }
+                else if (siteUser != null)
+                {
+                    shoppingCart = await GetActiveShoppingCartAsync(siteUser.UserId);
+                }
+                else
+                {
+                    throw new InvalidOperationException("Invalid user context.");
                 }
 
-                var shoppingCart = await GetActiveShoppingCartAsync(siteUser.UserId);
                 if (shoppingCart == null || !shoppingCart.ShoppingCartProducts.Any())
                 {
                     return BadRequest("No active shopping cart found or the cart is empty.");
                 }
-
-                // Save shopping cart to get the ShoppingCartId
-                await _context.SaveChangesAsync();
 
                 var order = CreateOrderFromRequest(request, shoppingCart.ShoppingCartId);
 
@@ -113,14 +84,9 @@ namespace BlossomApi.Controllers
                 }
 
                 CalculateTotalPrice(order, shoppingCart, order.Promocode);
+                UpdateProductStock(shoppingCart);
 
-                _context.Orders.Add(order);
-                _context.ShoppingCarts.Add(new ShoppingCart()
-                {
-                    SiteUserId = siteUser.UserId,
-                    CreatedDate = DateTime.UtcNow
-                });
-                await _context.SaveChangesAsync();
+                await SaveOrderAndCommitTransaction(order, siteUser);
 
                 await transaction.CommitAsync();
 
@@ -129,46 +95,96 @@ namespace BlossomApi.Controllers
             catch (InvalidOperationException ex)
             {
                 await transaction.RollbackAsync();
-                // _logger.LogError(ex, "Error occurred while creating the order.");
                 return BadRequest(ex.Message);
             }
             catch (Exception ex)
             {
                 await transaction.RollbackAsync();
-                // _logger.LogError(ex, "An error occurred while creating the order.");
                 return StatusCode(500, "An error occurred while creating the order.");
             }
         }
 
-        private async Task<ShoppingCart> AddProductsToShoppingCart(ShoppingCart shoppingCart, List<OrderProductRequest> products)
+        private async Task SaveOrderAndCommitTransaction(Order order, SiteUser? siteUser)
+        {
+            _context.Orders.Add(order);
+            if (siteUser != null)
+            {
+                _context.ShoppingCarts.Add(new ShoppingCart { SiteUserId = siteUser.UserId, CreatedDate = DateTime.UtcNow });
+            }
+
+            await _context.SaveChangesAsync();
+        }
+
+        private async Task<ShoppingCart?> AddProductsToShoppingCart(ShoppingCart shoppingCart, List<OrderProductRequest> products)
         {
             var addedShoppingCart = _context.ShoppingCarts.Add(shoppingCart).Entity;
             await _context.SaveChangesAsync();
 
+            var shoppingCartProducts = new List<ShoppingCartProduct>();
+
             foreach (var productRequest in products)
             {
                 var product = await _context.Products.FindAsync(productRequest.ProductId);
-                if (product == null)
-                {
-                    throw new InvalidOperationException($"Товар з ID {productRequest.ProductId} не знайдено.");
-                }
-
-                if (!product.InStock || product.AvailableAmount < productRequest.ProductAmount)
-                {
-                    throw new InvalidOperationException($"Товар з ID {productRequest.ProductId} недоступний або на складі залишилось недостатньо товару.");
-                }
+                ValidateProductAvailability(product, productRequest.ProductAmount);
 
                 var shoppingCartProduct = new ShoppingCartProduct
                 {
                     ShoppingCartId = addedShoppingCart.ShoppingCartId,
-                    ProductId = product.ProductId,
+                    ProductId = product!.ProductId,
                     Quantity = productRequest.ProductAmount
                 };
-                addedShoppingCart.ShoppingCartProducts.Add(_context.ShoppingCartProducts.Add(shoppingCartProduct).Entity);
-                product.AvailableAmount -= productRequest.ProductAmount;
+
+                shoppingCartProducts.Add(shoppingCartProduct);
             }
 
+            await _context.ShoppingCartProducts.AddRangeAsync(shoppingCartProducts);
+            await _context.SaveChangesAsync();
+
+            // Reload the ShoppingCart with the products to ensure the relationships are correctly established
+            addedShoppingCart = await _context.ShoppingCarts
+                .Include(sc => sc.ShoppingCartProducts)
+                .ThenInclude(scp => scp.Product)
+                .FirstOrDefaultAsync(sc => sc.ShoppingCartId == addedShoppingCart.ShoppingCartId);
+
             return addedShoppingCart;
+        }
+
+        private void ValidateProductAvailability(Product? product, int requestedAmount)
+        {
+            if (product == null)
+            {
+                throw new InvalidOperationException("Product not found.");
+            }
+
+            if (!product.InStock || product.AvailableAmount < requestedAmount)
+            {
+                throw new InvalidOperationException("Product not available or insufficient stock.");
+            }
+        }
+
+        private Product UpdateProductStockAfterAdd(Product product, int requestedAmount)
+        {
+            product.AvailableAmount -= requestedAmount;
+
+            product.InStock = product.AvailableAmount switch
+            {
+                0 => false,
+                < 0 => throw new InvalidOperationException("Insufficient stock."),
+                _ => product.InStock
+            };
+
+            return product;
+        }
+
+        private void UpdateProductStock(ShoppingCart shoppingCart)
+        {
+            var productUpdates = new List<Product>();
+            foreach (var cartProduct in shoppingCart.ShoppingCartProducts)
+            {
+                productUpdates.Add(UpdateProductStockAfterAdd(cartProduct.Product, cartProduct.Quantity));
+            }
+
+            _context.Products.UpdateRange(productUpdates);
         }
 
         private async Task<SiteUser?> GetCurrentUserAsync()
@@ -209,6 +225,7 @@ namespace BlossomApi.Controllers
             }
 
             order.PromocodeId = promocode.PromocodeId;
+            order.Promocode = promocode;
             promocode.UsageLeft--;
             _context.Promocodes.Update(promocode);
 

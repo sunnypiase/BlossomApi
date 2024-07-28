@@ -92,6 +92,6 @@ if (app.Environment.IsDevelopment())
 {
     app.Run("http://0.0.0.0:8001");
 }
-logger.LogInformation("Version 2.2");
+logger.LogInformation("Version 2.3");
 
 app.Run("http://0.0.0.0:80");

@@ -115,14 +115,15 @@ namespace BlossomApi.Controllers
                 return BadRequest("No active shopping cart found.");
             }
 
-            var shoppingCartProduct = shoppingCart.ShoppingCartProducts.FirstOrDefault(p => p.ProductId == request.ProductId);
+            var shoppingCartProduct = await _context.ShoppingCartProducts
+                .FirstOrDefaultAsync(p => p.ShoppingCartId == shoppingCart.ShoppingCartId && p.ProductId == request.ProductId);
+
             if (shoppingCartProduct == null)
             {
                 return BadRequest("Product not found in cart.");
             }
 
-            shoppingCart.ShoppingCartProducts.Remove(shoppingCartProduct);
-
+            _context.ShoppingCartProducts.Remove(shoppingCartProduct);
             await _context.SaveChangesAsync();
             return Ok();
         }
@@ -160,6 +161,7 @@ namespace BlossomApi.Controllers
         {
             var shoppingCart = await _context.ShoppingCarts
                 .Include(sc => sc.ShoppingCartProducts)
+                .ThenInclude(scp => scp.Product)
                 .FirstOrDefaultAsync(sc => sc.SiteUserId == userId && sc.Order == null);
 
             if (shoppingCart != null)
