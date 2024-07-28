@@ -67,12 +67,12 @@ namespace BlossomApi.Controllers
                 }
                 else
                 {
-                    throw new InvalidOperationException("Invalid user context.");
+                    throw new InvalidOperationException("Невірний контекст користувача.");
                 }
 
                 if (shoppingCart == null || !shoppingCart.ShoppingCartProducts.Any())
                 {
-                    return BadRequest("No active shopping cart found or the cart is empty.");
+                    return BadRequest("Не знайдено активного кошика покупок або кошик порожній.");
                 }
 
                 var order = CreateOrderFromRequest(request, shoppingCart.ShoppingCartId);
@@ -100,7 +100,7 @@ namespace BlossomApi.Controllers
             catch (Exception ex)
             {
                 await transaction.RollbackAsync();
-                return StatusCode(500, "An error occurred while creating the order.");
+                return StatusCode(500, "Сталася помилка під час створення замовлення.");
             }
         }
 
@@ -153,12 +153,12 @@ namespace BlossomApi.Controllers
         {
             if (product == null)
             {
-                throw new InvalidOperationException("Product not found.");
+                throw new InvalidOperationException("Товар не знайдено.");
             }
 
             if (!product.InStock || product.AvailableAmount < requestedAmount)
             {
-                throw new InvalidOperationException("Product not available or insufficient stock.");
+                throw new InvalidOperationException("Товар недоступний або недостатня кількість на складі.");
             }
         }
 
@@ -169,7 +169,7 @@ namespace BlossomApi.Controllers
             product.InStock = product.AvailableAmount switch
             {
                 0 => false,
-                < 0 => throw new InvalidOperationException("Insufficient stock."),
+                < 0 => throw new InvalidOperationException("Недостатня кількість товару на складі."),
                 _ => product.InStock
             };
 
@@ -201,7 +201,7 @@ namespace BlossomApi.Controllers
                 .FirstOrDefaultAsync(sc => sc.SiteUserId == userId && sc.Order == null);
         }
 
-        private async Task<string> ValidateAndApplyPromocode(string usedPromocode, Order order)
+        private async Task<string> ValidateAndApplyPromocode(string? usedPromocode, Order order)
         {
             if (string.IsNullOrEmpty(usedPromocode))
             {
@@ -242,8 +242,8 @@ namespace BlossomApi.Controllers
                 Surname = request.UserInfo.Surname,
                 Email = request.UserInfo.Email,
                 PhoneNumber = request.UserInfo.Phone,
-                DontCallMe = request.AdditionalInfo.DontCallMe,
-                EcoPackaging = request.AdditionalInfo.EcoPackaging,
+                DontCallMe = request.AdditionalInfo?.DontCallMe ?? false,
+                EcoPackaging = request.AdditionalInfo?.EcoPackaging ?? false,
                 ShoppingCartId = shoppingCartId
             };
 
@@ -289,7 +289,8 @@ namespace BlossomApi.Controllers
 
         public class GuestOrderRequest : OrderBaseRequest
         {
-            [Required] public List<OrderProductRequest> Products { get; set; }
+            [Required(ErrorMessage = "Список товарів є обов'язковим.")]
+            public List<OrderProductRequest> Products { get; set; }
         }
 
         public class AuthenticatedOrderRequest : OrderBaseRequest
@@ -299,36 +300,56 @@ namespace BlossomApi.Controllers
 
         public abstract class OrderBaseRequest
         {
-            public string UsedPromocode { get; set; }
-            [Required] public UserInfoRequest UserInfo { get; set; }
-            [Required] public DeliveryInfoRequest DeliveryInfo { get; set; }
-            public AdditionalInfoRequest AdditionalInfo { get; set; }
+            public string? UsedPromocode { get; set; }
+
+            [Required(ErrorMessage = "Інформація про користувача є обов'язковою.")]
+            public UserInfoRequest UserInfo { get; set; }
+
+            [Required(ErrorMessage = "Інформація про доставку є обов'язковою.")]
+            public DeliveryInfoRequest DeliveryInfo { get; set; }
+
+            public AdditionalInfoRequest? AdditionalInfo { get; set; }
         }
 
         public class OrderProductRequest
         {
-            [Required] public int ProductId { get; set; }
-            [Required] public int ProductAmount { get; set; }
+            [Required(ErrorMessage = "ID товару є обов'язковим.")]
+            public int ProductId { get; set; }
+
+            [Required(ErrorMessage = "Кількість товару є обов'язковою.")]
+            [Range(1, int.MaxValue, ErrorMessage = "Кількість товару повинна бути більшою за 0.")]
+            public int ProductAmount { get; set; }
         }
 
         public class UserInfoRequest
         {
-            [Required] public string Name { get; set; }
-            [Required] [PhoneNumber] public string Phone { get; set; }
-            [Required] public string Surname { get; set; }
-            [EmailAddress] public string Email { get; set; }
+            [Required(ErrorMessage = "Ім'я є обов'язковим.")]
+            public string Name { get; set; }
+
+            [Required(ErrorMessage = "Номер телефону є обов'язковим.")]
+            [PhoneNumber(ErrorMessage = "Неправильний формат номера телефону.")]
+            public string Phone { get; set; }
+
+            [Required(ErrorMessage = "Прізвище є обов'язковим.")]
+            public string Surname { get; set; }
+
+            [EmailAddress(ErrorMessage = "Неправильний формат електронної пошти.")]
+            public string Email { get; set; }
         }
 
         public class DeliveryInfoRequest
         {
-            [Required] public string City { get; set; }
-            [Required] public string Department { get; set; }
+            [Required(ErrorMessage = "Місто є обов'язковим.")]
+            public string City { get; set; }
+
+            [Required(ErrorMessage = "Номер відділення є обов'язковим.")]
+            public string Department { get; set; }
         }
 
         public class AdditionalInfoRequest
         {
-            public bool DontCallMe { get; set; }
-            public bool EcoPackaging { get; set; }
+            public bool DontCallMe { get; set; } = false;
+            public bool EcoPackaging { get; set; } = false;
         }
     }
 }

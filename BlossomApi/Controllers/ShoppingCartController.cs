@@ -34,7 +34,7 @@ namespace BlossomApi.Controllers
             var product = await _context.Products.FindAsync(request.ProductId);
             if (product is not { InStock: true } || product.AvailableAmount < 1)
             {
-                return BadRequest("Product is not available or out of stock.");
+                return BadRequest("Товар недоступний або відсутній на складі.");
             }
 
             var shoppingCart = await GetOrCreateActiveShoppingCartAsync(siteUser.UserId);
@@ -66,7 +66,7 @@ namespace BlossomApi.Controllers
         {
             if (request.Quantity <= 0)
             {
-                return BadRequest("Quantity must be greater than 0.");
+                return BadRequest("Кількість повинна бути більше 0.");
             }
 
             var siteUser = await GetCurrentUserAsync();
@@ -78,19 +78,19 @@ namespace BlossomApi.Controllers
             var shoppingCart = await GetActiveShoppingCartAsync(siteUser.UserId);
             if (shoppingCart == null)
             {
-                return BadRequest("No active shopping cart found.");
+                return BadRequest("Не знайдено активного кошика покупок.");
             }
 
             var shoppingCartProduct = shoppingCart.ShoppingCartProducts.FirstOrDefault(p => p.ProductId == request.ProductId);
             if (shoppingCartProduct == null)
             {
-                return BadRequest("Product not found in cart.");
+                return BadRequest("Товар не знайдено у кошику.");
             }
 
             var product = await _context.Products.FindAsync(request.ProductId);
             if (product == null || !product.InStock || product.AvailableAmount < request.Quantity)
             {
-                return BadRequest("Product is not available or out of stock.");
+                return BadRequest("Товар недоступний або відсутній на складі.");
             }
 
             shoppingCartProduct.Quantity = request.Quantity;
@@ -112,7 +112,7 @@ namespace BlossomApi.Controllers
             var shoppingCart = await GetActiveShoppingCartAsync(siteUser.UserId);
             if (shoppingCart == null)
             {
-                return BadRequest("No active shopping cart found.");
+                return BadRequest("Не знайдено активного кошика покупок.");
             }
 
             var shoppingCartProduct = await _context.ShoppingCartProducts
@@ -120,7 +120,7 @@ namespace BlossomApi.Controllers
 
             if (shoppingCartProduct == null)
             {
-                return BadRequest("Product not found in cart.");
+                return BadRequest("Товар не знайдено у кошику.");
             }
 
             _context.ShoppingCartProducts.Remove(shoppingCartProduct);
@@ -190,18 +190,24 @@ namespace BlossomApi.Controllers
 
         public class AddProductRequest
         {
-            [Required] public int ProductId { get; set; }
+            [Required(ErrorMessage = "ID товару є обов'язковим.")]
+            public int ProductId { get; set; }
         }
 
         public class ChangeProductAmountRequest
         {
-            [Required] public int ProductId { get; set; }
-            [Required] public int Quantity { get; set; }
+            [Required(ErrorMessage = "ID товару є обов'язковим.")]
+            public int ProductId { get; set; }
+
+            [Required(ErrorMessage = "Кількість є обов'язковою.")]
+            [Range(1, int.MaxValue, ErrorMessage = "Кількість повинна бути більшою за 0.")]
+            public int Quantity { get; set; }
         }
 
         public class RemoveProductRequest
         {
-            [Required] public int ProductId { get; set; }
+            [Required(ErrorMessage = "ID товару є обов'язковим.")]
+            public int ProductId { get; set; }
         }
     }
 }

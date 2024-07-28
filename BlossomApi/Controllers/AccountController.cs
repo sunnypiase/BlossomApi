@@ -60,19 +60,19 @@ namespace BlossomApi.Controllers
             await _context.SaveChangesAsync();
 
             await _signInManager.SignInAsync(user, isPersistent: false);
-            return Ok(new { Message = "Registration successful" });
+            return Ok(new { Message = "Реєстрація успішна" });
         }
 
         [HttpPost("Login")]
         public async Task<IActionResult> Login([FromBody] LoginRequest login)
         {
-            _signInManager.AuthenticationScheme =IdentityConstants.ApplicationScheme;
+            _signInManager.AuthenticationScheme = IdentityConstants.ApplicationScheme;
 
             var result = await _signInManager.PasswordSignInAsync(login.Email, login.Password, false, lockoutOnFailure: true);
 
             if (!result.Succeeded)
             {
-                return Unauthorized(new { Message = "Invalid login attempt." });
+                return Unauthorized(new { Message = "Невдала спроба входу." });
             }
 
             return Ok();
@@ -82,32 +82,43 @@ namespace BlossomApi.Controllers
         public async Task<IActionResult> Logout()
         {
             await _signInManager.SignOutAsync();
-            return Ok(new { Message = "Logout successful" });
+            return Ok(new { Message = "Вихід успішний" });
         }
     }
 
     public class RegisterModel
     {
-        [Required] public string Username { get; set; }
-        [Required] public string Surname { get; set; }
-        [Required] [EmailAddress] public string Email { get; set; }
+        [Required(ErrorMessage = "Ім'я користувача є обов'язковим.")]
+        public string Username { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "Прізвище є обов'язковим.")]
+        public string Surname { get; set; }
+
+        [Required(ErrorMessage = "Електронна пошта є обов'язковою.")]
+        [EmailAddress(ErrorMessage = "Неправильний формат електронної пошти.")]
+        public string Email { get; set; }
+
+        [Required(ErrorMessage = "Пароль є обов'язковим.")]
         [DataType(DataType.Password)]
         public string Password { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "Підтвердження паролю є обов'язковим.")]
         [DataType(DataType.Password)]
-        [Compare("Password", ErrorMessage = "Passwords do not match.")]
+        [Compare("Password", ErrorMessage = "Паролі не співпадають.")]
         public string ConfirmPassword { get; set; }
 
-        [Required, PhoneNumber]
+        [Required(ErrorMessage = "Номер телефону є обов'язковим.")]
+        [PhoneNumber(ErrorMessage = "Неправильний формат номера телефону.")]
         public string PhoneNumber { get; set; }
     }
 
     public class LoginRequest
     {
-        [Required] [EmailAddress] public string Email { get; set; }
-        [Required] public string Password { get; set; }
+        [Required(ErrorMessage = "Електронна пошта є обов'язковою.")]
+        [EmailAddress(ErrorMessage = "Неправильний формат електронної пошти.")]
+        public string Email { get; set; }
+
+        [Required(ErrorMessage = "Пароль є обов'язковим.")]
+        public string Password { get; set; }
     }
 }
