@@ -40,6 +40,7 @@ namespace BlossomApi.DB
         public DbSet<DeliveryInfo> DeliveryInfos { get; set; }
         public DbSet<Review> Reviews { get; set; }
         public DbSet<Characteristic> Characteristics { get; set; }
+        public DbSet<Promocode> Promocodes { get; set; }  // Add this line
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -55,7 +56,7 @@ namespace BlossomApi.DB
             modelBuilder.Entity<ShoppingCart>()
                 .HasOne(sc => sc.SiteUser)
                 .WithMany(u => u.ShoppingCarts)
-                .HasForeignKey(sc => sc.UserId)
+                .HasForeignKey(sc => sc.SiteUserId)
                 .OnDelete(DeleteBehavior.Restrict); // Avoid cascade delete
 
             // Many-to-many relationship between Product and Category using a join table
@@ -139,6 +140,13 @@ namespace BlossomApi.DB
             modelBuilder.Entity<Product>().HasData(DatabaseProductSeeder.GetProducts());
             modelBuilder.Entity<Characteristic>().HasData(DatabaseCharacteristicSeeder.GetCharacteristics());
             modelBuilder.Entity<Review>().HasData(DatabaseReviewSeeder.GetReviews());
+
+            // Many-to-one relationship between Order and Promocode
+            modelBuilder.Entity<Order>()
+                .HasOne(o => o.Promocode)
+                .WithMany()
+                .HasForeignKey(o => o.PromocodeId)
+                .OnDelete(DeleteBehavior.Restrict); // Avoid cascade delete
         }
     }
 }

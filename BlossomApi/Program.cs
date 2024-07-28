@@ -77,8 +77,6 @@ if (app.Environment.IsDevelopment())
     app.UseDeveloperExceptionPage();
 }
 
-app.MapIdentityApi<IdentityUser>();
-
 app.UseHttpsRedirection();
 
 app.UseRouting();
@@ -94,6 +92,6 @@ if (app.Environment.IsDevelopment())
 {
     app.Run("http://0.0.0.0:8001");
 }
-logger.LogInformation("Version 2.1");
+logger.LogInformation("Version 2.2");
 
 app.Run("http://0.0.0.0:80");

@@ -9,13 +9,17 @@ namespace BlossomApi.Models
     {
         [Key] public int UserId { get; set; }
         public string Username { get; set; }
+        public string Surname { get; set; }
+        public string Email { get; set; }
+        public string PhoneNumber { get; set; }
+        public string? City { get; set; }
+        public string? DepartmentNumber { get; set; }
 
         // Navigation properties
         public string IdentityUserId { get; set; }
 
         // Navigation properties
-        [ForeignKey("IdentityUserId")]
-        public IdentityUser IdentityUser { get; set; }
+        [ForeignKey("IdentityUserId")] public IdentityUser IdentityUser { get; set; }
         public ICollection<ShoppingCart> ShoppingCarts { get; set; } = new List<ShoppingCart>();
     }
 
@@ -24,14 +28,14 @@ namespace BlossomApi.Models
         [Key] public int ShoppingCartId { get; set; }
         public DateTime CreatedDate { get; set; }
 
-        public int UserId { get; set; }
+        public int? SiteUserId { get; set; } // Can be null if the user is not logged in
 
         // Navigation properties
-        public SiteUser SiteUser { get; set; }
+        public SiteUser? SiteUser { get; set; } // Can be null if the user is not logged in
         public ICollection<ShoppingCartProduct> ShoppingCartProducts { get; set; } = new List<ShoppingCartProduct>();
 
         // Navigation property for the relationship with Order
-        public Order Order { get; set; }
+        public Order? Order { get; set; }
     }
 
     public class ShoppingCartProduct
@@ -55,7 +59,7 @@ namespace BlossomApi.Models
         public string ImagesSerialized { get; set; } // Serialized images
         public string Brand { get; set; }
         public decimal Price { get; set; }
-        public decimal Discount { get; set; }
+        public decimal Discount { get; set; } // Precentage of discount
         public bool IsNew { get; set; }
         public double Rating { get; set; }
         public bool InStock { get; set; }
@@ -132,23 +136,55 @@ namespace BlossomApi.Models
     {
         [Key] public int OrderId { get; set; }
         public DateTime OrderDate { get; set; }
-        public string Status { get; set; }
-
+        public OrderStatus Status { get; set; }
+        public string Username { get; set; }
+        public string Surname { get; set; }
+        public string Email { get; set; }
+        public string PhoneNumber { get; set; }
+        public bool DontCallMe { get; set; }
+        public bool EcoPackaging { get; set; }
+        public decimal TotalPrice { get; set; }
+        public decimal TotalDiscount { get; set; } // Discount in value
+        public decimal TotalPriceWithDiscount { get; set; } // Total price - discount value
+        public decimal DiscountFromPromocode { get; set; } // Discount in value from promocode
+        public decimal DiscountFromProductAction { get; set; } // Discount in value from product action
+        
         public int ShoppingCartId { get; set; }
 
         // Navigation properties
+        public int? PromocodeId { get; set; }
+        public Promocode Promocode { get; set; }
         public ShoppingCart ShoppingCart { get; set; }
         public DeliveryInfo DeliveryInfo { get; set; }
+    }
+
+    public class Promocode
+    {
+        [Key] public int PromocodeId { get; set; }
+        public string Code { get; set; }
+        public decimal Discount { get; set; }
+        public int UsageLeft { get; set; }
+        public DateTime ExpirationDate { get; set; }
+    }
+
+    public enum OrderStatus
+    {
+        Created, //  User created the order
+        Accepted, // Admin accepted the order after calling the user
+        Declined, // Admin declined the order after calling the user
+        NeedToShip, // Admin accepted the order and need to ship it
+        Shipped, // Admin shipped the order
+        Completed, // User received the order
+        Refund // User refunded the order
     }
 
     public class DeliveryInfo
     {
         [Key] public int DeliveryInfoId { get; set; }
 
+        public string City { get; set; }
+        public string DepartmentNumber { get; set; }
         public int OrderId { get; set; }
-        public string Address { get; set; }
-        public DateTime DeliveryDate { get; set; }
-
         // Navigation property
         public Order Order { get; set; }
     }

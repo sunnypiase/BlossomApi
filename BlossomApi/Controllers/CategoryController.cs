@@ -2,6 +2,8 @@ using BlossomApi.DB;
 using BlossomApi.Dtos;
 using BlossomApi.Models;
 using BlossomApi.Services;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -24,6 +26,7 @@ namespace BlossomApi.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<CategoryResponseDto>>> GetCategories()
         {
+            // var currentUser = _userManager.GetUserId(User);
             return await _context.Categories
                 .Select(c => new CategoryResponseDto
                 {
