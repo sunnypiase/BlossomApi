@@ -20,7 +20,7 @@ services:
     image: ${DOCKER_REGISTRY-}blossomapi
     build:
       context: .
-      dockerfile: BlossomApi/Dockerfile
+      dockerfile: Dockerfile
     ports:
       - 8001:80
     depends_on:

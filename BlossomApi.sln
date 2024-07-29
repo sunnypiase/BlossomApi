@@ -1,6 +1,6 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BlossomApi", "BlossomApi\BlossomApi.csproj", "{2E7C6E43-09C3-48A8-98F2-1FDE56CF86BB}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BlossomApi", "BlossomApi.csproj", "{2E7C6E43-09C3-48A8-98F2-1FDE56CF86BB}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
