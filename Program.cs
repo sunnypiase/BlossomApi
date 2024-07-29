@@ -27,18 +27,9 @@ builder.Services.AddSingleton<ILoggerFactory, LoggerFactory>();
 var logger = builder.Services.BuildServiceProvider().GetRequiredService<ILoggerFactory>().CreateLogger<Program>();
 
 // Determine the environment and set the connection string accordingly
-string connectionString;
-
-if (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "ENV")
-{
-    // Local development connection string
-    connectionString = ConnectionHelper.GetConnectionString(builder.Configuration);
-}
-else
-{
-    connectionString = BuildConnectionString("postgresql://postgres:ZIZkykDYNDRGCaEdThFrNRaTPpzqLSPp@monorail.proxy.rlwy.net:39147/railway");
-    // Use the connection helper to build the connection string from environment variables
-}
+var connectionString = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "ENV"
+    ? ConnectionHelper.GetConnectionString(builder.Configuration)
+    : "Host=localhost;Username=postgres;Password=root;Database=postgres;Port=5432;Pooling=true;";
 
 // Log the connection string for debugging
 logger.LogInformation($"Connection String: {connectionString}");
@@ -73,38 +64,18 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
 app.UseRouting();
 
 // Enable CORS
 app.UseCors("AllowAll");
 
 app.UseAuthorization();
-
 app.MapControllers();
 
-if (app.Environment.IsDevelopment())
+if (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "ENV")
 {
-    app.Run("http://0.0.0.0:8001");
+    app.Run("http://0.0.0.0:80");
 }
+
 logger.LogInformation("Version 3.1");
-
-app.Run("http://0.0.0.0:80");
-static string BuildConnectionString(string databaseUrl)
-{
-    var databaseUri = new Uri(databaseUrl);
-    var userInfo = databaseUri.UserInfo.Split(':');
-        
-    var builder = new NpgsqlConnectionStringBuilder
-    {
-        Host = databaseUri.Host,
-        Port = databaseUri.Port,
-        Username = userInfo[0],
-        Password = userInfo[1],
-        Database = databaseUri.LocalPath.TrimStart('/'),
-        SslMode = SslMode.Require,
-        TrustServerCertificate = true
-    };
-
-    return builder.ToString();
-}
+app.Run("http://0.0.0.0:8001");

@@ -4,14 +4,18 @@ networks:
   blossomapinetwork:
 
 services:
-  demoappdb:
+  postgresdb:
     container_name: app-db
-    image: mcr.microsoft.com/mssql/server:2019-latest
+    image: postgres:latest
     ports:
-      - 8002:1433
+      - "5432:5432"
     environment:
-      ACCEPT_EULA: "Y"
-      SA_PASSWORD: "password@12345#"
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=BlossomDb
+    restart: always
+    volumes:
+      - app_data:/var/lib/postgresql/data
     networks:
       - blossomapinetwork
 
@@ -22,12 +26,13 @@ services:
       context: .
       dockerfile: Dockerfile
     ports:
-      - 8001:80
+      - "8001:80"
     depends_on:
-      - demoappdb
+      - postgresdb
     environment:
-      - DB_HOST=demoappdb
-      - DB_NAME=BlossomApi
-      - DB_SA_PASSWORD=password@12345#
+      - DATABASE_URL=User ID=postgres;Password=postgres;Host=postgresdb;Port=5432;Database=BlossomDb;Pooling=true;
+      - ASPNETCORE_ENVIRONMENT=ENV
     networks:
       - blossomapinetwork
+volumes:
+  app_data:

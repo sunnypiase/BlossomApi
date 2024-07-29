@@ -1,11 +1,15 @@
-using BlossomApi.Models;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
+using System;
+using BlossomApi.Models;
+using BlossomApi.Seeders;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Storage;
-using System;
-using BlossomApi.Seeders;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 
 namespace BlossomApi.DB
 {
@@ -40,7 +44,7 @@ namespace BlossomApi.DB
         public DbSet<DeliveryInfo> DeliveryInfos { get; set; }
         public DbSet<Review> Reviews { get; set; }
         public DbSet<Characteristic> Characteristics { get; set; }
-        public DbSet<Promocode> Promocodes { get; set; }
+        public DbSet<Promocode> Promocodes { get; set; } 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -147,6 +151,31 @@ namespace BlossomApi.DB
                 .WithMany()
                 .HasForeignKey(o => o.PromocodeId)
                 .OnDelete(DeleteBehavior.Restrict); // Avoid cascade delete
+
+            // Configure DateTime properties to use UTC
+            var dateTimeConverter = new ValueConverter<DateTime, DateTime>(
+                v => v.ToUniversalTime(),
+                v => DateTime.SpecifyKind(v, DateTimeKind.Utc));
+
+            var nullableDateTimeConverter = new ValueConverter<DateTime?, DateTime?>(
+                v => v.HasValue ? v.Value.ToUniversalTime() : v,
+                v => v.HasValue ? DateTime.SpecifyKind(v.Value, DateTimeKind.Utc) : v);
+
+            foreach (var entityType in modelBuilder.Model.GetEntityTypes())
+            {
+                foreach (var property in entityType.GetProperties())
+                {
+                    if (property.ClrType == typeof(DateTime))
+                    {
+                        property.SetValueConverter(dateTimeConverter);
+                    }
+
+                    if (property.ClrType == typeof(DateTime?))
+                    {
+                        property.SetValueConverter(nullableDateTimeConverter);
+                    }
+                }
+            }
         }
     }
 }

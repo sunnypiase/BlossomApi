@@ -6,23 +6,21 @@ namespace BlossomApi.DB
     {
         public static string GetConnectionString(IConfiguration configuration)
         {
-            var connectionString = configuration.GetConnectionString("DefaultConnection");
             var databaseUrl = Environment.GetEnvironmentVariable("DATABASE_URL");
-            return string.IsNullOrEmpty(databaseUrl) ? connectionString : BuildConnectionString(databaseUrl);
+            return databaseUrl.Contains("postgres://") ? BuildConnectionStringFromUri(databaseUrl) : databaseUrl;
         }
 
-        private static string BuildConnectionString(string databaseUrl)
+        private static string BuildConnectionStringFromUri(string databaseUrl)
         {
-            Console.WriteLine($"Database URL: {databaseUrl}");
             var databaseUri = new Uri(databaseUrl);
             var userInfo = databaseUri.UserInfo.Split(':');
-        
+
             var builder = new NpgsqlConnectionStringBuilder
             {
                 Host = databaseUri.Host,
-                Port = databaseUri.Port,
-                Username = userInfo[0],
-                Password = userInfo[1],
+                Port = databaseUri.Port > 0 ? databaseUri.Port : 5432,  // Default to 5432 if port is invalid
+                Username = Uri.UnescapeDataString(userInfo[0]),
+                Password = Uri.UnescapeDataString(userInfo[1]),
                 Database = databaseUri.LocalPath.TrimStart('/'),
                 SslMode = SslMode.Require,
                 TrustServerCertificate = true
