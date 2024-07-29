@@ -29,15 +29,15 @@ var logger = builder.Services.BuildServiceProvider().GetRequiredService<ILoggerF
 // Determine the environment and set the connection string accordingly
 string connectionString;
 
-if (builder.Environment.IsDevelopment())
+if (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "ENV")
 {
     // Local development connection string
-    connectionString = BuildConnectionString("postgresql://postgres:ZIZkykDYNDRGCaEdThFrNRaTPpzqLSPp@monorail.proxy.rlwy.net:39147/railway");
+    connectionString = ConnectionHelper.GetConnectionString(builder.Configuration);
 }
 else
 {
+    connectionString = BuildConnectionString("postgresql://postgres:ZIZkykDYNDRGCaEdThFrNRaTPpzqLSPp@monorail.proxy.rlwy.net:39147/railway");
     // Use the connection helper to build the connection string from environment variables
-    connectionString = ConnectionHelper.GetConnectionString(builder.Configuration);
 }
 
 // Log the connection string for debugging
