@@ -3,79 +3,85 @@ using BlossomApi.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
-using Npgsql;
 using Swashbuckle.AspNetCore.Filters;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen(options =>
-{
-    options.AddSecurityDefinition("oauth2", new OpenApiSecurityScheme
-    {
-        In = ParameterLocation.Header,
-        Name = "Authorization",
-        Type = SecuritySchemeType.ApiKey
-    });
-    options.OperationFilter<SecurityRequirementsOperationFilter>();
-});
-builder.Services.AddScoped<CategoryService>();
-builder.Logging.ClearProviders();
-builder.Logging.AddConsole();
-builder.Services.AddSingleton<ILoggerFactory, LoggerFactory>();
-var logger = builder.Services.BuildServiceProvider().GetRequiredService<ILoggerFactory>().CreateLogger<Program>();
-
-// Determine the environment and set the connection string accordingly
-var connectionString = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "ENV"
-    ? ConnectionHelper.GetConnectionString(builder.Configuration)
-    : "Host=localhost;Username=postgres;Password=root;Database=postgres;Port=5432;Pooling=true;";
-
-// Log the connection string for debugging
-logger.LogInformation($"Connection String: {connectionString}");
-
-// Add services to the container.
-builder.Services.AddDbContext<BlossomContext>(opt => opt.UseNpgsql(connectionString));
-builder.Services.AddAuthorization();
-builder.Services.AddIdentityApiEndpoints<IdentityUser>()
-    .AddEntityFrameworkStores<BlossomContext>();
-builder.Services.AddControllers();
-
-// Add CORS services
-builder.Services.AddCors(options =>
-{
-    options.AddPolicy("AllowAll", builder =>
-    {
-        builder.AllowAnyOrigin()
-            .AllowAnyMethod()
-            .AllowAnyHeader();
-    });
-});
+ConfigureServices(builder.Services, builder.Configuration, builder.Environment);
 
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
-app.UseSwagger();
-app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "BlossomApi v1"));
+ConfigureMiddleware(app);
 
-if (app.Environment.IsDevelopment())
+app.Run();
+
+void ConfigureServices(IServiceCollection services, IConfiguration configuration, IWebHostEnvironment environment)
 {
-    app.UseDeveloperExceptionPage();
+    services.AddEndpointsApiExplorer();
+    services.AddSwaggerGen(options =>
+    {
+        options.AddSecurityDefinition("oauth2", new OpenApiSecurityScheme
+        {
+            In = ParameterLocation.Header,
+            Name = "Authorization",
+            Type = SecuritySchemeType.ApiKey
+        });
+        options.OperationFilter<SecurityRequirementsOperationFilter>();
+    });
+    services.AddScoped<CategoryService>();
+    services.AddSingleton<ILoggerFactory, LoggerFactory>();
+    services.AddLogging(config =>
+    {
+        config.ClearProviders();
+        config.AddConsole();
+    });
+
+    var connectionString = GetConnectionString(configuration, environment);
+    services.AddDbContext<BlossomContext>(opt => opt.UseNpgsql(connectionString));
+    services.AddAuthorization();
+    services.AddIdentityApiEndpoints<IdentityUser>()
+        .AddEntityFrameworkStores<BlossomContext>();
+    services.AddControllers();
+
+    services.AddCors(options =>
+    {
+        options.AddPolicy("AllowAll", corsPolicyBuilder =>
+        {
+            corsPolicyBuilder.AllowAnyOrigin()
+                .AllowAnyMethod()
+                .AllowAnyHeader();
+        });
+    });
 }
 
-app.UseHttpsRedirection();
-app.UseRouting();
+string GetConnectionString(IConfiguration configuration, IWebHostEnvironment environment)
+    => environment.IsDevelopment()
+        ? ConnectionHelper.GetConnectionString(configuration)
+        : "Host=localhost;Username=postgres;Password=root;Database=postgres;Port=5432;Pooling=true;";
 
-// Enable CORS
-app.UseCors("AllowAll");
-
-app.UseAuthorization();
-app.MapControllers();
-
-if (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "ENV")
+void ConfigureMiddleware(WebApplication webApp)
 {
-    app.Run("http://0.0.0.0:80");
-}
+    var logger = webApp.Services.GetRequiredService<ILoggerFactory>().CreateLogger<Program>();
 
-logger.LogInformation("Version 3.1");
-app.Run("http://0.0.0.0:8001");
+    webApp.UseSwagger();
+    webApp.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "BlossomApi v1"));
+
+    if (webApp.Environment.IsDevelopment())
+    {
+        webApp.UseDeveloperExceptionPage();
+    }
+
+    webApp.UseHttpsRedirection();
+    webApp.UseRouting();
+
+    webApp.UseCors("AllowAll");
+
+    webApp.UseAuthorization();
+    webApp.MapControllers();
+
+    webApp.Run(Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "ENV" ? "http://0.0.0.0:80" : "http://0.0.0.0:8001");
+
+    logger.LogInformation("Version 4.0");
+}
