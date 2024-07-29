@@ -13,6 +13,7 @@ namespace BlossomApi.DB
 
         private static string BuildConnectionString(string databaseUrl)
         {
+            Console.WriteLine($"Database URL: {databaseUrl}");
             var databaseUri = new Uri(databaseUrl);
             var userInfo = databaseUri.UserInfo.Split(':');
         
