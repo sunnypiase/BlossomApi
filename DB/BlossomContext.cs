@@ -40,7 +40,7 @@ namespace BlossomApi.DB
         public DbSet<DeliveryInfo> DeliveryInfos { get; set; }
         public DbSet<Review> Reviews { get; set; }
         public DbSet<Characteristic> Characteristics { get; set; }
-        public DbSet<Promocode> Promocodes { get; set; }  // Add this line
+        public DbSet<Promocode> Promocodes { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

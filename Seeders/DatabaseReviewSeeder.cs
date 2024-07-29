@@ -21,7 +21,7 @@ namespace BlossomApi.Seeders
                         Name = $"Reviewer {random.Next(1, 100)}",
                         ReviewText = "This is a sample review.",
                         Rating = random.Next(1, 6), // Random rating between 1 and 5
-                        Date = DateTime.Now.AddDays(-random.Next(0, 365)), // Random date within the past year
+                        Date = DateTime.UtcNow.AddDays(-random.Next(0, 365)), // Random date within the past year
                         ProductId = productId
                     });
                 }

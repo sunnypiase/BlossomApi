@@ -26,7 +26,7 @@ namespace BlossomApi.Models
     public class ShoppingCart
     {
         [Key] public int ShoppingCartId { get; set; }
-        public DateTime CreatedDate { get; set; }
+        public DateTime CreatedDate { get; set; } = DateTime.UtcNow;
 
         public int? SiteUserId { get; set; } // Can be null if the user is not logged in
 
@@ -107,7 +107,7 @@ namespace BlossomApi.Models
         public string Name { get; set; }
         public string ReviewText { get; set; }
         public int Rating { get; set; }
-        public DateTime Date { get; set; }
+        public DateTime Date { get; set; } = DateTime.UtcNow;
 
         public int ProductId { get; set; }
         public Product Product { get; set; }
@@ -164,7 +164,7 @@ namespace BlossomApi.Models
         public string Code { get; set; }
         public decimal Discount { get; set; }
         public int UsageLeft { get; set; }
-        public DateTime ExpirationDate { get; set; }
+        public DateTime ExpirationDate { get; set; } = DateTime.UtcNow;
     }
 
     public enum OrderStatus

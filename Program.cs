@@ -3,6 +3,7 @@ using BlossomApi.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
+using Npgsql;
 using Swashbuckle.AspNetCore.Filters;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -24,32 +25,26 @@ builder.Logging.ClearProviders();
 builder.Logging.AddConsole();
 builder.Services.AddSingleton<ILoggerFactory, LoggerFactory>();
 var logger = builder.Services.BuildServiceProvider().GetRequiredService<ILoggerFactory>().CreateLogger<Program>();
+
 // Determine the environment and set the connection string accordingly
 string connectionString;
 
 if (builder.Environment.IsDevelopment())
 {
     // Local development connection string
-    connectionString = "Server=localhost;Database=BlossomDb;Trusted_Connection=True;TrustServerCertificate=True;";
+    connectionString = BuildConnectionString("postgresql://postgres:ZIZkykDYNDRGCaEdThFrNRaTPpzqLSPp@monorail.proxy.rlwy.net:39147/railway");
 }
 else
 {
-    // Load environment-specific appsettings
-    var dbHost = Environment.GetEnvironmentVariable("DB_HOST");
-    var dbName = Environment.GetEnvironmentVariable("DB_NAME");
-    var dbPassword = Environment.GetEnvironmentVariable("DB_SA_PASSWORD");
-
-    // Log the connection string for debugging
-    logger.LogInformation($"DB_HOST: {dbHost}");
-    logger.LogInformation($"DB_NAME: {dbName}");
-    logger.LogInformation($"DB_SA_PASSWORD: {dbPassword}");
-
-    connectionString = $"Data Source={dbHost};Initial Catalog={dbName};User ID=sa;Password={dbPassword};TrustServerCertificate=True";
-    logger.LogInformation($"Connection String: {connectionString}");
+    // Use the connection helper to build the connection string from environment variables
+    connectionString = ConnectionHelper.GetConnectionString(builder.Configuration);
 }
 
+// Log the connection string for debugging
+logger.LogInformation($"Connection String: {connectionString}");
+
 // Add services to the container.
-builder.Services.AddDbContext<BlossomContext>(opt => opt.UseSqlServer(connectionString));
+builder.Services.AddDbContext<BlossomContext>(opt => opt.UseNpgsql(connectionString));
 builder.Services.AddAuthorization();
 builder.Services.AddIdentityApiEndpoints<IdentityUser>()
     .AddEntityFrameworkStores<BlossomContext>();
@@ -95,3 +90,21 @@ if (app.Environment.IsDevelopment())
 logger.LogInformation("Version 3.1");
 
 app.Run("http://0.0.0.0:80");
+static string BuildConnectionString(string databaseUrl)
+{
+    var databaseUri = new Uri(databaseUrl);
+    var userInfo = databaseUri.UserInfo.Split(':');
+        
+    var builder = new NpgsqlConnectionStringBuilder
+    {
+        Host = databaseUri.Host,
+        Port = databaseUri.Port,
+        Username = userInfo[0],
+        Password = userInfo[1],
+        Database = databaseUri.LocalPath.TrimStart('/'),
+        SslMode = SslMode.Require,
+        TrustServerCertificate = true
+    };
+
+    return builder.ToString();
+}
