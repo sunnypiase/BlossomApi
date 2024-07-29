@@ -7,7 +7,7 @@ namespace BlossomApi.DB
         public static string GetConnectionString(IConfiguration configuration)
         {
             var databaseUrl = Environment.GetEnvironmentVariable("DATABASE_URL");
-            return databaseUrl.Contains("postgres://") ? BuildConnectionStringFromUri(databaseUrl) : databaseUrl;
+            return databaseUrl.Contains("postgresql://") ? BuildConnectionStringFromUri(databaseUrl) : databaseUrl;
         }
 
         private static string BuildConnectionStringFromUri(string databaseUrl)
