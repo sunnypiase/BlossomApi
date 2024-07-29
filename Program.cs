@@ -3,7 +3,6 @@ using BlossomApi.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
-using Npgsql;
 using Swashbuckle.AspNetCore.Filters;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -37,8 +36,9 @@ logger.LogInformation($"Connection String: {connectionString}");
 // Add services to the container.
 builder.Services.AddDbContext<BlossomContext>(opt => opt.UseNpgsql(connectionString));
 builder.Services.AddAuthorization();
-builder.Services.AddIdentityApiEndpoints<IdentityUser>()
-    .AddEntityFrameworkStores<BlossomContext>();
+builder.Services.AddIdentity<IdentityUser, IdentityRole>()
+    .AddEntityFrameworkStores<BlossomContext>()
+    .AddDefaultTokenProviders();
 builder.Services.AddControllers();
 
 // Add CORS services
@@ -76,6 +76,9 @@ if (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "ENV")
 {
     app.Run("http://0.0.0.0:80");
 }
-
-logger.LogInformation("Version 3.1");
-app.Run("http://0.0.0.0:8001");
+else
+{
+    Environment.SetEnvironmentVariable("ADMIN_SECRET", "admin_secret");
+    logger.LogInformation("Version 3.1");
+    app.Run("http://0.0.0.0:8001");
+}

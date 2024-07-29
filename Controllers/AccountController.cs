@@ -13,16 +13,19 @@ namespace BlossomApi.Controllers
     {
         private readonly UserManager<IdentityUser> _userManager;
         private readonly SignInManager<IdentityUser> _signInManager;
+        private readonly RoleManager<IdentityRole> _roleManager;
         private readonly BlossomContext _context;
 
         public AccountController(
             UserManager<IdentityUser> userManager,
             SignInManager<IdentityUser> signInManager,
-            BlossomContext context)
+            BlossomContext context,
+            RoleManager<IdentityRole> roleManager)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _context = context;
+            _roleManager = roleManager;
         }
 
         [HttpPost("Register")]
@@ -61,6 +64,57 @@ namespace BlossomApi.Controllers
 
             await _signInManager.SignInAsync(user, isPersistent: false);
             return Ok(new { Message = "Реєстрація успішна" });
+        }
+
+        [HttpPost("RegisterAdmin")]
+        public async Task<IActionResult> RegisterAdmin(RegisterModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var adminSecret = Environment.GetEnvironmentVariable("ADMIN_SECRET");
+            if (model.Secret != null && model.Secret != adminSecret)
+            {
+                return Unauthorized(new { Message = "Invalid admin secret." });
+            }
+
+            var user = new IdentityUser { UserName = model.Email, Email = model.Email };
+            var result = await _userManager.CreateAsync(user, model.Password);
+
+            if (!result.Succeeded)
+            {
+                foreach (var error in result.Errors)
+                {
+                    ModelState.AddModelError(string.Empty, error.Description);
+                }
+
+                return BadRequest(ModelState);
+            }
+
+            var siteUser = _context.SiteUsers.Add(new SiteUser
+            {
+                IdentityUserId = user.Id,
+                Username = model.Username,
+                Surname = model.Surname,
+                Email = model.Email,
+                PhoneNumber = model.PhoneNumber
+            });
+
+            await _context.SaveChangesAsync();
+            await _context.ShoppingCarts.AddAsync(new ShoppingCart { SiteUserId = siteUser.Entity.UserId, CreatedDate = DateTime.UtcNow });
+            await _context.SaveChangesAsync();
+
+            var adminRole = "Admin";
+            if (!await _roleManager.RoleExistsAsync(adminRole))
+            {
+                await _roleManager.CreateAsync(new IdentityRole(adminRole));
+            }
+            await _userManager.AddToRoleAsync(user, adminRole);
+
+            await _signInManager.SignInAsync(user, isPersistent: false);
+            return Ok(new { Message = "Admin registration successful" });
         }
 
         [HttpPost("Login")]
@@ -110,6 +164,8 @@ namespace BlossomApi.Controllers
         [Required(ErrorMessage = "Номер телефону є обов'язковим.")]
         [PhoneNumber(ErrorMessage = "Неправильний формат номера телефону.")]
         public string PhoneNumber { get; set; }
+
+        public string? Secret { get; set; }
     }
 
     public class LoginRequest
