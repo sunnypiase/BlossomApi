@@ -62,7 +62,7 @@ namespace BlossomApi.Controllers
             await _context.ShoppingCarts.AddAsync(new ShoppingCart { SiteUserId = siteUser.Entity.UserId, CreatedDate = DateTime.UtcNow });
             await _context.SaveChangesAsync();
 
-            await _signInManager.SignInAsync(user, isPersistent: false);
+            await _signInManager.SignInAsync(user, isPersistent: true);
             return Ok(new { Message = "Реєстрація успішна" });
         }
 
@@ -113,7 +113,7 @@ namespace BlossomApi.Controllers
             }
             await _userManager.AddToRoleAsync(user, adminRole);
 
-            await _signInManager.SignInAsync(user, isPersistent: false);
+            await _signInManager.SignInAsync(user, isPersistent: true);
             return Ok(new { Message = "Admin registration successful" });
         }
 
@@ -122,7 +122,7 @@ namespace BlossomApi.Controllers
         {
             _signInManager.AuthenticationScheme = IdentityConstants.ApplicationScheme;
 
-            var result = await _signInManager.PasswordSignInAsync(login.Email, login.Password, false, lockoutOnFailure: true);
+            var result = await _signInManager.PasswordSignInAsync(login.Email, login.Password, true, lockoutOnFailure: true);
 
             if (!result.Succeeded)
             {
