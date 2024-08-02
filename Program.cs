@@ -48,7 +48,8 @@ builder.Services.AddCors(options =>
     {
         builder.AllowAnyOrigin()
             .AllowAnyMethod()
-            .AllowAnyHeader();
+            .AllowAnyHeader()
+            .AllowCredentials();
     });
 });
 
@@ -79,6 +80,6 @@ if (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "ENV")
 else
 {
     Environment.SetEnvironmentVariable("ADMIN_SECRET", "admin_secret");
-    logger.LogInformation("Version 3.1");
+    logger.LogInformation("Version 4.1");
     app.Run("http://0.0.0.0:8001");
 }
