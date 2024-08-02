@@ -44,9 +44,13 @@ builder.Services.AddControllers();
 // Add CORS services
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowAll", builder =>
+    options.AddPolicy("AllowSpecificOrigins", builder =>
     {
-        builder.AllowAnyOrigin()
+        builder.WithOrigins(
+                "http://localhost:3000",
+                "https://localhost:3000",
+                "http://fight-club-ivory.vercel.app",
+                "https://fight-club-ivory.vercel.app")
             .AllowAnyMethod()
             .AllowAnyHeader()
             .AllowCredentials();
@@ -68,7 +72,7 @@ app.UseHttpsRedirection();
 app.UseRouting();
 
 // Enable CORS
-app.UseCors("AllowAll");
+app.UseCors("AllowSpecificOrigins");
 
 app.UseAuthorization();
 app.MapControllers();
