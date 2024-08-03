@@ -43,7 +43,7 @@ builder.Services.AddIdentity<IdentityUser, IdentityRole>()
 // Configure cookie settings
 builder.Services.ConfigureApplicationCookie(options =>
 {
-    options.Cookie.SameSite = SameSiteMode.Lax;
+    options.Cookie.SameSite = SameSiteMode.None;
     options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
 });
 
@@ -85,10 +85,10 @@ app.UseCors("AllowSpecificOrigins");
 // Apply the cookie policy
 app.UseCookiePolicy(new CookiePolicyOptions()
 {
-    MinimumSameSitePolicy = SameSiteMode.Lax
+    MinimumSameSitePolicy = SameSiteMode.None
 });
 
-app.UseAuthentication();
+app.UseAuthentication();  // Add this line to enable authentication
 app.UseAuthorization();
 app.MapControllers();
 
