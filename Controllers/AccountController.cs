@@ -2,6 +2,7 @@ using System.ComponentModel.DataAnnotations;
 using BlossomApi.AttributeValidations;
 using BlossomApi.DB;
 using BlossomApi.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
@@ -129,6 +130,13 @@ namespace BlossomApi.Controllers
                 return Unauthorized(new { Message = "Невдала спроба входу." });
             }
 
+            return Ok();
+        }
+
+        [Authorize]
+        [HttpGet("GetAuth")]
+        public IActionResult GetAuth()
+        {
             return Ok();
         }
 
