@@ -39,6 +39,14 @@ builder.Services.AddAuthorization();
 builder.Services.AddIdentity<IdentityUser, IdentityRole>()
     .AddEntityFrameworkStores<BlossomContext>()
     .AddDefaultTokenProviders();
+
+// Configure cookie settings
+builder.Services.ConfigureApplicationCookie(options =>
+{
+    options.Cookie.SameSite = SameSiteMode.None;
+    options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+});
+
 builder.Services.AddControllers();
 
 // Add CORS services
@@ -74,6 +82,13 @@ app.UseRouting();
 // Enable CORS
 app.UseCors("AllowSpecificOrigins");
 
+// Apply the cookie policy
+app.UseCookiePolicy(new CookiePolicyOptions()
+{
+    MinimumSameSitePolicy = SameSiteMode.None
+});
+
+app.UseAuthentication();  // Add this line to enable authentication
 app.UseAuthorization();
 app.MapControllers();
 
