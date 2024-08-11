@@ -20,6 +20,7 @@ builder.Services.AddSwaggerGen(options =>
     options.OperationFilter<SecurityRequirementsOperationFilter>();
 });
 builder.Services.AddScoped<CategoryService>();
+builder.Services.AddScoped<ImageService>();
 builder.Logging.ClearProviders();
 builder.Logging.AddConsole();
 builder.Services.AddSingleton<ILoggerFactory, LoggerFactory>();
@@ -99,6 +100,6 @@ if (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "ENV")
 else
 {
     Environment.SetEnvironmentVariable("ADMIN_SECRET", "admin_secret");
-    logger.LogInformation("Version 4.1");
+    logger.LogInformation("Version 5.0");
     app.Run("http://0.0.0.0:8001");
 }
