@@ -88,10 +88,6 @@ namespace BlossomApi.DB
                 .HasColumnName("Images");
 
             modelBuilder.Entity<Product>()
-                .Property(p => p.OptionsSerialized)
-                .HasColumnName("Options");
-
-            modelBuilder.Entity<Product>()
                 .Property(p => p.DieNumbersSerialized)
                 .HasColumnName("DieNumbers");
 

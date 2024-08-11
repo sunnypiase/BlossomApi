@@ -26,7 +26,7 @@ namespace BlossomApi.Seeders
                     NumberOfPurchases = 7506,
                     NumberOfViews = 12116,
                     Article = "588900",
-                    OptionsSerialized = "[\"Option 1\", \"Option 2\"]",
+                    //OptionsSerialized = "[\"Option 1\", \"Option 2\"]",
                     DieNumbersSerialized = "[3, 4, 2, 1]",
                     Description = "Description of Product 1"
                 },
@@ -47,7 +47,7 @@ namespace BlossomApi.Seeders
                     NumberOfPurchases = 2805,
                     NumberOfViews = 47382,
                     Article = "246719",
-                    OptionsSerialized = "[\"Option 1\"]",
+                    //OptionsSerialized = "[\"Option 1\"]",
                     DieNumbersSerialized = "[3, 1, 4]",
                     Description = "Description of Product 2"
                 },
@@ -68,7 +68,7 @@ namespace BlossomApi.Seeders
                     NumberOfPurchases = 3775,
                     NumberOfViews = 42153,
                     Article = "725598",
-                    OptionsSerialized = "[\"Option 1\", \"Option 2\", \"Option 3\", \"Option 4\"]",
+                    //OptionsSerialized = "[\"Option 1\", \"Option 2\", \"Option 3\", \"Option 4\"]",
                     DieNumbersSerialized = "[1, 2]",
                     Description = "Description of Product 3"
                 },
@@ -89,7 +89,7 @@ namespace BlossomApi.Seeders
                     NumberOfPurchases = 8358,
                     NumberOfViews = 31150,
                     Article = "285783",
-                    OptionsSerialized = "[\"Option 1\", \"Option 2\"]",
+                    //OptionsSerialized = "[\"Option 1\", \"Option 2\"]",
                     DieNumbersSerialized = "[1, 2, 3, 4]",
                     Description = "Description of Product 4"
                 },
@@ -110,7 +110,7 @@ namespace BlossomApi.Seeders
                     NumberOfPurchases = 6669,
                     NumberOfViews = 27091,
                     Article = "572043",
-                    OptionsSerialized = "[\"Option 1\", \"Option 2\", \"Option 3\", \"Option 4\"]",
+                    //OptionsSerialized = "[\"Option 1\", \"Option 2\", \"Option 3\", \"Option 4\"]",
                     DieNumbersSerialized = "[4]",
                     Description = "Description of Product 5"
                 },
@@ -131,7 +131,7 @@ namespace BlossomApi.Seeders
                     NumberOfPurchases = 6144,
                     NumberOfViews = 35376,
                     Article = "883608",
-                    OptionsSerialized = "[\"Option 1\"]",
+                    //OptionsSerialized = "[\"Option 1\"]",
                     DieNumbersSerialized = "[3, 1]",
                     Description = "Description of Product 6"
                 },
@@ -152,7 +152,7 @@ namespace BlossomApi.Seeders
                     NumberOfPurchases = 6803,
                     NumberOfViews = 32147,
                     Article = "315193",
-                    OptionsSerialized = "[\"Option 1\"]",
+                    //OptionsSerialized = "[\"Option 1\"]",
                     DieNumbersSerialized = "[4, 1, 2]",
                     Description = "Description of Product 7"
                 },
@@ -173,7 +173,7 @@ namespace BlossomApi.Seeders
                     NumberOfPurchases = 8118,
                     NumberOfViews = 23835,
                     Article = "826958",
-                    OptionsSerialized = "[\"Option 1\", \"Option 2\"]",
+                    //OptionsSerialized = "[\"Option 1\", \"Option 2\"]",
                     DieNumbersSerialized = "[5, 3]",
                     Description = "Description of Product 8"
                 },
@@ -194,7 +194,7 @@ namespace BlossomApi.Seeders
                     NumberOfPurchases = 9088,
                     NumberOfViews = 44518,
                     Article = "243906",
-                    OptionsSerialized = "[\"Option 1\", \"Option 2\"]",
+                    //OptionsSerialized = "[\"Option 1\", \"Option 2\"]",
                     DieNumbersSerialized = "[3, 5]",
                     Description = "Description of Product 9"
                 },
@@ -215,7 +215,7 @@ namespace BlossomApi.Seeders
                     NumberOfPurchases = 1531,
                     NumberOfViews = 23080,
                     Article = "697442",
-                    OptionsSerialized = "[\"Option 1\"]",
+                    //OptionsSerialized = "[\"Option 1\"]",
                     DieNumbersSerialized = "[5, 4, 2, 1, 3]",
                     Description = "Description of Product 10"
                 },
@@ -236,7 +236,7 @@ namespace BlossomApi.Seeders
                     NumberOfPurchases = 8606,
                     NumberOfViews = 29279,
                     Article = "478490",
-                    OptionsSerialized = "[\"Option 1\"]",
+                    //OptionsSerialized = "[\"Option 1\"]",
                     DieNumbersSerialized = "[4, 5]",
                     Description = "Description of Product 11"
                 },
@@ -257,7 +257,7 @@ namespace BlossomApi.Seeders
                     NumberOfPurchases = 9973,
                     NumberOfViews = 13205,
                     Article = "867237",
-                    OptionsSerialized = "[\"Option 1\", \"Option 2\", \"Option 3\"]",
+                    //OptionsSerialized = "[\"Option 1\", \"Option 2\", \"Option 3\"]",
                     DieNumbersSerialized = "[4, 3, 1]",
                     Description = "Description of Product 12"
                 },
@@ -278,7 +278,7 @@ namespace BlossomApi.Seeders
                     NumberOfPurchases = 6531,
                     NumberOfViews = 25015,
                     Article = "112039",
-                    OptionsSerialized = "[\"Option 1\"]",
+                    //OptionsSerialized = "[\"Option 1\"]",
                     DieNumbersSerialized = "[4, 5, 1]",
                     Description = "Description of Product 13"
                 },
@@ -299,7 +299,7 @@ namespace BlossomApi.Seeders
                     NumberOfPurchases = 5708,
                     NumberOfViews = 34255,
                     Article = "551657",
-                    OptionsSerialized = "[\"Option 1\"]",
+                    //OptionsSerialized = "[\"Option 1\"]",
                     DieNumbersSerialized = "[1, 2, 3, 5]",
                     Description = "Description of Product 14"
                 },
@@ -320,7 +320,7 @@ namespace BlossomApi.Seeders
                     NumberOfPurchases = 3660,
                     NumberOfViews = 42392,
                     Article = "236229",
-                    OptionsSerialized = "[\"Option 1\"]",
+                    //OptionsSerialized = "[\"Option 1\"]",
                     DieNumbersSerialized = "[3]",
                     Description = "Description of Product 15"
                 },
@@ -341,7 +341,7 @@ namespace BlossomApi.Seeders
                     NumberOfPurchases = 9968,
                     NumberOfViews = 26949,
                     Article = "786374",
-                    OptionsSerialized = "[\"Option 1\", \"Option 2\", \"Option 3\", \"Option 4\"]",
+                    //OptionsSerialized = "[\"Option 1\", \"Option 2\", \"Option 3\", \"Option 4\"]",
                     DieNumbersSerialized = "[2, 5, 1, 3]",
                     Description = "Description of Product 16"
                 },
@@ -362,7 +362,7 @@ namespace BlossomApi.Seeders
                     NumberOfPurchases = 1424,
                     NumberOfViews = 22758,
                     Article = "117817",
-                    OptionsSerialized = "[\"Option 1\", \"Option 2\"]",
+                    //OptionsSerialized = "[\"Option 1\", \"Option 2\"]",
                     DieNumbersSerialized = "[2, 1, 5, 3, 4]",
                     Description = "Description of Product 17"
                 },
@@ -383,7 +383,7 @@ namespace BlossomApi.Seeders
                     NumberOfPurchases = 6537,
                     NumberOfViews = 43440,
                     Article = "914004",
-                    OptionsSerialized = "[\"Option 1\", \"Option 2\"]",
+                    //OptionsSerialized = "[\"Option 1\", \"Option 2\"]",
                     DieNumbersSerialized = "[4]",
                     Description = "Description of Product 18"
                 },
@@ -404,7 +404,7 @@ namespace BlossomApi.Seeders
                     NumberOfPurchases = 3727,
                     NumberOfViews = 23003,
                     Article = "865717",
-                    OptionsSerialized = "[\"Option 1\", \"Option 2\", \"Option 3\"]",
+                    //OptionsSerialized = "[\"Option 1\", \"Option 2\", \"Option 3\"]",
                     DieNumbersSerialized = "[3, 4]",
                     Description = "Description of Product 19"
                 },
@@ -425,7 +425,7 @@ namespace BlossomApi.Seeders
                     NumberOfPurchases = 1366,
                     NumberOfViews = 1140,
                     Article = "815558",
-                    OptionsSerialized = "[\"Option 1\", \"Option 2\", \"Option 3\", \"Option 4\"]",
+                    //OptionsSerialized = "[\"Option 1\", \"Option 2\", \"Option 3\", \"Option 4\"]",
                     DieNumbersSerialized = "[1, 3, 5]",
                     Description = "Description of Product 20"
                 },
@@ -446,7 +446,7 @@ namespace BlossomApi.Seeders
                     NumberOfPurchases = 8058,
                     NumberOfViews = 18089,
                     Article = "519889",
-                    OptionsSerialized = "[\"Option 1\", \"Option 2\", \"Option 3\", \"Option 4\"]",
+                    //OptionsSerialized = "[\"Option 1\", \"Option 2\", \"Option 3\", \"Option 4\"]",
                     DieNumbersSerialized = "[3]",
                     Description = "Description of Product 21"
                 },
@@ -467,7 +467,7 @@ namespace BlossomApi.Seeders
                     NumberOfPurchases = 6620,
                     NumberOfViews = 40480,
                     Article = "535361",
-                    OptionsSerialized = "[\"Option 1\", \"Option 2\", \"Option 3\", \"Option 4\"]",
+                    //OptionsSerialized = "[\"Option 1\", \"Option 2\", \"Option 3\", \"Option 4\"]",
                     DieNumbersSerialized = "[5, 4, 3]",
                     Description = "Description of Product 22"
                 },
@@ -488,7 +488,7 @@ namespace BlossomApi.Seeders
                     NumberOfPurchases = 4082,
                     NumberOfViews = 28796,
                     Article = "697319",
-                    OptionsSerialized = "[\"Option 1\", \"Option 2\", \"Option 3\", \"Option 4\"]",
+                    //OptionsSerialized = "[\"Option 1\", \"Option 2\", \"Option 3\", \"Option 4\"]",
                     DieNumbersSerialized = "[5, 1]",
                     Description = "Description of Product 23"
                 },
@@ -509,7 +509,7 @@ namespace BlossomApi.Seeders
                     NumberOfPurchases = 2186,
                     NumberOfViews = 25056,
                     Article = "477784",
-                    OptionsSerialized = "[\"Option 1\", \"Option 2\"]",
+                    //OptionsSerialized = "[\"Option 1\", \"Option 2\"]",
                     DieNumbersSerialized = "[4]",
                     Description = "Description of Product 24"
                 },
@@ -530,7 +530,7 @@ namespace BlossomApi.Seeders
                     NumberOfPurchases = 7350,
                     NumberOfViews = 22496,
                     Article = "731744",
-                    OptionsSerialized = "[\"Option 1\", \"Option 2\"]",
+                    //OptionsSerialized = "[\"Option 1\", \"Option 2\"]",
                     DieNumbersSerialized = "[5, 1]",
                     Description = "Description of Product 25"
                 },
@@ -551,7 +551,7 @@ namespace BlossomApi.Seeders
                     NumberOfPurchases = 1588,
                     NumberOfViews = 31390,
                     Article = "518046",
-                    OptionsSerialized = "[\"Option 1\", \"Option 2\"]",
+                    //OptionsSerialized = "[\"Option 1\", \"Option 2\"]",
                     DieNumbersSerialized = "[4, 5, 1, 2]",
                     Description = "Description of Product 26"
                 },
@@ -572,7 +572,7 @@ namespace BlossomApi.Seeders
                     NumberOfPurchases = 6625,
                     NumberOfViews = 28895,
                     Article = "934674",
-                    OptionsSerialized = "[\"Option 1\", \"Option 2\", \"Option 3\"]",
+                    //OptionsSerialized = "[\"Option 1\", \"Option 2\", \"Option 3\"]",
                     DieNumbersSerialized = "[4, 3, 5, 2]",
                     Description = "Description of Product 27"
                 },
@@ -593,7 +593,7 @@ namespace BlossomApi.Seeders
                     NumberOfPurchases = 894,
                     NumberOfViews = 100,
                     Article = "659862",
-                    OptionsSerialized = "[\"Option 1\", \"Option 2\", \"Option 3\"]",
+                    //OptionsSerialized = "[\"Option 1\", \"Option 2\", \"Option 3\"]",
                     DieNumbersSerialized = "[4, 3]",
                     Description = "Description of Product 28"
                 },
@@ -614,7 +614,7 @@ namespace BlossomApi.Seeders
                     NumberOfPurchases = 4665,
                     NumberOfViews = 20576,
                     Article = "810460",
-                    OptionsSerialized = "[\"Option 1\", \"Option 2\", \"Option 3\"]",
+                    //OptionsSerialized = "[\"Option 1\", \"Option 2\", \"Option 3\"]",
                     DieNumbersSerialized = "[1, 5, 4]",
                     Description = "Description of Product 29"
                 },
@@ -635,7 +635,7 @@ namespace BlossomApi.Seeders
                     NumberOfPurchases = 481,
                     NumberOfViews = 14822,
                     Article = "766744",
-                    OptionsSerialized = "[\"Option 1\", \"Option 2\"]",
+                    //OptionsSerialized = "[\"Option 1\", \"Option 2\"]",
                     DieNumbersSerialized = "[5, 4, 3, 2]",
                     Description = "Description of Product 30"
                 },
@@ -656,7 +656,7 @@ namespace BlossomApi.Seeders
                     NumberOfPurchases = 757,
                     NumberOfViews = 40479,
                     Article = "785039",
-                    OptionsSerialized = "[\"Option 1\", \"Option 2\", \"Option 3\", \"Option 4\"]",
+                    //OptionsSerialized = "[\"Option 1\", \"Option 2\", \"Option 3\", \"Option 4\"]",
                     DieNumbersSerialized = "[4, 1, 2]",
                     Description = "Description of Product 31"
                 },
@@ -677,7 +677,7 @@ namespace BlossomApi.Seeders
                     NumberOfPurchases = 5880,
                     NumberOfViews = 5469,
                     Article = "812900",
-                    OptionsSerialized = "[\"Option 1\", \"Option 2\", \"Option 3\", \"Option 4\"]",
+                    //OptionsSerialized = "[\"Option 1\", \"Option 2\", \"Option 3\", \"Option 4\"]",
                     DieNumbersSerialized = "[5, 3]",
                     Description = "Description of Product 32"
                 },
@@ -698,7 +698,7 @@ namespace BlossomApi.Seeders
                     NumberOfPurchases = 3845,
                     NumberOfViews = 18176,
                     Article = "123656",
-                    OptionsSerialized = "[\"Option 1\", \"Option 2\"]",
+                    //OptionsSerialized = "[\"Option 1\", \"Option 2\"]",
                     DieNumbersSerialized = "[1, 3, 2, 4]",
                     Description = "Description of Product 33"
                 },
@@ -719,7 +719,7 @@ namespace BlossomApi.Seeders
                     NumberOfPurchases = 3930,
                     NumberOfViews = 26642,
                     Article = "494677",
-                    OptionsSerialized = "[\"Option 1\", \"Option 2\"]",
+                    //OptionsSerialized = "[\"Option 1\", \"Option 2\"]",
                     DieNumbersSerialized = "[2, 4]",
                     Description = "Description of Product 34"
                 },
@@ -740,7 +740,7 @@ namespace BlossomApi.Seeders
                     NumberOfPurchases = 4884,
                     NumberOfViews = 36462,
                     Article = "445737",
-                    OptionsSerialized = "[\"Option 1\"]",
+                    //OptionsSerialized = "[\"Option 1\"]",
                     DieNumbersSerialized = "[1, 3, 5, 2, 4]",
                     Description = "Description of Product 35"
                 },
@@ -761,7 +761,7 @@ namespace BlossomApi.Seeders
                     NumberOfPurchases = 5264,
                     NumberOfViews = 33755,
                     Article = "790689",
-                    OptionsSerialized = "[\"Option 1\", \"Option 2\", \"Option 3\"]",
+                    //OptionsSerialized = "[\"Option 1\", \"Option 2\", \"Option 3\"]",
                     DieNumbersSerialized = "[3, 5, 4, 2, 1]",
                     Description = "Description of Product 36"
                 },
@@ -782,7 +782,7 @@ namespace BlossomApi.Seeders
                     NumberOfPurchases = 6063,
                     NumberOfViews = 7244,
                     Article = "433936",
-                    OptionsSerialized = "[\"Option 1\", \"Option 2\"]",
+                    //OptionsSerialized = "[\"Option 1\", \"Option 2\"]",
                     DieNumbersSerialized = "[1, 5]",
                     Description = "Description of Product 37"
                 },
@@ -803,7 +803,7 @@ namespace BlossomApi.Seeders
                     NumberOfPurchases = 2859,
                     NumberOfViews = 13742,
                     Article = "616739",
-                    OptionsSerialized = "[\"Option 1\", \"Option 2\"]",
+                    //OptionsSerialized = "[\"Option 1\", \"Option 2\"]",
                     DieNumbersSerialized = "[1, 3, 5, 2]",
                     Description = "Description of Product 38"
                 },
@@ -824,7 +824,7 @@ namespace BlossomApi.Seeders
                     NumberOfPurchases = 8894,
                     NumberOfViews = 42302,
                     Article = "171256",
-                    OptionsSerialized = "[\"Option 1\"]",
+                    //OptionsSerialized = "[\"Option 1\"]",
                     DieNumbersSerialized = "[4, 3, 2, 1, 5]",
                     Description = "Description of Product 39"
                 },
@@ -845,7 +845,7 @@ namespace BlossomApi.Seeders
                     NumberOfPurchases = 9419,
                     NumberOfViews = 32180,
                     Article = "514044",
-                    OptionsSerialized = "[\"Option 1\", \"Option 2\"]",
+                    //OptionsSerialized = "[\"Option 1\", \"Option 2\"]",
                     DieNumbersSerialized = "[2, 1, 4, 3]",
                     Description = "Description of Product 40"
                 },
@@ -866,7 +866,7 @@ namespace BlossomApi.Seeders
                     NumberOfPurchases = 6151,
                     NumberOfViews = 23308,
                     Article = "118583",
-                    OptionsSerialized = "[\"Option 1\"]",
+                    //OptionsSerialized = "[\"Option 1\"]",
                     DieNumbersSerialized = "[3, 2, 4, 1, 5]",
                     Description = "Description of Product 41"
                 },
@@ -887,7 +887,7 @@ namespace BlossomApi.Seeders
                     NumberOfPurchases = 1986,
                     NumberOfViews = 10137,
                     Article = "404571",
-                    OptionsSerialized = "[\"Option 1\", \"Option 2\"]",
+                    //OptionsSerialized = "[\"Option 1\", \"Option 2\"]",
                     DieNumbersSerialized = "[4]",
                     Description = "Description of Product 42"
                 },
@@ -908,7 +908,7 @@ namespace BlossomApi.Seeders
                     NumberOfPurchases = 7785,
                     NumberOfViews = 16232,
                     Article = "819214",
-                    OptionsSerialized = "[\"Option 1\", \"Option 2\", \"Option 3\"]",
+                    //OptionsSerialized = "[\"Option 1\", \"Option 2\", \"Option 3\"]",
                     DieNumbersSerialized = "[5]",
                     Description = "Description of Product 43"
                 },
@@ -929,7 +929,7 @@ namespace BlossomApi.Seeders
                     NumberOfPurchases = 6979,
                     NumberOfViews = 36433,
                     Article = "307598",
-                    OptionsSerialized = "[\"Option 1\", \"Option 2\", \"Option 3\", \"Option 4\"]",
+                    //OptionsSerialized = "[\"Option 1\", \"Option 2\", \"Option 3\", \"Option 4\"]",
                     DieNumbersSerialized = "[4, 2, 1, 5]",
                     Description = "Description of Product 44"
                 },
@@ -950,7 +950,7 @@ namespace BlossomApi.Seeders
                     NumberOfPurchases = 1737,
                     NumberOfViews = 35445,
                     Article = "424110",
-                    OptionsSerialized = "[\"Option 1\", \"Option 2\", \"Option 3\", \"Option 4\"]",
+                    //OptionsSerialized = "[\"Option 1\", \"Option 2\", \"Option 3\", \"Option 4\"]",
                     DieNumbersSerialized = "[2]",
                     Description = "Description of Product 45"
                 },
@@ -971,7 +971,7 @@ namespace BlossomApi.Seeders
                     NumberOfPurchases = 4645,
                     NumberOfViews = 296,
                     Article = "946381",
-                    OptionsSerialized = "[\"Option 1\", \"Option 2\"]",
+                    //OptionsSerialized = "[\"Option 1\", \"Option 2\"]",
                     DieNumbersSerialized = "[3, 2, 1]",
                     Description = "Description of Product 46"
                 },
@@ -992,7 +992,7 @@ namespace BlossomApi.Seeders
                     NumberOfPurchases = 9921,
                     NumberOfViews = 27716,
                     Article = "222762",
-                    OptionsSerialized = "[\"Option 1\", \"Option 2\"]",
+                    //OptionsSerialized = "[\"Option 1\", \"Option 2\"]",
                     DieNumbersSerialized = "[3, 1, 5]",
                     Description = "Description of Product 47"
                 },
@@ -1013,7 +1013,7 @@ namespace BlossomApi.Seeders
                     NumberOfPurchases = 6512,
                     NumberOfViews = 40247,
                     Article = "494080",
-                    OptionsSerialized = "[\"Option 1\", \"Option 2\"]",
+                    //OptionsSerialized = "[\"Option 1\", \"Option 2\"]",
                     DieNumbersSerialized = "[5, 2, 4, 3, 1]",
                     Description = "Description of Product 48"
                 },
@@ -1034,7 +1034,7 @@ namespace BlossomApi.Seeders
                     NumberOfPurchases = 2069,
                     NumberOfViews = 37149,
                     Article = "160395",
-                    OptionsSerialized = "[\"Option 1\"]",
+                    //OptionsSerialized = "[\"Option 1\"]",
                     DieNumbersSerialized = "[5]",
                     Description = "Description of Product 49"
                 },
@@ -1055,7 +1055,7 @@ namespace BlossomApi.Seeders
                     NumberOfPurchases = 4336,
                     NumberOfViews = 17528,
                     Article = "383267",
-                    OptionsSerialized = "[\"Option 1\", \"Option 2\", \"Option 3\"]",
+                    //OptionsSerialized = "[\"Option 1\", \"Option 2\", \"Option 3\"]",
                     DieNumbersSerialized = "[4, 2, 1, 3]",
                     Description = "Description of Product 50"
                 },
@@ -1076,7 +1076,7 @@ namespace BlossomApi.Seeders
                     NumberOfPurchases = 9727,
                     NumberOfViews = 44701,
                     Article = "122744",
-                    OptionsSerialized = "[\"Option 1\"]",
+                    //OptionsSerialized = "[\"Option 1\"]",
                     DieNumbersSerialized = "[5]",
                     Description = "Description of Product 51"
                 },
@@ -1097,7 +1097,7 @@ namespace BlossomApi.Seeders
                     NumberOfPurchases = 583,
                     NumberOfViews = 8443,
                     Article = "548992",
-                    OptionsSerialized = "[\"Option 1\"]",
+                    //OptionsSerialized = "[\"Option 1\"]",
                     DieNumbersSerialized = "[5]",
                     Description = "Description of Product 52"
                 },
@@ -1118,7 +1118,7 @@ namespace BlossomApi.Seeders
                     NumberOfPurchases = 2065,
                     NumberOfViews = 9629,
                     Article = "321848",
-                    OptionsSerialized = "[\"Option 1\", \"Option 2\"]",
+                    //OptionsSerialized = "[\"Option 1\", \"Option 2\"]",
                     DieNumbersSerialized = "[3, 1, 5, 4]",
                     Description = "Description of Product 53"
                 },
@@ -1139,7 +1139,7 @@ namespace BlossomApi.Seeders
                     NumberOfPurchases = 5104,
                     NumberOfViews = 13803,
                     Article = "498036",
-                    OptionsSerialized = "[\"Option 1\"]",
+                    //OptionsSerialized = "[\"Option 1\"]",
                     DieNumbersSerialized = "[2]",
                     Description = "Description of Product 54"
                 },
@@ -1160,7 +1160,7 @@ namespace BlossomApi.Seeders
                     NumberOfPurchases = 2712,
                     NumberOfViews = 30898,
                     Article = "621163",
-                    OptionsSerialized = "[\"Option 1\", \"Option 2\", \"Option 3\"]",
+                    //OptionsSerialized = "[\"Option 1\", \"Option 2\", \"Option 3\"]",
                     DieNumbersSerialized = "[1, 2, 5, 4]",
                     Description = "Description of Product 55"
                 },
@@ -1181,7 +1181,7 @@ namespace BlossomApi.Seeders
                     NumberOfPurchases = 32,
                     NumberOfViews = 19155,
                     Article = "926926",
-                    OptionsSerialized = "[\"Option 1\", \"Option 2\", \"Option 3\"]",
+                    //OptionsSerialized = "[\"Option 1\", \"Option 2\", \"Option 3\"]",
                     DieNumbersSerialized = "[2, 3, 1, 5]",
                     Description = "Description of Product 56"
                 },
@@ -1202,7 +1202,7 @@ namespace BlossomApi.Seeders
                     NumberOfPurchases = 4585,
                     NumberOfViews = 42239,
                     Article = "854651",
-                    OptionsSerialized = "[\"Option 1\", \"Option 2\"]",
+                    //OptionsSerialized = "[\"Option 1\", \"Option 2\"]",
                     DieNumbersSerialized = "[5]",
                     Description = "Description of Product 57"
                 },
@@ -1223,7 +1223,7 @@ namespace BlossomApi.Seeders
                     NumberOfPurchases = 7744,
                     NumberOfViews = 27147,
                     Article = "591211",
-                    OptionsSerialized = "[\"Option 1\", \"Option 2\"]",
+                    //OptionsSerialized = "[\"Option 1\", \"Option 2\"]",
                     DieNumbersSerialized = "[1, 4, 3, 5]",
                     Description = "Description of Product 58"
                 },
@@ -1244,7 +1244,7 @@ namespace BlossomApi.Seeders
                     NumberOfPurchases = 2132,
                     NumberOfViews = 43673,
                     Article = "331753",
-                    OptionsSerialized = "[\"Option 1\", \"Option 2\", \"Option 3\"]",
+                    //OptionsSerialized = "[\"Option 1\", \"Option 2\", \"Option 3\"]",
                     DieNumbersSerialized = "[4, 3, 1, 5]",
                     Description = "Description of Product 59"
                 },
@@ -1265,7 +1265,7 @@ namespace BlossomApi.Seeders
                     NumberOfPurchases = 5422,
                     NumberOfViews = 14981,
                     Article = "528647",
-                    OptionsSerialized = "[\"Option 1\", \"Option 2\"]",
+                    //OptionsSerialized = "[\"Option 1\", \"Option 2\"]",
                     DieNumbersSerialized = "[3, 5, 1, 2, 4]",
                     Description = "Description of Product 60"
                 },
@@ -1286,7 +1286,7 @@ namespace BlossomApi.Seeders
                     NumberOfPurchases = 5168,
                     NumberOfViews = 35876,
                     Article = "670450",
-                    OptionsSerialized = "[\"Option 1\", \"Option 2\", \"Option 3\"]",
+                    //OptionsSerialized = "[\"Option 1\", \"Option 2\", \"Option 3\"]",
                     DieNumbersSerialized = "[3, 2, 5, 4, 1]",
                     Description = "Description of Product 61"
                 },
@@ -1307,7 +1307,7 @@ namespace BlossomApi.Seeders
                     NumberOfPurchases = 277,
                     NumberOfViews = 48451,
                     Article = "773944",
-                    OptionsSerialized = "[\"Option 1\", \"Option 2\", \"Option 3\"]",
+                    //OptionsSerialized = "[\"Option 1\", \"Option 2\", \"Option 3\"]",
                     DieNumbersSerialized = "[3]",
                     Description = "Description of Product 62"
                 },
@@ -1328,7 +1328,7 @@ namespace BlossomApi.Seeders
                     NumberOfPurchases = 2490,
                     NumberOfViews = 12674,
                     Article = "408851",
-                    OptionsSerialized = "[\"Option 1\", \"Option 2\"]",
+                    //OptionsSerialized = "[\"Option 1\", \"Option 2\"]",
                     DieNumbersSerialized = "[2]",
                     Description = "Description of Product 63"
                 },
@@ -1349,7 +1349,7 @@ namespace BlossomApi.Seeders
                     NumberOfPurchases = 9923,
                     NumberOfViews = 30543,
                     Article = "597041",
-                    OptionsSerialized = "[\"Option 1\", \"Option 2\"]",
+                    //OptionsSerialized = "[\"Option 1\", \"Option 2\"]",
                     DieNumbersSerialized = "[5]",
                     Description = "Description of Product 64"
                 },
@@ -1370,7 +1370,7 @@ namespace BlossomApi.Seeders
                     NumberOfPurchases = 2616,
                     NumberOfViews = 26514,
                     Article = "558160",
-                    OptionsSerialized = "[\"Option 1\"]",
+                    //OptionsSerialized = "[\"Option 1\"]",
                     DieNumbersSerialized = "[5, 2, 1, 4]",
                     Description = "Description of Product 65"
                 },
@@ -1391,7 +1391,7 @@ namespace BlossomApi.Seeders
                     NumberOfPurchases = 2008,
                     NumberOfViews = 11338,
                     Article = "934610",
-                    OptionsSerialized = "[\"Option 1\", \"Option 2\"]",
+                    //OptionsSerialized = "[\"Option 1\", \"Option 2\"]",
                     DieNumbersSerialized = "[2, 3, 1, 5]",
                     Description = "Description of Product 66"
                 },
@@ -1412,7 +1412,7 @@ namespace BlossomApi.Seeders
                     NumberOfPurchases = 6862,
                     NumberOfViews = 48643,
                     Article = "261749",
-                    OptionsSerialized = "[\"Option 1\", \"Option 2\"]",
+                    //OptionsSerialized = "[\"Option 1\", \"Option 2\"]",
                     DieNumbersSerialized = "[1, 2, 3, 5, 4]",
                     Description = "Description of Product 67"
                 },
@@ -1433,7 +1433,7 @@ namespace BlossomApi.Seeders
                     NumberOfPurchases = 1146,
                     NumberOfViews = 20393,
                     Article = "860017",
-                    OptionsSerialized = "[\"Option 1\"]",
+                    //OptionsSerialized = "[\"Option 1\"]",
                     DieNumbersSerialized = "[1, 4, 2]",
                     Description = "Description of Product 68"
                 },
@@ -1454,7 +1454,7 @@ namespace BlossomApi.Seeders
                     NumberOfPurchases = 9990,
                     NumberOfViews = 24972,
                     Article = "154761",
-                    OptionsSerialized = "[\"Option 1\", \"Option 2\", \"Option 3\", \"Option 4\"]",
+                    //OptionsSerialized = "[\"Option 1\", \"Option 2\", \"Option 3\", \"Option 4\"]",
                     DieNumbersSerialized = "[1, 5]",
                     Description = "Description of Product 69"
                 },
@@ -1475,7 +1475,7 @@ namespace BlossomApi.Seeders
                     NumberOfPurchases = 3461,
                     NumberOfViews = 34363,
                     Article = "576384",
-                    OptionsSerialized = "[\"Option 1\", \"Option 2\", \"Option 3\"]",
+                    //OptionsSerialized = "[\"Option 1\", \"Option 2\", \"Option 3\"]",
                     DieNumbersSerialized = "[3, 4, 2, 5]",
                     Description = "Description of Product 70"
                 },
@@ -1496,7 +1496,7 @@ namespace BlossomApi.Seeders
                     NumberOfPurchases = 3660,
                     NumberOfViews = 47382,
                     Article = "245654",
-                    OptionsSerialized = "[\"Option 1\", \"Option 2\", \"Option 3\"]",
+                    //OptionsSerialized = "[\"Option 1\", \"Option 2\", \"Option 3\"]",
                     DieNumbersSerialized = "[2, 1, 4, 3]",
                     Description = "Description of Product 71"
                 },
@@ -1517,7 +1517,7 @@ namespace BlossomApi.Seeders
                     NumberOfPurchases = 9524,
                     NumberOfViews = 30918,
                     Article = "385356",
-                    OptionsSerialized = "[\"Option 1\"]",
+                    //OptionsSerialized = "[\"Option 1\"]",
                     DieNumbersSerialized = "[2, 5]",
                     Description = "Description of Product 72"
                 },
@@ -1538,7 +1538,7 @@ namespace BlossomApi.Seeders
                     NumberOfPurchases = 3237,
                     NumberOfViews = 30148,
                     Article = "942998",
-                    OptionsSerialized = "[\"Option 1\", \"Option 2\", \"Option 3\", \"Option 4\"]",
+                    //OptionsSerialized = "[\"Option 1\", \"Option 2\", \"Option 3\", \"Option 4\"]",
                     DieNumbersSerialized = "[5, 3, 1]",
                     Description = "Description of Product 73"
                 },
@@ -1559,7 +1559,7 @@ namespace BlossomApi.Seeders
                     NumberOfPurchases = 2938,
                     NumberOfViews = 30410,
                     Article = "777773",
-                    OptionsSerialized = "[\"Option 1\", \"Option 2\"]",
+                    //OptionsSerialized = "[\"Option 1\", \"Option 2\"]",
                     DieNumbersSerialized = "[1, 2]",
                     Description = "Description of Product 74"
                 },
@@ -1580,7 +1580,7 @@ namespace BlossomApi.Seeders
                     NumberOfPurchases = 8830,
                     NumberOfViews = 41169,
                     Article = "949594",
-                    OptionsSerialized = "[\"Option 1\", \"Option 2\", \"Option 3\"]",
+                    //OptionsSerialized = "[\"Option 1\", \"Option 2\", \"Option 3\"]",
                     DieNumbersSerialized = "[1]",
                     Description = "Description of Product 75"
                 },
@@ -1601,7 +1601,7 @@ namespace BlossomApi.Seeders
                     NumberOfPurchases = 5924,
                     NumberOfViews = 30599,
                     Article = "131617",
-                    OptionsSerialized = "[\"Option 1\", \"Option 2\", \"Option 3\", \"Option 4\"]",
+                    //OptionsSerialized = "[\"Option 1\", \"Option 2\", \"Option 3\", \"Option 4\"]",
                     DieNumbersSerialized = "[4, 5, 3]",
                     Description = "Description of Product 76"
                 },
@@ -1622,7 +1622,7 @@ namespace BlossomApi.Seeders
                     NumberOfPurchases = 796,
                     NumberOfViews = 20590,
                     Article = "317727",
-                    OptionsSerialized = "[\"Option 1\", \"Option 2\", \"Option 3\", \"Option 4\"]",
+                    //OptionsSerialized = "[\"Option 1\", \"Option 2\", \"Option 3\", \"Option 4\"]",
                     DieNumbersSerialized = "[4, 2, 1, 5, 3]",
                     Description = "Description of Product 77"
                 },
@@ -1643,7 +1643,7 @@ namespace BlossomApi.Seeders
                     NumberOfPurchases = 3848,
                     NumberOfViews = 45563,
                     Article = "794717",
-                    OptionsSerialized = "[\"Option 1\", \"Option 2\", \"Option 3\", \"Option 4\"]",
+                    //OptionsSerialized = "[\"Option 1\", \"Option 2\", \"Option 3\", \"Option 4\"]",
                     DieNumbersSerialized = "[5, 3, 1]",
                     Description = "Description of Product 78"
                 },
@@ -1664,7 +1664,7 @@ namespace BlossomApi.Seeders
                     NumberOfPurchases = 6236,
                     NumberOfViews = 43658,
                     Article = "611046",
-                    OptionsSerialized = "[\"Option 1\"]",
+                    //OptionsSerialized = "[\"Option 1\"]",
                     DieNumbersSerialized = "[1]",
                     Description = "Description of Product 79"
                 },
@@ -1685,7 +1685,7 @@ namespace BlossomApi.Seeders
                     NumberOfPurchases = 1871,
                     NumberOfViews = 43366,
                     Article = "871766",
-                    OptionsSerialized = "[\"Option 1\", \"Option 2\"]",
+                    //OptionsSerialized = "[\"Option 1\", \"Option 2\"]",
                     DieNumbersSerialized = "[3, 5]",
                     Description = "Description of Product 80"
                 },
@@ -1706,7 +1706,7 @@ namespace BlossomApi.Seeders
                     NumberOfPurchases = 945,
                     NumberOfViews = 14555,
                     Article = "287307",
-                    OptionsSerialized = "[\"Option 1\", \"Option 2\"]",
+                    //OptionsSerialized = "[\"Option 1\", \"Option 2\"]",
                     DieNumbersSerialized = "[1, 4, 3, 2, 5]",
                     Description = "Description of Product 81"
                 },
@@ -1727,7 +1727,7 @@ namespace BlossomApi.Seeders
                     NumberOfPurchases = 8575,
                     NumberOfViews = 43801,
                     Article = "397414",
-                    OptionsSerialized = "[\"Option 1\", \"Option 2\"]",
+                    //OptionsSerialized = "[\"Option 1\", \"Option 2\"]",
                     DieNumbersSerialized = "[3, 5, 1, 2, 4]",
                     Description = "Description of Product 82"
                 },
@@ -1748,7 +1748,7 @@ namespace BlossomApi.Seeders
                     NumberOfPurchases = 946,
                     NumberOfViews = 36107,
                     Article = "131871",
-                    OptionsSerialized = "[\"Option 1\", \"Option 2\", \"Option 3\"]",
+                    //OptionsSerialized = "[\"Option 1\", \"Option 2\", \"Option 3\"]",
                     DieNumbersSerialized = "[5]",
                     Description = "Description of Product 83"
                 },
@@ -1769,7 +1769,7 @@ namespace BlossomApi.Seeders
                     NumberOfPurchases = 7657,
                     NumberOfViews = 25035,
                     Article = "235673",
-                    OptionsSerialized = "[\"Option 1\", \"Option 2\", \"Option 3\"]",
+                    //OptionsSerialized = "[\"Option 1\", \"Option 2\", \"Option 3\"]",
                     DieNumbersSerialized = "[5, 4, 1, 3, 2]",
                     Description = "Description of Product 84"
                 },
@@ -1790,7 +1790,7 @@ namespace BlossomApi.Seeders
                     NumberOfPurchases = 6675,
                     NumberOfViews = 46490,
                     Article = "984661",
-                    OptionsSerialized = "[\"Option 1\", \"Option 2\", \"Option 3\", \"Option 4\"]",
+                    //OptionsSerialized = "[\"Option 1\", \"Option 2\", \"Option 3\", \"Option 4\"]",
                     DieNumbersSerialized = "[3, 4, 2, 5, 1]",
                     Description = "Description of Product 85"
                 },
@@ -1811,7 +1811,7 @@ namespace BlossomApi.Seeders
                     NumberOfPurchases = 2201,
                     NumberOfViews = 8001,
                     Article = "284181",
-                    OptionsSerialized = "[\"Option 1\", \"Option 2\", \"Option 3\"]",
+                    //OptionsSerialized = "[\"Option 1\", \"Option 2\", \"Option 3\"]",
                     DieNumbersSerialized = "[4]",
                     Description = "Description of Product 86"
                 },
@@ -1832,7 +1832,7 @@ namespace BlossomApi.Seeders
                     NumberOfPurchases = 7145,
                     NumberOfViews = 17981,
                     Article = "521015",
-                    OptionsSerialized = "[\"Option 1\", \"Option 2\", \"Option 3\", \"Option 4\"]",
+                    //OptionsSerialized = "[\"Option 1\", \"Option 2\", \"Option 3\", \"Option 4\"]",
                     DieNumbersSerialized = "[1, 5, 4, 3]",
                     Description = "Description of Product 87"
                 },
@@ -1853,7 +1853,7 @@ namespace BlossomApi.Seeders
                     NumberOfPurchases = 734,
                     NumberOfViews = 19519,
                     Article = "775331",
-                    OptionsSerialized = "[\"Option 1\", \"Option 2\", \"Option 3\"]",
+                    //OptionsSerialized = "[\"Option 1\", \"Option 2\", \"Option 3\"]",
                     DieNumbersSerialized = "[2, 4, 5, 3, 1]",
                     Description = "Description of Product 88"
                 },
@@ -1874,7 +1874,7 @@ namespace BlossomApi.Seeders
                     NumberOfPurchases = 5302,
                     NumberOfViews = 15416,
                     Article = "940706",
-                    OptionsSerialized = "[\"Option 1\", \"Option 2\"]",
+                    //OptionsSerialized = "[\"Option 1\", \"Option 2\"]",
                     DieNumbersSerialized = "[1, 2, 4, 5, 3]",
                     Description = "Description of Product 89"
                 },
@@ -1895,7 +1895,7 @@ namespace BlossomApi.Seeders
                     NumberOfPurchases = 5084,
                     NumberOfViews = 6956,
                     Article = "454875",
-                    OptionsSerialized = "[\"Option 1\", \"Option 2\", \"Option 3\", \"Option 4\"]",
+                    //OptionsSerialized = "[\"Option 1\", \"Option 2\", \"Option 3\", \"Option 4\"]",
                     DieNumbersSerialized = "[4, 5, 3]",
                     Description = "Description of Product 90"
                 },
@@ -1916,7 +1916,7 @@ namespace BlossomApi.Seeders
                     NumberOfPurchases = 4149,
                     NumberOfViews = 8656,
                     Article = "344546",
-                    OptionsSerialized = "[\"Option 1\", \"Option 2\", \"Option 3\"]",
+                    //OptionsSerialized = "[\"Option 1\", \"Option 2\", \"Option 3\"]",
                     DieNumbersSerialized = "[1, 2, 4, 3]",
                     Description = "Description of Product 91"
                 },
@@ -1937,7 +1937,7 @@ namespace BlossomApi.Seeders
                     NumberOfPurchases = 1993,
                     NumberOfViews = 5809,
                     Article = "306142",
-                    OptionsSerialized = "[\"Option 1\", \"Option 2\"]",
+                    //OptionsSerialized = "[\"Option 1\", \"Option 2\"]",
                     DieNumbersSerialized = "[5, 4]",
                     Description = "Description of Product 92"
                 },
@@ -1958,7 +1958,7 @@ namespace BlossomApi.Seeders
                     NumberOfPurchases = 1944,
                     NumberOfViews = 12264,
                     Article = "962979",
-                    OptionsSerialized = "[\"Option 1\"]",
+                    //OptionsSerialized = "[\"Option 1\"]",
                     DieNumbersSerialized = "[3, 4]",
                     Description = "Description of Product 93"
                 },
@@ -1979,7 +1979,7 @@ namespace BlossomApi.Seeders
                     NumberOfPurchases = 4545,
                     NumberOfViews = 35563,
                     Article = "459255",
-                    OptionsSerialized = "[\"Option 1\", \"Option 2\", \"Option 3\"]",
+                    //OptionsSerialized = "[\"Option 1\", \"Option 2\", \"Option 3\"]",
                     DieNumbersSerialized = "[4, 5, 3, 1, 2]",
                     Description = "Description of Product 94"
                 },
@@ -2000,7 +2000,7 @@ namespace BlossomApi.Seeders
                     NumberOfPurchases = 829,
                     NumberOfViews = 15146,
                     Article = "494548",
-                    OptionsSerialized = "[\"Option 1\", \"Option 2\"]",
+                    //OptionsSerialized = "[\"Option 1\", \"Option 2\"]",
                     DieNumbersSerialized = "[2, 4]",
                     Description = "Description of Product 95"
                 },
@@ -2021,7 +2021,7 @@ namespace BlossomApi.Seeders
                     NumberOfPurchases = 1343,
                     NumberOfViews = 37905,
                     Article = "709717",
-                    OptionsSerialized = "[\"Option 1\", \"Option 2\", \"Option 3\"]",
+                    //OptionsSerialized = "[\"Option 1\", \"Option 2\", \"Option 3\"]",
                     DieNumbersSerialized = "[5, 4, 1, 3]",
                     Description = "Description of Product 96"
                 },
@@ -2042,7 +2042,7 @@ namespace BlossomApi.Seeders
                     NumberOfPurchases = 3255,
                     NumberOfViews = 23594,
                     Article = "723919",
-                    OptionsSerialized = "[\"Option 1\", \"Option 2\"]",
+                    //OptionsSerialized = "[\"Option 1\", \"Option 2\"]",
                     DieNumbersSerialized = "[1, 4, 5]",
                     Description = "Description of Product 97"
                 },
@@ -2063,7 +2063,7 @@ namespace BlossomApi.Seeders
                     NumberOfPurchases = 2691,
                     NumberOfViews = 907,
                     Article = "469059",
-                    OptionsSerialized = "[\"Option 1\", \"Option 2\", \"Option 3\"]",
+                    //OptionsSerialized = "[\"Option 1\", \"Option 2\", \"Option 3\"]",
                     DieNumbersSerialized = "[3, 4, 5, 2, 1]",
                     Description = "Description of Product 98"
                 },
@@ -2084,7 +2084,7 @@ namespace BlossomApi.Seeders
                     NumberOfPurchases = 4001,
                     NumberOfViews = 8197,
                     Article = "772821",
-                    OptionsSerialized = "[\"Option 1\", \"Option 2\", \"Option 3\"]",
+                    //OptionsSerialized = "[\"Option 1\", \"Option 2\", \"Option 3\"]",
                     DieNumbersSerialized = "[2, 4, 3, 5]",
                     Description = "Description of Product 99"
                 },
@@ -2105,7 +2105,7 @@ namespace BlossomApi.Seeders
                     NumberOfPurchases = 9566,
                     NumberOfViews = 31037,
                     Article = "200307",
-                    OptionsSerialized = "[\"Option 1\"]",
+                    //OptionsSerialized = "[\"Option 1\"]",
                     DieNumbersSerialized = "[2, 4, 5]",
                     Description = "Description of Product 100"
                 }

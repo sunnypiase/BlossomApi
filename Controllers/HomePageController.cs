@@ -21,6 +21,7 @@ namespace BlossomApi.Controllers
         public async Task<ActionResult<IEnumerable<ProductResponseDto>>> GetNewProducts()
         {
             var products = await _context.Products
+                .OrderByDescending(p => p.InStock)
                 .Where(p => p.IsNew)
                 .Take(10)
                 .Select(p => new ProductResponseDto
@@ -67,6 +68,7 @@ namespace BlossomApi.Controllers
         {
             var products = await _context.Products
                 .Where(p => p.Discount > 0)
+                .OrderByDescending(p => p.InStock)
                 .Take(10)
                 .Select(p => new ProductResponseDto
                 {
@@ -111,7 +113,8 @@ namespace BlossomApi.Controllers
         public async Task<ActionResult<IEnumerable<ProductResponseDto>>> GetPopularProducts()
         {
             var products = await _context.Products
-                .OrderByDescending(p => p.Rating)
+                .OrderByDescending(p => p.InStock)
+                .ThenByDescending(p => p.Rating)
                 .Take(10)
                 .Select(p => new ProductResponseDto
                 {
@@ -156,7 +159,8 @@ namespace BlossomApi.Controllers
         {
             var products = await _context.Products
                 .Include(x => x.Categories)
-                .OrderByDescending(p => p.Rating)
+                .OrderByDescending(p => p.InStock)
+                .ThenByDescending(p => p.Rating)
                 .Where(x => x.Categories.Any(c => c.CategoryId == categoryId))
                 .Take(10)
                 .Select(p => new ProductResponseDto

@@ -33,6 +33,9 @@ namespace BlossomApi.Controllers
             }
 
             var orders = await _context.Orders
+                .Include(o => o.Promocode)
+                .Include(o => o.DeliveryInfo)
+                .Include(o => o.ShoppingCart)
                 .Where(o => o.ShoppingCart.SiteUserId == siteUser.UserId)
                 .Select(o => ToOrderDto(o))
                 .ToListAsync();
@@ -46,6 +49,9 @@ namespace BlossomApi.Controllers
         public async Task<IActionResult> GetOrdersByStatuses([FromQuery] List<OrderStatus> statuses)
         {
             var orders = await _context.Orders
+                .Include(o => o.Promocode)
+                .Include(o => o.DeliveryInfo)
+                .Include(o => o.ShoppingCart)
                 .Where(o => statuses.Contains(o.Status))
                 .Select(o => ToOrderDto(o))
                 .ToListAsync();
@@ -59,6 +65,9 @@ namespace BlossomApi.Controllers
         public async Task<IActionResult> GetAllOrders()
         {
             var orders = await _context.Orders
+                .Include(o => o.Promocode)
+                .Include(o => o.DeliveryInfo)
+                .Include(o => o.ShoppingCart)
                 .Select(o => ToOrderDto(o))
                 .ToListAsync();
 
@@ -71,6 +80,9 @@ namespace BlossomApi.Controllers
         public async Task<IActionResult> GetOrdersByUserId(int userId)
         {
             var orders = await _context.Orders
+                .Include(o => o.Promocode)
+                .Include(o => o.DeliveryInfo)
+                .Include(o => o.ShoppingCart)
                 .Where(o => o.ShoppingCart.SiteUserId == userId)
                 .Select(o => ToOrderDto(o))
                 .ToListAsync();
@@ -101,33 +113,30 @@ namespace BlossomApi.Controllers
             return await _context.SiteUsers.FirstOrDefaultAsync(u => u.IdentityUserId == identityUserId);
         }
 
-        private static OrderDto ToOrderDto(Order order)
+        private static OrderDto ToOrderDto(Order order) => new OrderDto
         {
-            return new OrderDto
+            OrderId = order.OrderId,
+            OrderDate = order.OrderDate,
+            Status = order.Status,
+            Username = order.Username,
+            Surname = order.Surname,
+            Email = order.Email,
+            PhoneNumber = order.PhoneNumber,
+            DontCallMe = order.DontCallMe,
+            EcoPackaging = order.EcoPackaging,
+            TotalPrice = order.TotalPrice,
+            TotalDiscount = order.TotalDiscount,
+            TotalPriceWithDiscount = order.TotalPriceWithDiscount,
+            DiscountFromPromocode = order.DiscountFromPromocode,
+            DiscountFromProductAction = order.DiscountFromProductAction,
+            ShoppingCartId = order.ShoppingCartId,
+            PromocodeId = order.PromocodeId,
+            DeliveryInfo = order.DeliveryInfo != null ? new DeliveryInfoDto
             {
-                OrderId = order.OrderId,
-                OrderDate = order.OrderDate,
-                Status = order.Status,
-                Username = order.Username,
-                Surname = order.Surname,
-                Email = order.Email,
-                PhoneNumber = order.PhoneNumber,
-                DontCallMe = order.DontCallMe,
-                EcoPackaging = order.EcoPackaging,
-                TotalPrice = order.TotalPrice,
-                TotalDiscount = order.TotalDiscount,
-                TotalPriceWithDiscount = order.TotalPriceWithDiscount,
-                DiscountFromPromocode = order.DiscountFromPromocode,
-                DiscountFromProductAction = order.DiscountFromProductAction,
-                ShoppingCartId = order.ShoppingCartId,
-                PromocodeId = order.PromocodeId,
-                DeliveryInfo = order.DeliveryInfo != null ? new DeliveryInfoDto
-                {
-                    City = order.DeliveryInfo.City,
-                    DepartmentNumber = order.DeliveryInfo.DepartmentNumber
-                } : null
-            };
-        }
+                City = order.DeliveryInfo.City,
+                DepartmentNumber = order.DeliveryInfo.DepartmentNumber
+            } : new DeliveryInfoDto()
+        };
     }
 
     public class ChangeOrderStatusRequest

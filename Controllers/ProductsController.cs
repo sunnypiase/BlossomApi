@@ -6,6 +6,7 @@ using BlossomApi.Dtos;
 using BlossomApi.Services;
 using System.Text.Json;
 using System.Linq.Expressions;
+using OfficeOpenXml;
 
 namespace BlossomApi.Controllers
 {
@@ -104,8 +105,8 @@ namespace BlossomApi.Controllers
                 .ToListAsync();
         }
 
-        // GET: api/Product/5
-        [HttpGet("{id}")]
+        // GET: api/Product/{id}
+        [HttpGet("{id:int}")]
         public async Task<ActionResult<ProductResponseDto>> GetProduct(int id)
         {
             var product = await _context.Products
@@ -120,6 +121,25 @@ namespace BlossomApi.Controllers
             }
 
             return Ok(MapToProductResponseDto(product));
+        }
+
+        // GET: api/Product/ByIds
+        [HttpGet("ByIds")]
+        public ActionResult<IEnumerable<ProductResponseDto>> GetProductByIds([FromQuery] List<int> ids)
+        {
+            var products = _context.Products
+                .Include(x => x.Categories)
+                .Include(x => x.Reviews)
+                .Include(x => x.Characteristics)
+                .Where(x => ids.Contains(x.ProductId))
+                .ToList();
+
+            if (products == null || products.Count == 0)
+            {
+                return NotFound();
+            }
+
+            return Ok(products.Select(MapToProductResponseDto));
         }
 
         // PUT: api/Product/5
@@ -157,10 +177,10 @@ namespace BlossomApi.Controllers
 
         // POST: api/Product
         [HttpPost]
-        public async Task<ActionResult<ProductResponseDto>> PostProduct([FromForm] ProductCreateDto productDto, [FromForm] List<IFormFile> imageFiles)
+        public async Task<ActionResult<ProductResponseDto>> PostProduct([FromBody] ProductCreateDto productDto)
         {
             var product = new Product();
-            await UpdateProductAsync(product, productDto, imageFiles);
+            await UpdateProductAsync(product, productDto, null);
 
             _context.Products.Add(product);
             await _context.SaveChangesAsync();
@@ -217,17 +237,81 @@ namespace BlossomApi.Controllers
 
                     var imageUrl = await _imageService.UploadImageAsync(imageFile.FileName, stream);
                     uploadedImageUrls.Add(imageUrl);
-                    product.Images.Add(imageUrl);
                 }
             }
 
-            product.ImagesSerialized = JsonSerializer.Serialize(product.Images);
+            product.Images = uploadedImageUrls;
 
             _context.Entry(product).State = EntityState.Modified;
             await _context.SaveChangesAsync();
 
             return Ok(new { Message = "Images uploaded successfully", ImageUrls = uploadedImageUrls });
         }
+
+        [HttpPost("ImportFromExcel")]
+        public async Task<ActionResult<IEnumerable<int>>> ImportFromExcel(IFormFile excelFile)
+        {
+            if (excelFile == null || excelFile.Length == 0)
+            {
+                return BadRequest("No file uploaded or file is empty.");
+            }
+
+            var productIds = new List<int>();
+
+            try
+            {
+                using (var stream = new MemoryStream())
+                {
+                    await excelFile.CopyToAsync(stream);
+                    using (var package = new ExcelPackage(stream))
+                    {
+                        var worksheet = package.Workbook.Worksheets[0];
+                        var rowCount = worksheet.Dimension.Rows;
+
+                        var products = new List<Product>();
+
+                        for (int row = 2; row <= rowCount; row++) // Assuming the first row is headers
+                        {
+                            var productDto = new ProductCreateDto
+                            {
+                                Name = worksheet.Cells[row, 1].Value?.ToString(),
+                                NameEng = worksheet.Cells[row, 2].Value?.ToString(),
+                                Brand = worksheet.Cells[row, 3].Value?.ToString(),
+                                Price = decimal.Parse(worksheet.Cells[row, 4].Value?.ToString() ?? "0"),
+                                Discount = decimal.Parse(worksheet.Cells[row, 5].Value?.ToString() ?? "0"),
+                                IsNew = bool.Parse(worksheet.Cells[row, 6].Value?.ToString() ?? "false"),
+                                AvailableAmount = int.Parse(worksheet.Cells[row, 7].Value?.ToString() ?? "0"),
+                                Article = worksheet.Cells[row, 8].Value?.ToString(),
+                                Description = worksheet.Cells[row, 9].Value?.ToString(),
+                                CategoryIds = worksheet.Cells[row, 10].Value?.ToString()
+                                    ?.Split(',')
+                                    .Select(int.Parse)
+                                    .ToList() ?? new List<int>(),
+                            };
+
+                            var product = new Product();
+                            await UpdateProductAsync(product, productDto, null);
+                            products.Add(product);
+                        }
+
+                        // Add all products in one transaction
+                        _context.Products.AddRange(products);
+                        await _context.SaveChangesAsync();
+
+                        // Retrieve the generated IDs
+                        productIds = products.Select(p => p.ProductId).ToList();
+                    }
+                }
+
+                return Ok(productIds);
+            }
+            catch (Exception ex)
+            {
+                // Log the exception (implement logging as necessary)
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
+        }
+
 
         private bool ProductExists(int id)
         {
@@ -269,8 +353,11 @@ namespace BlossomApi.Controllers
                     }
                 }
 
-                product.Images = uploadedImageUrls;
-                product.ImagesSerialized = JsonSerializer.Serialize(product.Images);
+                product.Images = uploadedImageUrls; // This will automatically serialize to ImagesSerialized
+            }
+            else
+            {
+                product.Images ??= []; // Ensure Images is not null
             }
 
             // Update categories
@@ -287,6 +374,7 @@ namespace BlossomApi.Controllers
                 }
             }
         }
+
 
         private static ProductResponseDto MapToProductResponseDto(Product p)
         {

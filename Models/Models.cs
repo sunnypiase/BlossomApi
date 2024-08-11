@@ -56,7 +56,7 @@ namespace BlossomApi.Models
         [Key] public int ProductId { get; set; }
         public string Name { get; set; }
         public string NameEng { get; set; }
-        public string ImagesSerialized { get; set; } // Serialized images
+        public string ImagesSerialized { get; set; } = "[]"; // Default to an empty JSON array
         public string Brand { get; set; }
         public decimal Price { get; set; }
         public decimal Discount { get; set; } // Precentage of discount
@@ -68,8 +68,7 @@ namespace BlossomApi.Models
         public int NumberOfPurchases { get; set; }
         public int NumberOfViews { get; set; }
         public string Article { get; set; }
-        public string OptionsSerialized { get; set; } // Serialized options
-        public string DieNumbersSerialized { get; set; } // Serialized die numbers
+        public string DieNumbersSerialized { get; set; } = "[]"; // Serialized die numbers
         public string Description { get; set; }
 
         // Navigation properties
@@ -82,15 +81,26 @@ namespace BlossomApi.Models
         [NotMapped]
         public List<string> Images
         {
-            get => JsonSerializer.Deserialize<List<string>>(ImagesSerialized) ?? new List<string>();
-            set => ImagesSerialized = JsonSerializer.Serialize(value);
+            get
+            {
+                return string.IsNullOrEmpty(ImagesSerialized)
+                    ? []
+                    : JsonSerializer.Deserialize<List<string>>(ImagesSerialized) ?? [];
+            }
+            set => ImagesSerialized = JsonSerializer.Serialize(value ?? []);
         }
+
 
         [NotMapped]
         public List<int> DieNumbers
         {
-            get => JsonSerializer.Deserialize<List<int>>(DieNumbersSerialized) ?? new List<int>();
-            set => DieNumbersSerialized = JsonSerializer.Serialize(value);
+            get
+            {
+                return string.IsNullOrEmpty(DieNumbersSerialized)
+                    ? []
+                    : JsonSerializer.Deserialize<List<int>>(DieNumbersSerialized) ?? [];
+            }
+            set => DieNumbersSerialized = JsonSerializer.Serialize(value ?? []);
         }
     }
 
