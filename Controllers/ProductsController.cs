@@ -249,7 +249,7 @@ namespace BlossomApi.Controllers
         }
 
         [HttpPost("ImportFromExcel")]
-        public async Task<ActionResult<IEnumerable<int>>> ImportFromExcel([FromForm] IFormFile excelFile)
+        public async Task<ActionResult<IEnumerable<int>>> ImportFromExcel([FromForm] FileModel fileModel)
         {
             if (excelFile == null || excelFile.Length == 0)
             {
@@ -412,5 +412,9 @@ namespace BlossomApi.Controllers
                 InStock = p.InStock
             };
         }
+    }
+    public class FileModel
+    {
+        public IFormFile ExcelFile { get; set; }
     }
 }
