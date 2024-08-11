@@ -68,7 +68,7 @@ namespace BlossomApi.Controllers
         }
 
         [HttpPost("RegisterAdmin")]
-        public async Task<IActionResult> RegisterAdmin(RegisterModel model)
+        public async Task<IActionResult> RegisterAdmin(RegisterAdminModel model)
         {
             if (!ModelState.IsValid)
             {
@@ -140,6 +140,13 @@ namespace BlossomApi.Controllers
             return Ok();
         }
 
+        [Authorize(Roles = "Admin")]
+        [HttpGet("GetAdminAuth")]
+        public IActionResult GetAdminAuth()
+        {
+            return Ok();
+        }
+
         [HttpPost("Logout")]
         public async Task<IActionResult> Logout()
         {
@@ -173,6 +180,10 @@ namespace BlossomApi.Controllers
         [PhoneNumber(ErrorMessage = "Неправильний формат номера телефону.")]
         public string PhoneNumber { get; set; }
 
+        public string? Secret { get; set; }
+    }
+    public class RegisterAdminModel : RegisterModel
+    {
         public string? Secret { get; set; }
     }
 

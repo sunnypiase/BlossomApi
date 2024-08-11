@@ -1,10 +1,11 @@
-using System.Linq.Expressions;
-using BlossomApi.DB;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using BlossomApi.DB;
 using BlossomApi.Models;
 using BlossomApi.Dtos;
 using BlossomApi.Services;
+using System.Text.Json;
+using System.Linq.Expressions;
 
 namespace BlossomApi.Controllers
 {
@@ -14,102 +15,13 @@ namespace BlossomApi.Controllers
     {
         private readonly BlossomContext _context;
         private readonly CategoryService _categoryService;
+        private readonly ImageService _imageService;
 
-        public ProductController(BlossomContext context, CategoryService categoryService)
+        public ProductController(BlossomContext context, CategoryService categoryService, ImageService imageService)
         {
             _context = context;
             _categoryService = categoryService;
-        }
-
-        // GET: api/Product
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<ProductResponseDto>>> GetProducts()
-        {
-            return await _context.Products
-                .Select(p => MapToProductResponseDto(p))
-                .ToListAsync();
-        }
-
-        // GET: api/Product/5
-        [HttpGet("{id}")]
-        public async Task<ActionResult<ProductResponseDto>> GetProduct(int id)
-        {
-            var product = await _context.Products
-                .Include(x => x.Categories)
-                .Include(x => x.Reviews)
-                .Include(x => x.Characteristics)
-                    .FirstOrDefaultAsync(p => p.ProductId == id);
-
-            if (product == null)
-            {
-                return NotFound();
-            }
-
-            return Ok(MapToProductResponseDto(product));
-        }
-
-        // PUT: api/Product/5
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutProduct(int id, ProductCreateDto productDto)
-        {
-            var product = await _context.Products.Include(p => p.Categories).FirstOrDefaultAsync(p => p.ProductId == id);
-            if (product == null)
-            {
-                return NotFound();
-            }
-
-            UpdateProduct(product, productDto);
-
-            _context.Entry(product).State = EntityState.Modified;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!ProductExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
-            return NoContent();
-        }
-
-        // POST: api/Product
-        [HttpPost]
-        public async Task<ActionResult<ProductResponseDto>> PostProduct(ProductCreateDto productDto)
-        {
-            var product = new Product();
-            UpdateProduct(product, productDto);
-
-            _context.Products.Add(product);
-            await _context.SaveChangesAsync();
-
-            var productResponse = MapToProductResponseDto(product);
-
-            return CreatedAtAction(nameof(GetProduct), new { id = product.ProductId }, productResponse);
-        }
-
-        // DELETE: api/Product/5
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteProduct(int id)
-        {
-            var product = await _context.Products.FindAsync(id);
-            if (product == null)
-            {
-                return NotFound();
-            }
-
-            _context.Products.Remove(product);
-            await _context.SaveChangesAsync();
-
-            return NoContent();
+            _imageService = imageService;
         }
 
         // POST: api/Product/GetProductsByFilter
@@ -154,13 +66,16 @@ namespace BlossomApi.Controllers
                 query = query.Where(p => p.Price <= request.MaxPrice.Value);
             }
 
+            query = query.OrderByDescending(p => p.InStock);
+            // Apply sorting and then ensure products out of stock are at the end
             query = request.SortBy switch
             {
-                "popularity" => query.OrderByDescending(p => p.Rating), // Assuming popularity is determined by rating
-                "price_asc" => query.OrderBy(p => p.Price),
-                "price_desc" => query.OrderByDescending(p => p.Price),
-                _ => query.OrderBy(p => p.Name)
+                "popularity" => ((IOrderedQueryable<Product>)query).ThenByDescending(p => p.Rating),
+                "price_asc" => ((IOrderedQueryable<Product>)query).ThenBy(p => p.Price),
+                "price_desc" => ((IOrderedQueryable<Product>)query).ThenByDescending(p => p.Price),
+                _ => ((IOrderedQueryable<Product>)query).ThenBy(p => p.Name)
             };
+
 
             var totalCount = await query.CountAsync();
 
@@ -179,23 +94,198 @@ namespace BlossomApi.Controllers
             return Ok(response);
         }
 
-        // GET: api/Product/AlsoBought/{id}
-        [HttpGet("AlsoBought/{id}")]
-        public async Task<ActionResult<IEnumerable<ProductResponseDto>>> GetAlsoBoughtProducts(int id)
+
+        // GET: api/Product
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<ProductResponseDto>>> GetProducts()
         {
-            var products = await _context.Products
-                .Where(p => p.ProductId != id) // Exclude the current product
-                .OrderBy(r => EF.Functions.Random()) // Order by random to simulate "also bought" products
-                .Take(10)
+            return await _context.Products
                 .Select(p => MapToProductResponseDto(p))
                 .ToListAsync();
+        }
 
-            return Ok(products);
+        // GET: api/Product/5
+        [HttpGet("{id}")]
+        public async Task<ActionResult<ProductResponseDto>> GetProduct(int id)
+        {
+            var product = await _context.Products
+                .Include(x => x.Categories)
+                .Include(x => x.Reviews)
+                .Include(x => x.Characteristics)
+                .FirstOrDefaultAsync(p => p.ProductId == id);
+
+            if (product == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(MapToProductResponseDto(product));
+        }
+
+        // PUT: api/Product/5
+        [HttpPut("{id}")]
+        public async Task<IActionResult> PutProduct(int id, [FromForm] ProductCreateDto productDto, [FromForm] List<IFormFile>? imageFiles)
+        {
+            var product = await _context.Products.Include(p => p.Categories).FirstOrDefaultAsync(p => p.ProductId == id);
+            if (product == null)
+            {
+                return NotFound();
+            }
+
+            await UpdateProductAsync(product, productDto, imageFiles);
+
+            _context.Entry(product).State = EntityState.Modified;
+
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!ProductExists(id))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw;
+                }
+            }
+
+            return NoContent();
+        }
+
+        // POST: api/Product
+        [HttpPost]
+        public async Task<ActionResult<ProductResponseDto>> PostProduct([FromForm] ProductCreateDto productDto, [FromForm] List<IFormFile> imageFiles)
+        {
+            var product = new Product();
+            await UpdateProductAsync(product, productDto, imageFiles);
+
+            _context.Products.Add(product);
+            await _context.SaveChangesAsync();
+
+            var productResponse = MapToProductResponseDto(product);
+
+            return CreatedAtAction(nameof(GetProduct), new { id = product.ProductId }, productResponse);
+        }
+
+        // DELETE: api/Product/5
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteProduct(int id)
+        {
+            var product = await _context.Products.FindAsync(id);
+            if (product == null)
+            {
+                return NotFound();
+            }
+
+            _context.Products.Remove(product);
+            await _context.SaveChangesAsync();
+
+            return NoContent();
+        }
+
+        // POST: api/Product/{id}/images
+        [HttpPost("{id}/images")]
+        public async Task<IActionResult> AddProductImages(int id, List<IFormFile> imageFiles)
+        {
+            var product = await _context.Products.FirstOrDefaultAsync(p => p.ProductId == id);
+            if (product == null)
+            {
+                return NotFound("Product not found");
+            }
+
+            if (imageFiles == null || imageFiles.Count == 0)
+            {
+                return BadRequest("No image files provided");
+            }
+
+            var uploadedImageUrls = new List<string>();
+
+            foreach (var imageFile in imageFiles)
+            {
+                if (imageFile.Length == 0)
+                {
+                    return BadRequest($"File {imageFile.FileName} is empty");
+                }
+
+                using (var stream = new MemoryStream())
+                {
+                    await imageFile.CopyToAsync(stream);
+                    stream.Position = 0;
+
+                    var imageUrl = await _imageService.UploadImageAsync(imageFile.FileName, stream);
+                    uploadedImageUrls.Add(imageUrl);
+                    product.Images.Add(imageUrl);
+                }
+            }
+
+            product.ImagesSerialized = JsonSerializer.Serialize(product.Images);
+
+            _context.Entry(product).State = EntityState.Modified;
+            await _context.SaveChangesAsync();
+
+            return Ok(new { Message = "Images uploaded successfully", ImageUrls = uploadedImageUrls });
         }
 
         private bool ProductExists(int id)
         {
             return _context.Products.Any(e => e.ProductId == id);
+        }
+
+        private async Task UpdateProductAsync(Product product, ProductCreateDto productDto, List<IFormFile>? imageFiles)
+        {
+            product.Name = productDto?.Name ?? product.Name;
+            product.NameEng = productDto?.NameEng ?? product.NameEng;
+            product.Brand = productDto?.Brand ?? product.Brand;
+            product.Price = productDto?.Price ?? product.Price;
+            product.Discount = productDto?.Discount ?? product.Discount;
+            product.IsNew = productDto?.IsNew ?? product.IsNew;
+            product.InStock = (productDto?.AvailableAmount ?? product.AvailableAmount) > 0;
+            product.AvailableAmount = productDto?.AvailableAmount ?? product.AvailableAmount;
+            product.Article = productDto?.Article ?? product.Article;
+            product.DieNumbers = productDto?.DieNumbers ?? product.DieNumbers;
+            product.Description = productDto?.Description ?? product.Description;
+
+            if (imageFiles != null && imageFiles.Count > 0)
+            {
+                var uploadedImageUrls = new List<string>();
+
+                foreach (var imageFile in imageFiles)
+                {
+                    if (imageFile.Length == 0)
+                    {
+                        continue; // Skip empty files
+                    }
+
+                    using (var stream = new MemoryStream())
+                    {
+                        await imageFile.CopyToAsync(stream);
+                        stream.Position = 0;
+
+                        var imageUrl = await _imageService.UploadImageAsync(imageFile.FileName, stream);
+                        uploadedImageUrls.Add(imageUrl);
+                    }
+                }
+
+                product.Images = uploadedImageUrls;
+                product.ImagesSerialized = JsonSerializer.Serialize(product.Images);
+            }
+
+            // Update categories
+            if (productDto?.CategoryIds != null)
+            {
+                product.Categories.Clear();
+                foreach (var categoryId in productDto.CategoryIds)
+                {
+                    var category = _context.Categories.Find(categoryId);
+                    if (category != null)
+                    {
+                        product.Categories.Add(category);
+                    }
+                }
+            }
         }
 
         private static ProductResponseDto MapToProductResponseDto(Product p)
@@ -216,8 +306,7 @@ namespace BlossomApi.Controllers
                 NumberOfPurchases = p.NumberOfPurchases,
                 NumberOfViews = p.NumberOfViews,
                 Article = p.Article,
-                Options = p.Options,
-                Categories = p.Categories.Select(c => new CategoryResponseDto() { CategoryId = c.CategoryId, Name = c.Name, ParentCategoryId = c.ParentCategoryId }).ToList(),
+                Categories = p.Categories.Select(c => new CategoryResponseDto { CategoryId = c.CategoryId, Name = c.Name, ParentCategoryId = c.ParentCategoryId }).ToList(),
                 DieNumbers = p.DieNumbers,
                 Reviews = p.Reviews.Select(r => new ReviewDto
                 {
@@ -234,38 +323,6 @@ namespace BlossomApi.Controllers
                 Description = p.Description,
                 InStock = p.InStock
             };
-        }
-
-        private void UpdateProduct(Product product, ProductCreateDto productDto)
-        {
-            product.Name = productDto.Name;
-            product.NameEng = productDto.NameEng;
-            product.Images = productDto.Images;
-            product.Brand = productDto.Brand;
-            product.Price = productDto.Price;
-            product.Discount = productDto.Discount;
-            product.IsNew = productDto.IsNew;
-            product.Rating = productDto.Rating;
-            product.InStock = productDto.InStock;
-            product.AvailableAmount = productDto.AvailableAmount;
-            product.NumberOfReviews = productDto.NumberOfReviews;
-            product.NumberOfPurchases = productDto.NumberOfPurchases;
-            product.NumberOfViews = productDto.NumberOfViews;
-            product.Article = productDto.Article;
-            product.Options = productDto.Options;
-            product.DieNumbers = productDto.DieNumbers;
-            product.Description = productDto.Description;
-
-            // Update categories
-            product.Categories.Clear();
-            foreach (var categoryId in productDto.CategoryIds)
-            {
-                var category = _context.Categories.Find(categoryId);
-                if (category != null)
-                {
-                    product.Categories.Add(category);
-                }
-            }
         }
     }
 }

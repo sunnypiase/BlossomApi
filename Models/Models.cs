@@ -87,13 +87,6 @@ namespace BlossomApi.Models
         }
 
         [NotMapped]
-        public List<string> Options
-        {
-            get => JsonSerializer.Deserialize<List<string>>(OptionsSerialized) ?? new List<string>();
-            set => OptionsSerialized = JsonSerializer.Serialize(value);
-        }
-
-        [NotMapped]
         public List<int> DieNumbers
         {
             get => JsonSerializer.Deserialize<List<int>>(DieNumbersSerialized) ?? new List<int>();
