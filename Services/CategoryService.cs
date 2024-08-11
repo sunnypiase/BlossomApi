@@ -3,8 +3,8 @@ using BlossomApi.Models;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using BlossomApi.Dtos;
 using Microsoft.EntityFrameworkCore;
+using BlossomApi.Dtos;
 
 namespace BlossomApi.Services
 {
@@ -31,11 +31,11 @@ namespace BlossomApi.Services
             return categoryTree;
         }
 
-        public List<string> GetAllCategoryNames(CategoryNode root)
+        public List<int> GetAllCategoryIds(CategoryNode root)
         {
-            var names = new List<string>();
-            TraverseCategoryTree(root, names);
-            return names;
+            var ids = new List<int>();
+            TraverseCategoryTree(root, ids);
+            return ids;
         }
 
         public async Task<List<Category>> GetAllChildCategoriesAsync(int parentId)
@@ -55,15 +55,15 @@ namespace BlossomApi.Services
             return allChildCategories;
         }
 
-        private void TraverseCategoryTree(CategoryNode node, List<string> names)
+        private void TraverseCategoryTree(CategoryNode node, List<int> ids)
         {
             if (node == null) return;
 
-            names.Add(node.Name);
+            ids.Add(node.CategoryId);
 
             foreach (var child in node.Children)
             {
-                TraverseCategoryTree(child, names);
+                TraverseCategoryTree(child, ids);
             }
         }
 

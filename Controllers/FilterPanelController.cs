@@ -3,6 +3,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using BlossomApi.Dtos.FilterPanel;
 using BlossomApi.Services;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace BlossomApi.Controllers
 {
@@ -33,7 +35,6 @@ namespace BlossomApi.Controllers
 
         private async Task<FilterPanelResponseDto> FetchFilterPanelData(int categoryId)
         {
-
             var rootCategory = await _context.Categories
                 .FirstOrDefaultAsync(c => c.CategoryId == categoryId);
 
@@ -43,12 +44,12 @@ namespace BlossomApi.Controllers
             }
 
             var categoryTree = await _categoryService.GetCategoryTreeAsync(categoryId);
-            var categoryNames = _categoryService.GetAllCategoryNames(categoryTree);
+            var categoryIds = _categoryService.GetAllCategoryIds(categoryTree);
 
             var products = await _context.Products
                 .Include(p => p.Characteristics)
                 .Include(p => p.Categories)
-                .Where(p => p.Categories.Any(c => categoryNames.Contains(c.Name.ToLower())))
+                .Where(p => p.Categories.Any(c => categoryIds.Contains(c.CategoryId)))
                 .ToListAsync();
 
             var characteristics = products
