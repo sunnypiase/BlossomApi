@@ -251,7 +251,7 @@ namespace BlossomApi.Controllers
         [HttpPost("ImportFromExcel")]
         public async Task<ActionResult<IEnumerable<int>>> ImportFromExcel([FromForm] FileModel fileModel)
         {
-            if (excelFile == null || excelFile.Length == 0)
+            if (fileModel.ExcelFile == null || fileModel.ExcelFile.Length == 0)
             {
                 return BadRequest("No file uploaded or file is empty.");
             }
@@ -262,7 +262,7 @@ namespace BlossomApi.Controllers
             {
                 using (var stream = new MemoryStream())
                 {
-                    await excelFile.CopyToAsync(stream);
+                    await fileModel.ExcelFile.CopyToAsync(stream);
                     using (var package = new ExcelPackage(stream))
                     {
                         var worksheet = package.Workbook.Worksheets[0];
