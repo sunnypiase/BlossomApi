@@ -144,7 +144,7 @@ namespace BlossomApi.Controllers
 
         // PUT: api/Product/5
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutProduct(int id, [FromForm] ProductCreateDto productDto, [FromForm] List<IFormFile>? imageFiles)
+        public async Task<IActionResult> PutProduct(int id, [FromBody] ProductCreateDto productDto)
         {
             var product = await _context.Products.Include(p => p.Categories).FirstOrDefaultAsync(p => p.ProductId == id);
             if (product == null)
@@ -152,7 +152,7 @@ namespace BlossomApi.Controllers
                 return NotFound();
             }
 
-            await UpdateProductAsync(product, productDto, imageFiles);
+            await UpdateProductAsync(product, productDto, null);
 
             _context.Entry(product).State = EntityState.Modified;
 
@@ -172,7 +172,7 @@ namespace BlossomApi.Controllers
                 }
             }
 
-            return NoContent();
+            return Ok();
         }
 
         // POST: api/Product
@@ -208,7 +208,7 @@ namespace BlossomApi.Controllers
 
         // POST: api/Product/{id}/images
         [HttpPost("{id}/images")]
-        public async Task<IActionResult> AddProductImages(int id, List<IFormFile> imageFiles)
+        public async Task<IActionResult> AddProductImages(int id, [FromForm] List<IFormFile> imageFiles)
         {
             var product = await _context.Products.FirstOrDefaultAsync(p => p.ProductId == id);
             if (product == null)
@@ -357,7 +357,7 @@ namespace BlossomApi.Controllers
             }
             else
             {
-                product.Images ??= []; // Ensure Images is not null
+                product.Images ??= new(); // Ensure Images is not null
             }
 
             // Update categories
