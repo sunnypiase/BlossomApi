@@ -1,7 +1,10 @@
 using BlossomApi.DB;
 using BlossomApi.Dtos;
+using BlossomApi.Models;
+using BlossomApi.Repositories;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Linq.Expressions;
 
 namespace BlossomApi.Controllers
 {
@@ -10,112 +13,64 @@ namespace BlossomApi.Controllers
     public class HomePageController : ControllerBase
     {
         private readonly BlossomContext _context;
+        private readonly IShownProductRepository _shownProductRepository;
 
-        public HomePageController(BlossomContext context)
+        public HomePageController(BlossomContext context, IShownProductRepository shownProductRepository)
         {
             _context = context;
+            _shownProductRepository = shownProductRepository;
         }
 
         // GET: api/HomePage/New
         [HttpGet("New")]
         public async Task<ActionResult<IEnumerable<ProductResponseDto>>> GetNewProducts()
         {
-            var products = await _context.Products
-                .OrderByDescending(p => p.InStock)
-                .Where(p => p.IsNew)
-                .Take(10)
-                .Select(p => new ProductResponseDto
-                {
-                    Id = p.ProductId,
-                    Name = p.Name,
-                    NameEng = p.NameEng,
-                    Amount = p.AvailableAmount,
-                    Images = p.Images,
-                    Brand = p.Brand,
-                    Price = p.Price,
-                    Discount = p.Discount,
-                    IsNew = p.IsNew,
-                    Rating = p.Rating,
-                    NumberOfReviews = p.NumberOfReviews,
-                    NumberOfPurchases = p.NumberOfPurchases,
-                    NumberOfViews = p.NumberOfViews,
-                    Article = p.Article,
-                    Categories = p.Categories.Select(c => new CategoryResponseDto() { CategoryId = c.CategoryId, Name = c.Name, ParentCategoryId = c.ParentCategoryId }).ToList(),
-                    DieNumbers = p.DieNumbers,
-                    Reviews = p.Reviews.Select(r => new ReviewDto
-                    {
-                        Name = r.Name,
-                        Review = r.ReviewText,
-                        Rating = r.Rating,
-                        Date = r.Date.ToString("dd.MM.yyyy")
-                    }).ToList(),
-                    Characteristics = p.Characteristics.Select(c => new CharacteristicDto
-                    {
-                        Title = c.Title,
-                        Desc = c.Desc
-                    }).ToList(),
-                    Description = p.Description,
-                    InStock = p.InStock
-                })
-                .ToListAsync();
-
-            return Ok(products);
+            return await GetProductsAsync(p => p.IsNew, 10, "New products not found");
         }
 
         // GET: api/HomePage/Discounts
         [HttpGet("Discounts")]
         public async Task<ActionResult<IEnumerable<ProductResponseDto>>> GetDiscountedProducts()
         {
-            var products = await _context.Products
-                .Where(p => p.Discount > 0)
-                .OrderByDescending(p => p.InStock)
-                .Take(10)
-                .Select(p => new ProductResponseDto
-                {
-                    Id = p.ProductId,
-                    Name = p.Name,
-                    NameEng = p.NameEng,
-                    Amount = p.AvailableAmount,
-                    Images = p.Images,
-                    Brand = p.Brand,
-                    Price = p.Price,
-                    Discount = p.Discount,
-                    IsNew = p.IsNew,
-                    Rating = p.Rating,
-                    NumberOfReviews = p.NumberOfReviews,
-                    NumberOfPurchases = p.NumberOfPurchases,
-                    NumberOfViews = p.NumberOfViews,
-                    Article = p.Article,
-                    Categories = p.Categories.Select(c => new CategoryResponseDto() { CategoryId = c.CategoryId, Name = c.Name, ParentCategoryId = c.ParentCategoryId }).ToList(),
-                    DieNumbers = p.DieNumbers,
-                    Reviews = p.Reviews.Select(r => new ReviewDto
-                    {
-                        Name = r.Name,
-                        Review = r.ReviewText,
-                        Rating = r.Rating,
-                        Date = r.Date.ToString("dd.MM.yyyy")
-                    }).ToList(),
-                    Characteristics = p.Characteristics.Select(c => new CharacteristicDto
-                    {
-                        Title = c.Title,
-                        Desc = c.Desc
-                    }).ToList(),
-                    Description = p.Description,
-                    InStock = p.InStock
-                })
-                .ToListAsync();
-
-            return Ok(products);
+            return await GetProductsAsync(p => p.Discount > 0, 10, "Discounted products not found");
         }
 
         // GET: api/HomePage/Popular
         [HttpGet("Popular")]
         public async Task<ActionResult<IEnumerable<ProductResponseDto>>> GetPopularProducts()
         {
-            var products = await _context.Products
-                .OrderByDescending(p => p.InStock)
-                .ThenByDescending(p => p.Rating)
-                .Take(10)
+            return await GetProductsAsync(p => p.IsHit, 10, "Popular products not found", orderBy: p => p.OrderByDescending(p => p.Rating));
+        }
+
+        // GET: api/HomePage/PopularByCategory/5
+        [HttpGet("PopularByCategory/{categoryId}")]
+        public async Task<ActionResult<IEnumerable<ProductResponseDto>>> GetPopularProductsByCategory(int categoryId)
+        {
+            return await GetProductsAsync(p => p.Categories.Any(c => c.CategoryId == categoryId), 10, $"No popular products found for category {categoryId}", orderBy: p => p.OrderByDescending(p => p.Rating));
+        }
+
+        private async Task<ActionResult<IEnumerable<ProductResponseDto>>> GetProductsAsync(
+            Expression<Func<Product, bool>> filter,
+            int take,
+            string notFoundMessage,
+            Func<IQueryable<Product>, IOrderedQueryable<Product>> orderBy = null)
+        {
+            var query = _shownProductRepository.GetProducts();
+
+            if (filter != null)
+            {
+                query = query.Where(filter);
+            }
+
+            query = query.OrderByDescending(p => p.InStock);
+
+            if (orderBy != null)
+            {
+                query = orderBy(query);
+            }
+
+            var products = await query
+                .Take(take)
                 .Select(p => new ProductResponseDto
                 {
                     Id = p.ProductId,
@@ -132,7 +87,7 @@ namespace BlossomApi.Controllers
                     NumberOfPurchases = p.NumberOfPurchases,
                     NumberOfViews = p.NumberOfViews,
                     Article = p.Article,
-                    Categories = p.Categories.Select(c => new CategoryResponseDto() { CategoryId = c.CategoryId, Name = c.Name, ParentCategoryId = c.ParentCategoryId }).ToList(),
+                    Categories = p.Categories.Select(c => new CategoryResponseDto { CategoryId = c.CategoryId, Name = c.Name, ParentCategoryId = c.ParentCategoryId }).ToList(),
                     DieNumbers = p.DieNumbers,
                     Reviews = p.Reviews.Select(r => new ReviewDto
                     {
@@ -151,52 +106,10 @@ namespace BlossomApi.Controllers
                 })
                 .ToListAsync();
 
-            return Ok(products);
-        }
-        // GET: api/HomePage/PopularByCategory/5
-        [HttpGet("PopularByCategory/{categoryId}")]
-        public async Task<ActionResult<IEnumerable<ProductResponseDto>>> GetPopularProductsByCategory(int categoryId)
-        {
-            var products = await _context.Products
-                .Include(x => x.Categories)
-                .OrderByDescending(p => p.InStock)
-                .ThenByDescending(p => p.Rating)
-                .Where(x => x.Categories.Any(c => c.CategoryId == categoryId))
-                .Take(10)
-                .Select(p => new ProductResponseDto
-                {
-                    Id = p.ProductId,
-                    Name = p.Name,
-                    NameEng = p.NameEng,
-                    Amount = p.AvailableAmount,
-                    Images = p.Images,
-                    Brand = p.Brand,
-                    Price = p.Price,
-                    Discount = p.Discount,
-                    IsNew = p.IsNew,
-                    Rating = p.Rating,
-                    NumberOfReviews = p.NumberOfReviews,
-                    NumberOfPurchases = p.NumberOfPurchases,
-                    NumberOfViews = p.NumberOfViews,
-                    Article = p.Article,
-                    Categories = p.Categories.Select(c => new CategoryResponseDto() { CategoryId = c.CategoryId, Name = c.Name, ParentCategoryId = c.ParentCategoryId }).ToList(),
-                    DieNumbers = p.DieNumbers,
-                    Reviews = p.Reviews.Select(r => new ReviewDto
-                    {
-                        Name = r.Name,
-                        Review = r.ReviewText,
-                        Rating = r.Rating,
-                        Date = r.Date.ToString("dd.MM.yyyy")
-                    }).ToList(),
-                    Characteristics = p.Characteristics.Select(c => new CharacteristicDto
-                    {
-                        Title = c.Title,
-                        Desc = c.Desc
-                    }).ToList(),
-                    Description = p.Description,
-                    InStock = p.InStock
-                })
-                .ToListAsync();
+            if (products == null || products.Count == 0)
+            {
+                return NotFound(notFoundMessage);
+            }
 
             return Ok(products);
         }

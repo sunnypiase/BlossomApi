@@ -1,4 +1,4 @@
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json;
 using Microsoft.AspNetCore.Identity;
@@ -21,6 +21,9 @@ namespace BlossomApi.Models
         // Navigation properties
         [ForeignKey("IdentityUserId")] public IdentityUser IdentityUser { get; set; }
         public ICollection<ShoppingCart> ShoppingCarts { get; set; } = new List<ShoppingCart>();
+
+        // Many-to-many relationship with Product for favorites
+        public ICollection<Product> FavoriteProducts { get; set; } = new List<Product>();
     }
 
     public class ShoppingCart
@@ -59,10 +62,9 @@ namespace BlossomApi.Models
         public string ImagesSerialized { get; set; } = "[]"; // Default to an empty JSON array
         public string Brand { get; set; }
         public decimal Price { get; set; }
-        public decimal Discount { get; set; } // Precentage of discount
-        public bool IsNew { get; set; }
+        public decimal PurchasePrice { get; set; } // Ціна придбання
+        public decimal Discount { get; set; } // Percentage of discount
         public double Rating { get; set; }
-        public bool InStock { get; set; }
         public int AvailableAmount { get; set; }
         public int NumberOfReviews { get; set; }
         public int NumberOfPurchases { get; set; }
@@ -70,12 +72,34 @@ namespace BlossomApi.Models
         public string Article { get; set; }
         public string DieNumbersSerialized { get; set; } = "[]"; // Serialized die numbers
         public string Description { get; set; }
+        public string? Ingridients { get; set; }
+        public bool InStock { get; set; }
+        public bool IsNew { get; set; }
+        public bool IsHit { get; set; }
+        public bool IsShown { get; set; }
+
+        // New properties for synchronization with Cassa
+        public string? UnitOfMeasurement { get; set; } // Одиниця виміру
+        public string? Group { get; set; } // Група
+        public string? Type { get; set; } // Тип
+        public string? ManufacturerBarcode { get; set; } // Штрихкод виробника
+        public string? UKTZED { get; set; } // УКТЗЕД
+        public decimal? Markup { get; set; } // Націнка
+        public decimal? VATRate { get; set; } // Ставка ПДВ
+        public decimal? ExciseTaxRate { get; set; } // Ставка акцизн. податку
+        public decimal? PensionFundRate { get; set; } // Ставка збору ПФ
+        public string? VATLetter { get; set; } // Літера ставки ПДВ
+        public string? ExciseTaxLetter { get; set; } // Літера ставки акцизного податку
+        public string? PensionFundLetter { get; set; } // Літера ставки збору ПФ
+        public decimal? DocumentQuantity { get; set; } // Кількість згідно документу
+        public decimal? ActualQuantity { get; set; } // Фактична кількість
 
         // Navigation properties
         public ICollection<Category> Categories { get; set; } = new List<Category>();
         public ICollection<Review> Reviews { get; set; } = new List<Review>();
         public ICollection<Characteristic> Characteristics { get; set; } = new List<Characteristic>();
         public ICollection<ShoppingCartProduct> ShoppingCartProducts { get; set; } = new List<ShoppingCartProduct>();
+        public ICollection<SiteUser> UsersWhoFavorited { get; set; } = new List<SiteUser>(); // Many-to-many with SiteUser
 
         // Not mapped properties for lists
         [NotMapped]
@@ -90,7 +114,6 @@ namespace BlossomApi.Models
             set => ImagesSerialized = JsonSerializer.Serialize(value ?? []);
         }
 
-
         [NotMapped]
         public List<int> DieNumbers
         {
@@ -103,6 +126,7 @@ namespace BlossomApi.Models
             set => DieNumbersSerialized = JsonSerializer.Serialize(value ?? []);
         }
     }
+
 
     public class Review
     {

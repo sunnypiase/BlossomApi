@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using BlossomApi.DB;
+using BlossomApi.Repositories;
 
 namespace BlossomApi.Controllers
 {
@@ -9,6 +10,7 @@ namespace BlossomApi.Controllers
     public class SearchController : ControllerBase
     {
         private readonly BlossomContext _context;
+        private readonly IShownProductRepository _shownProductRepository;
 
         public SearchController(BlossomContext context)
         {
@@ -23,7 +25,7 @@ namespace BlossomApi.Controllers
                 return BadRequest("Query string cannot be empty.");
             }
 
-            var result = await _context.Products
+            var result = await _shownProductRepository.GetProducts()
                 .Where(p => p.Name.Contains(query) || p.NameEng.Contains(query))
                 .OrderBy(p => p.Name)
                 .ThenBy(p => p.Rating)

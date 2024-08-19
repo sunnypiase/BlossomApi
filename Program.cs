@@ -1,4 +1,5 @@
 using BlossomApi.DB;
+using BlossomApi.Repositories;
 using BlossomApi.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -22,7 +23,12 @@ builder.Services.AddSwaggerGen(options =>
     options.OperationFilter<SecurityRequirementsOperationFilter>();
 });
 builder.Services.AddScoped<CategoryService>();
+builder.Services.AddScoped<IShownProductRepository, ShownProductRepository>();
 builder.Services.AddScoped<ImageService>();
+builder.Services.AddScoped<ProductQueryService>();
+builder.Services.AddScoped<ProductImageService>();
+builder.Services.AddScoped<ProductImportService>();
+builder.Services.AddScoped<ProductRecommendationService>();
 builder.Logging.ClearProviders();
 builder.Logging.AddConsole();
 builder.Services.AddSingleton<ILoggerFactory, LoggerFactory>();
@@ -51,7 +57,7 @@ builder.Services.ConfigureApplicationCookie(options =>
 });
 
 builder.Services.AddControllers();
-
+builder.Services.AddMemoryCache();
 // Add CORS services
 builder.Services.AddCors(options =>
 {

@@ -1,12 +1,11 @@
+using BlossomApi.DB;
+using BlossomApi.Dtos;
+using BlossomApi.Models;
+using BlossomApi.Repositories;
+using BlossomApi.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using BlossomApi.DB;
-using BlossomApi.Models;
-using BlossomApi.Dtos;
-using BlossomApi.Services;
-using System.Text.Json;
-using System.Linq.Expressions;
-using OfficeOpenXml;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace BlossomApi.Controllers
 {
@@ -17,84 +16,34 @@ namespace BlossomApi.Controllers
         private readonly BlossomContext _context;
         private readonly CategoryService _categoryService;
         private readonly ImageService _imageService;
+        private readonly ProductQueryService _productQueryService;
+        private readonly IShownProductRepository _shownProductRepository;
+        private readonly IMemoryCache _cache;
+        private readonly ProductImageService _productImageService;
+        private readonly ProductImportService _productImportService;
+        private readonly ProductRecommendationService _productRecommendationService;
 
-        public ProductController(BlossomContext context, CategoryService categoryService, ImageService imageService)
+        public ProductController(
+            BlossomContext context,
+            CategoryService categoryService,
+            ImageService imageService,
+            IShownProductRepository shownProductRepository,
+            IMemoryCache cache,
+            ProductQueryService productQueryService,
+            ProductImageService productImageService,
+            ProductImportService productImportService,
+            ProductRecommendationService productRecommendationService)
         {
             _context = context;
             _categoryService = categoryService;
             _imageService = imageService;
+            _shownProductRepository = shownProductRepository;
+            _cache = cache;
+            _productQueryService = productQueryService;
+            _productImageService = productImageService;
+            _productImportService = productImportService;
+            _productRecommendationService = productRecommendationService;
         }
-
-        // POST: api/Product/GetProductsByFilter
-        [HttpPost("GetProductsByFilter")]
-        public async Task<ActionResult<GetProductsByFilterResponse>> GetProductsByFilter(GetProductsByFilterRequestDto request)
-        {
-            var query = _context.Products.AsQueryable();
-
-            if (request.CategoryId != null)
-            {
-                var rootCategory = await _context.Categories
-                    .FirstOrDefaultAsync(c => c.CategoryId == request.CategoryId);
-
-                if (rootCategory != null)
-                {
-                    var allCategories = new List<Category> { rootCategory };
-                    allCategories.AddRange(await _categoryService.GetAllChildCategoriesAsync(rootCategory.CategoryId));
-
-                    var categoryIds = allCategories.Select(c => c.CategoryId).ToList();
-                    query = query.Where(p => p.Categories.Any(c => categoryIds.Contains(c.CategoryId)));
-                }
-            }
-
-            if (request.SelectedCharacteristics != null && request.SelectedCharacteristics.Count != 0)
-            {
-                var characteristicIds = request.SelectedCharacteristics;
-                Expression<Func<Product, bool>> predicate = p => false;
-
-                predicate = characteristicIds
-                    .Aggregate(predicate, (current, temp) => current.Or(p => p.Characteristics.Any(c => c.CharacteristicId == temp)));
-
-                query = query.Where(predicate);
-            }
-
-            if (request.MinPrice.HasValue && request.MinPrice.Value != 0)
-            {
-                query = query.Where(p => p.Price >= request.MinPrice.Value);
-            }
-
-            if (request.MaxPrice.HasValue && request.MaxPrice.Value != 0)
-            {
-                query = query.Where(p => p.Price <= request.MaxPrice.Value);
-            }
-
-            query = query.OrderByDescending(p => p.InStock);
-            // Apply sorting and then ensure products out of stock are at the end
-            query = request.SortBy switch
-            {
-                "popularity" => ((IOrderedQueryable<Product>)query).ThenByDescending(p => p.Rating),
-                "price_asc" => ((IOrderedQueryable<Product>)query).ThenBy(p => p.Price),
-                "price_desc" => ((IOrderedQueryable<Product>)query).ThenByDescending(p => p.Price),
-                _ => ((IOrderedQueryable<Product>)query).ThenBy(p => p.Name)
-            };
-
-
-            var totalCount = await query.CountAsync();
-
-            var products = await query
-                .Skip(request.Start)
-                .Take(request.Amount)
-                .Select(p => MapToProductResponseDto(p))
-                .ToListAsync();
-
-            var response = new GetProductsByFilterResponse
-            {
-                Products = products,
-                TotalCount = totalCount
-            };
-
-            return Ok(response);
-        }
-
 
         // GET: api/Product
         [HttpGet]
@@ -142,6 +91,97 @@ namespace BlossomApi.Controllers
             return Ok(products.Select(MapToProductResponseDto));
         }
 
+        [HttpGet("AlsoBought/{id:int}")]
+        public async Task<ActionResult<IEnumerable<ProductResponseDto>>> GetAlsoBoughtProducts(int id)
+        {
+            var products = await _productRecommendationService.GetAlsoBoughtProductsAsync(id);
+            if (products == null || !products.Any())
+            {
+                return NotFound();
+            }
+
+            return Ok(products);
+        }
+
+        // POST: api/Product/GetProductsByFilter
+        [HttpPost("GetProductsByFilter")]
+        public async Task<ActionResult<GetProductsByFilterResponse>> GetProductsByFilter(GetProductsByFilterRequestDto request)
+        {
+            var query = await _productQueryService.ApplyFilterAndSortAsync(new GetProductsByAdminFilterRequestDto
+            {
+                CategoryId = request.CategoryId,
+                SortOption = request.SortBy == "popularity" ? "popularity_dsc" : request.SortBy,
+                Amount = request.Amount,
+                Start = request.Start,
+                MaxPrice = request.MaxPrice,
+                MinPrice = request.MinPrice,
+                SelectedCharacteristics = request.SelectedCharacteristics,
+                IsShown = true
+            });
+
+            var totalCount = await query.CountAsync();
+
+            var products = await query
+                .Skip(request.Start)
+                .Take(request.Amount)
+                .Select(p => MapToProductResponseDto(p))
+                .ToListAsync();
+
+            var response = new GetProductsByFilterResponse
+            {
+                Products = products,
+                TotalCount = totalCount
+            };
+
+            return Ok(response);
+        }
+
+        // POST: api/Product
+        [HttpPost]
+        public async Task<ActionResult<ProductResponseDto>> PostProduct([FromBody] ProductCreateDto productDto)
+        {
+            var product = new Product();
+            await UpdateProductAsync(product, productDto, null);
+
+            _context.Products.Add(product);
+            await _context.SaveChangesAsync();
+
+            var productResponse = MapToProductResponseDto(product);
+            return CreatedAtAction(nameof(GetProduct), new { id = product.ProductId }, productResponse);
+        }
+
+        [HttpPost("{id}/images")]
+        public async Task<IActionResult> AddProductImages(int id, [FromForm] List<IFormFile> imageFiles)
+        {
+            try
+            {
+                var uploadedImageUrls = await _productImageService.AddProductImagesAsync(id, imageFiles);
+                return Ok(new { Message = "Images uploaded successfully", ImageUrls = uploadedImageUrls });
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpPost("ImportFromExcel")]
+        public async Task<ActionResult<IEnumerable<int>>> ImportFromExcel([FromForm] FileModel fileModel)
+        {
+            try
+            {
+                var productIds = await _productImportService.ImportFromExcelAsync(fileModel.ExcelFile);
+                return Ok(productIds);
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            catch (InvalidOperationException ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+        }
+
         // PUT: api/Product/5
         [HttpPut("{id}")]
         public async Task<IActionResult> PutProduct(int id, [FromBody] ProductCreateDto productDto)
@@ -175,21 +215,6 @@ namespace BlossomApi.Controllers
             return Ok();
         }
 
-        // POST: api/Product
-        [HttpPost]
-        public async Task<ActionResult<ProductResponseDto>> PostProduct([FromBody] ProductCreateDto productDto)
-        {
-            var product = new Product();
-            await UpdateProductAsync(product, productDto, null);
-
-            _context.Products.Add(product);
-            await _context.SaveChangesAsync();
-
-            var productResponse = MapToProductResponseDto(product);
-
-            return CreatedAtAction(nameof(GetProduct), new { id = product.ProductId }, productResponse);
-        }
-
         // DELETE: api/Product/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteProduct(int id)
@@ -205,113 +230,6 @@ namespace BlossomApi.Controllers
 
             return NoContent();
         }
-
-        // POST: api/Product/{id}/images
-        [HttpPost("{id}/images")]
-        public async Task<IActionResult> AddProductImages(int id, [FromForm] List<IFormFile> imageFiles)
-        {
-            var product = await _context.Products.FirstOrDefaultAsync(p => p.ProductId == id);
-            if (product == null)
-            {
-                return NotFound("Product not found");
-            }
-
-            if (imageFiles == null || imageFiles.Count == 0)
-            {
-                return BadRequest("No image files provided");
-            }
-
-            var uploadedImageUrls = new List<string>();
-
-            foreach (var imageFile in imageFiles)
-            {
-                if (imageFile.Length == 0)
-                {
-                    return BadRequest($"File {imageFile.FileName} is empty");
-                }
-
-                using (var stream = new MemoryStream())
-                {
-                    await imageFile.CopyToAsync(stream);
-                    stream.Position = 0;
-
-                    var imageUrl = await _imageService.UploadImageAsync(imageFile.FileName, stream);
-                    uploadedImageUrls.Add(imageUrl);
-                }
-            }
-
-            product.Images = uploadedImageUrls;
-
-            _context.Entry(product).State = EntityState.Modified;
-            await _context.SaveChangesAsync();
-
-            return Ok(new { Message = "Images uploaded successfully", ImageUrls = uploadedImageUrls });
-        }
-
-        [HttpPost("ImportFromExcel")]
-        public async Task<ActionResult<IEnumerable<int>>> ImportFromExcel([FromForm] FileModel fileModel)
-        {
-            if (fileModel.ExcelFile == null || fileModel.ExcelFile.Length == 0)
-            {
-                return BadRequest("No file uploaded or file is empty.");
-            }
-
-            var productIds = new List<int>();
-
-            try
-            {
-                using (var stream = new MemoryStream())
-                {
-                    await fileModel.ExcelFile.CopyToAsync(stream);
-                    using (var package = new ExcelPackage(stream))
-                    {
-                        var worksheet = package.Workbook.Worksheets[0];
-                        var rowCount = worksheet.Dimension.Rows;
-
-                        var products = new List<Product>();
-
-                        for (int row = 2; row <= rowCount; row++) // Assuming the first row is headers
-                        {
-                            var productDto = new ProductCreateDto
-                            {
-                                Name = worksheet.Cells[row, 1].Value?.ToString(),
-                                NameEng = worksheet.Cells[row, 2].Value?.ToString(),
-                                Brand = worksheet.Cells[row, 3].Value?.ToString(),
-                                Price = decimal.Parse(worksheet.Cells[row, 4].Value?.ToString() ?? "0"),
-                                Discount = decimal.Parse(worksheet.Cells[row, 5].Value?.ToString() ?? "0"),
-                                IsNew = bool.Parse(worksheet.Cells[row, 6].Value?.ToString() ?? "false"),
-                                AvailableAmount = int.Parse(worksheet.Cells[row, 7].Value?.ToString() ?? "0"),
-                                Article = worksheet.Cells[row, 8].Value?.ToString(),
-                                Description = worksheet.Cells[row, 9].Value?.ToString(),
-                                CategoryIds = worksheet.Cells[row, 10].Value?.ToString()
-                                    ?.Split(',')
-                                    .Select(int.Parse)
-                                    .ToList() ?? new List<int>(),
-                            };
-
-                            var product = new Product();
-                            await UpdateProductAsync(product, productDto, null);
-                            products.Add(product);
-                        }
-
-                        // Add all products in one transaction
-                        _context.Products.AddRange(products);
-                        await _context.SaveChangesAsync();
-
-                        // Retrieve the generated IDs
-                        productIds = products.Select(p => p.ProductId).ToList();
-                    }
-                }
-
-                return Ok(productIds);
-            }
-            catch (Exception ex)
-            {
-                // Log the exception (implement logging as necessary)
-                return StatusCode(500, $"Internal server error: {ex.Message}");
-            }
-        }
-
 
         private bool ProductExists(int id)
         {
@@ -374,7 +292,6 @@ namespace BlossomApi.Controllers
                 }
             }
         }
-
 
         private static ProductResponseDto MapToProductResponseDto(Product p)
         {

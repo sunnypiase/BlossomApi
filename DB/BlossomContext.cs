@@ -1,15 +1,11 @@
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.Text.Json;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using System;
 using BlossomApi.Models;
 using BlossomApi.Seeders;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Storage;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace BlossomApi.DB
 {
@@ -44,7 +40,7 @@ namespace BlossomApi.DB
         public DbSet<DeliveryInfo> DeliveryInfos { get; set; }
         public DbSet<Review> Reviews { get; set; }
         public DbSet<Characteristic> Characteristics { get; set; }
-        public DbSet<Promocode> Promocodes { get; set; } 
+        public DbSet<Promocode> Promocodes { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -55,6 +51,8 @@ namespace BlossomApi.DB
                 .HasOne(u => u.IdentityUser)
                 .WithOne()
                 .HasForeignKey<SiteUser>(u => u.IdentityUserId);
+
+
 
             // Many-to-one relationship between ShoppingCart and User
             modelBuilder.Entity<ShoppingCart>()
@@ -72,6 +70,15 @@ namespace BlossomApi.DB
                     j => j.HasOne<Category>().WithMany().HasForeignKey("CategoryId"),
                     j => j.HasOne<Product>().WithMany().HasForeignKey("ProductId"))
                 .HasData(DatabaseProductCategorySeeder.GetProductCategoryConnections());
+
+            // Many-to-many relationship between SiteUser and Product for favorites
+            modelBuilder.Entity<SiteUser>()
+                .HasMany(su => su.FavoriteProducts)
+                .WithMany(p => p.UsersWhoFavorited)
+                .UsingEntity<Dictionary<string, object>>(
+                    "UserFavoriteProducts",
+                    j => j.HasOne<Product>().WithMany().HasForeignKey("ProductId"),
+                    j => j.HasOne<SiteUser>().WithMany().HasForeignKey("UserId"));
 
             // Configure decimal property precision and scale
             modelBuilder.Entity<Product>()

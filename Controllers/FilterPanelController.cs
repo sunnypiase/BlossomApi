@@ -5,6 +5,7 @@ using BlossomApi.Dtos.FilterPanel;
 using BlossomApi.Services;
 using System.Linq;
 using System.Threading.Tasks;
+using BlossomApi.Repositories;
 
 namespace BlossomApi.Controllers
 {
@@ -14,11 +15,16 @@ namespace BlossomApi.Controllers
     {
         private readonly BlossomContext _context;
         private readonly CategoryService _categoryService;
+        private readonly IShownProductRepository _shownProductRepository;
 
-        public FilterPanelController(BlossomContext context, CategoryService categoryService)
+        public FilterPanelController(
+            BlossomContext context,
+            CategoryService categoryService,
+            IShownProductRepository shownProductRepository)
         {
             _context = context;
             _categoryService = categoryService;
+            _shownProductRepository = shownProductRepository;
         }
 
         // GET: api/FilterPanel/{categoryId}
@@ -46,7 +52,7 @@ namespace BlossomApi.Controllers
             var categoryTree = await _categoryService.GetCategoryTreeAsync(categoryId);
             var categoryIds = _categoryService.GetAllCategoryIds(categoryTree);
 
-            var products = await _context.Products
+            var products = await _shownProductRepository.GetProducts()
                 .Include(p => p.Characteristics)
                 .Include(p => p.Categories)
                 .Where(p => p.Categories.Any(c => categoryIds.Contains(c.CategoryId)))
