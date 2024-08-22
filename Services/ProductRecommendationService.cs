@@ -6,6 +6,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using BlossomApi.Dtos;
 using Microsoft.EntityFrameworkCore;
+using AutoMapper;
 
 namespace BlossomApi.Services
 {
@@ -13,11 +14,13 @@ namespace BlossomApi.Services
     {
         private readonly BlossomContext _context;
         private readonly IMemoryCache _cache;
+        private readonly IMapper _mapper;
 
-        public ProductRecommendationService(BlossomContext context, IMemoryCache cache)
+        public ProductRecommendationService(BlossomContext context, IMemoryCache cache, IMapper mapper)
         {
             _context = context;
             _cache = cache;
+            _mapper = mapper;
         }
 
         public async Task<List<ProductResponseDto>> GetAlsoBoughtProductsAsync(int productId)
@@ -49,9 +52,7 @@ namespace BlossomApi.Services
                     return new List<ProductResponseDto>();
                 }
 
-                cachedProducts = alsoBoughtProducts
-                    .Select(p => MapToProductResponseDto(p.Product))
-                    .ToList();
+                cachedProducts = _mapper.Map<List<ProductResponseDto>>(alsoBoughtProducts.Select(p => p.Product).ToList());
 
                 var cacheEntryOptions = new MemoryCacheEntryOptions
                 {
@@ -63,48 +64,6 @@ namespace BlossomApi.Services
             }
 
             return cachedProducts;
-        }
-
-        private static ProductResponseDto MapToProductResponseDto(Product product)
-        {
-            return new ProductResponseDto
-            {
-                Id = product.ProductId,
-                Name = product.Name,
-                NameEng = product.NameEng,
-                Amount = product.AvailableAmount,
-                Images = product.Images,
-                Brand = product.Brand,
-                Price = product.Price,
-                Discount = product.Discount,
-                IsNew = product.IsNew,
-                Rating = product.Rating,
-                NumberOfReviews = product.NumberOfReviews,
-                NumberOfPurchases = product.NumberOfPurchases,
-                NumberOfViews = product.NumberOfViews,
-                Article = product.Article,
-                Categories = product.Categories.Select(c => new CategoryResponseDto
-                {
-                    CategoryId = c.CategoryId,
-                    Name = c.Name,
-                    ParentCategoryId = c.ParentCategoryId
-                }).ToList(),
-                DieNumbers = product.DieNumbers,
-                Reviews = product.Reviews.Select(r => new ReviewDto
-                {
-                    Name = r.Name,
-                    Review = r.ReviewText,
-                    Rating = r.Rating,
-                    Date = r.Date.ToString("dd.MM.yyyy")
-                }).ToList(),
-                Characteristics = product.Characteristics.Select(c => new CharacteristicDto
-                {
-                    Title = c.Title,
-                    Desc = c.Desc
-                }).ToList(),
-                Description = product.Description,
-                InStock = product.InStock
-            };
         }
     }
 }

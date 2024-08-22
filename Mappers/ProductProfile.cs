@@ -7,7 +7,19 @@ public class ProductProfile : Profile
     public ProductProfile()
     {
         CreateMap<Product, ProductResponseDto>()
-            .ForMember(dest => dest.Categories, opt => opt.MapFrom(src => src.Categories.Select(c => new CategoryResponseDto
+            .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.ProductId))
+            .ForMember(dest => dest.Amount, opt => opt.MapFrom(src => src.AvailableAmount))
+            .ForMember(dest => dest.Images, opt => opt.MapFrom(src => src.Images))
+            .ForMember(dest => dest.MainCategory, opt => opt.MapFrom(src =>
+                src.MainCategory != null
+                ? new CategoryResponseDto
+                {
+                    CategoryId = src.MainCategory.CategoryId,
+                    Name = src.MainCategory.Name,
+                    ParentCategoryId = src.MainCategory.ParentCategoryId
+                }
+                : null))
+            .ForMember(dest => dest.AdditionalCategories, opt => opt.MapFrom(src => src.AdditionalCategories.Select(c => new CategoryResponseDto
             {
                 CategoryId = c.CategoryId,
                 Name = c.Name,
@@ -24,6 +36,7 @@ public class ProductProfile : Profile
             {
                 Title = c.Title,
                 Desc = c.Desc
-            }).ToList()));
+            }).ToList()))
+            .ForMember(dest => dest.InStock, opt => opt.MapFrom(src => src.InStock));
     }
 }

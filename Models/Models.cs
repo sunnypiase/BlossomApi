@@ -108,10 +108,10 @@ namespace BlossomApi.Models
             get
             {
                 return string.IsNullOrEmpty(ImagesSerialized)
-                    ? []
-                    : JsonSerializer.Deserialize<List<string>>(ImagesSerialized) ?? [];
+                    ? new List<string>()
+                    : JsonSerializer.Deserialize<List<string>>(ImagesSerialized) ?? new List<string>();
             }
-            set => ImagesSerialized = JsonSerializer.Serialize(value ?? []);
+            set => ImagesSerialized = JsonSerializer.Serialize(value ?? new List<string>());
         }
 
         [NotMapped]
@@ -120,13 +120,43 @@ namespace BlossomApi.Models
             get
             {
                 return string.IsNullOrEmpty(DieNumbersSerialized)
-                    ? []
-                    : JsonSerializer.Deserialize<List<int>>(DieNumbersSerialized) ?? [];
+                    ? new List<int>()
+                    : JsonSerializer.Deserialize<List<int>>(DieNumbersSerialized) ?? new List<int>();
             }
-            set => DieNumbersSerialized = JsonSerializer.Serialize(value ?? []);
+            set => DieNumbersSerialized = JsonSerializer.Serialize(value ?? new List<int>());
+        }
+
+        // Main Category Management
+        [NotMapped]
+        public Category MainCategory
+        {
+            get => Categories.FirstOrDefault();
+            set
+            {
+                if (Categories.Any())
+                {
+                    Categories.Remove(Categories.First());
+                }
+                Categories.ToList().Insert(0, value ?? throw new ArgumentNullException(nameof(MainCategory), "Main category cannot be null."));
+            }
+        }
+
+        // Additional Categories Management
+        [NotMapped]
+        public List<Category> AdditionalCategories
+        {
+            get => Categories?.Skip(1).ToList() ?? new List<Category>();
+            set
+            {
+                var mainCategory = MainCategory; // Keep the main category intact
+                Categories = new List<Category> { mainCategory };
+                if (value != null)
+                {
+                    Categories.ToList().AddRange(value);
+                }
+            }
         }
     }
-
 
     public class Review
     {

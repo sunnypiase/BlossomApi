@@ -19,7 +19,8 @@ namespace BlossomApi.Dtos
         public int NumberOfViews { get; set; }
         public string Article { get; set; }
         public List<string> Options { get; set; }
-        public List<CategoryResponseDto> Categories { get; set; }
+        public CategoryResponseDto MainCategory { get; set; }
+        public List<CategoryResponseDto> AdditionalCategories { get; set; }
         public List<int> DieNumbers { get; set; }
         public List<ReviewDto> Reviews { get; set; }
         public List<CharacteristicDto> Characteristics { get; set; }

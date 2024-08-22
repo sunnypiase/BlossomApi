@@ -91,12 +91,13 @@ namespace BlossomApi.Controllers
             var products = await query
                 .Skip(request.Start)
                 .Take(request.Amount)
-                .ProjectTo<ProductResponseDto>(_mapper.ConfigurationProvider)
                 .ToListAsync();
+
+            var productDtos = _mapper.Map<List<ProductResponseDto>>(products);
 
             var response = new GetProductsByFilterResponse
             {
-                Products = products,
+                Products = productDtos,
                 TotalCount = totalCount
             };
 
