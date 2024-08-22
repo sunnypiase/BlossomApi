@@ -56,43 +56,43 @@ namespace BlossomApi.Models
 
     public class Product
     {
-        [Key] public int ProductId { get; set; }
-        public string Name { get; set; }
-        public string NameEng { get; set; }
-        public string ImagesSerialized { get; set; } = "[]"; // Default to an empty JSON array
-        public string Brand { get; set; }
-        public decimal Price { get; set; }
-        public decimal PurchasePrice { get; set; } // Ціна придбання
-        public decimal Discount { get; set; } // Percentage of discount
-        public double Rating { get; set; }
-        public int AvailableAmount { get; set; }
-        public int NumberOfReviews { get; set; }
-        public int NumberOfPurchases { get; set; }
-        public int NumberOfViews { get; set; }
-        public string Article { get; set; }
-        public string DieNumbersSerialized { get; set; } = "[]"; // Serialized die numbers
-        public string Description { get; set; }
-        public string? Ingridients { get; set; }
-        public bool InStock { get; set; }
-        public bool IsNew { get; set; }
-        public bool IsHit { get; set; }
-        public bool IsShown { get; set; }
+        [Key] public int ProductId { get; set; } //не нужно
+        public string Name { get; set; } //+
+        public string NameEng { get; set; }// +
+        public string ImagesSerialized { get; set; } = "[]"; // Default to an empty JSON array +
+        public string Brand { get; set; }// +
+        public decimal Price { get; set; } //+
+        public decimal Discount { get; set; } // Percentage of discount +
+        public double Rating { get; set; }//-
+        public int AvailableAmount { get; set; }// +
+        public int NumberOfReviews { get; set; }//-
+        public int NumberOfPurchases { get; set; }//-
+        public int NumberOfViews { get; set; }//-
+        public string Article { get; set; } //+
+        public string DieNumbersSerialized { get; set; } = "[]"; // Serialized die numbers-
+        public string Description { get; set; } //+
+        public string? Ingridients { get; set; }//+
+        public bool InStock { get; set; }//не треба
+        public bool IsNew { get; set; } // +
+        public bool IsHit { get; set; }// +
+        public bool IsShown { get; set; } //+
 
         // New properties for synchronization with Cassa
-        public string? UnitOfMeasurement { get; set; } // Одиниця виміру
-        public string? Group { get; set; } // Група
-        public string? Type { get; set; } // Тип
-        public string? ManufacturerBarcode { get; set; } // Штрихкод виробника
-        public string? UKTZED { get; set; } // УКТЗЕД
-        public decimal? Markup { get; set; } // Націнка
-        public decimal? VATRate { get; set; } // Ставка ПДВ
+        public string? UnitOfMeasurement { get; set; } // Одиниця виміру +
+        public string? Group { get; set; } // Група +
+        public string? Type { get; set; } // Тип +
+        public string? ManufacturerBarcode { get; set; } // Штрихкод виробника +
+        public string? UKTZED { get; set; } // УКТЗЕД +
+        public decimal? Markup { get; set; } // Націнка+
+        public decimal PurchasePrice { get; set; } // Ціна придбання +
+        public decimal? VATRate { get; set; } // Ставка ПДВ +
         public decimal? ExciseTaxRate { get; set; } // Ставка акцизн. податку
-        public decimal? PensionFundRate { get; set; } // Ставка збору ПФ
-        public string? VATLetter { get; set; } // Літера ставки ПДВ
-        public string? ExciseTaxLetter { get; set; } // Літера ставки акцизного податку
-        public string? PensionFundLetter { get; set; } // Літера ставки збору ПФ
-        public decimal? DocumentQuantity { get; set; } // Кількість згідно документу
-        public decimal? ActualQuantity { get; set; } // Фактична кількість
+        public decimal? PensionFundRate { get; set; } // Ставка збору ПФ +
+        public string? VATLetter { get; set; } // Літера ставки ПДВ +
+        public string? ExciseTaxLetter { get; set; } // Літера ставки акцизного податку +
+        public string? PensionFundLetter { get; set; } // Літера ставки збору ПФ + 
+        public decimal? DocumentQuantity { get; set; } // Кількість згідно документу +
+        public decimal? ActualQuantity { get; set; } // Фактична кількість +
 
         // Navigation properties
         public ICollection<Category> Categories { get; set; } = new List<Category>();
@@ -133,11 +133,12 @@ namespace BlossomApi.Models
             get => Categories.FirstOrDefault();
             set
             {
-                if (Categories.Any())
+                if (value == null)
                 {
-                    Categories.Remove(Categories.First());
+                    throw new ArgumentNullException(nameof(MainCategory), "Main category cannot be null.");
                 }
-                Categories.ToList().Insert(0, value ?? throw new ArgumentNullException(nameof(MainCategory), "Main category cannot be null."));
+
+                Categories = [value, .. AdditionalCategories];
             }
         }
 
@@ -145,15 +146,15 @@ namespace BlossomApi.Models
         [NotMapped]
         public List<Category> AdditionalCategories
         {
-            get => Categories?.Skip(1).ToList() ?? new List<Category>();
+            get => Categories.Skip(1).ToList();
             set
             {
-                var mainCategory = MainCategory; // Keep the main category intact
-                Categories = new List<Category> { mainCategory };
-                if (value != null)
+                if (value == null)
                 {
-                    Categories.ToList().AddRange(value);
+                    throw new ArgumentNullException(nameof(AdditionalCategories), "Additional categories cannot be null.");
                 }
+
+                Categories = [MainCategory, .. value];
             }
         }
     }

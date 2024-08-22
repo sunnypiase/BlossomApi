@@ -24,6 +24,8 @@ namespace BlossomApi.Controllers
         private readonly ProductImageService _productImageService;
         private readonly ProductImportService _productImportService;
         private readonly ProductRecommendationService _productRecommendationService;
+        private readonly ProductUpdateService _productUpdateService;
+        private readonly ProductCreateService _productCreateService;
         private readonly IMapper _mapper;
 
         public ProductController(
@@ -36,7 +38,9 @@ namespace BlossomApi.Controllers
             ProductImageService productImageService,
             ProductImportService productImportService,
             ProductRecommendationService productRecommendationService,
-            IMapper mapper)
+            IMapper mapper,
+            ProductUpdateService productUpdateService,
+            ProductCreateService productCreateService)
         {
             _context = context;
             _categoryService = categoryService;
@@ -48,6 +52,8 @@ namespace BlossomApi.Controllers
             _productImportService = productImportService;
             _productRecommendationService = productRecommendationService;
             _mapper = mapper;
+            _productUpdateService = productUpdateService;
+            _productCreateService = productCreateService;
         }
 
         [HttpGet]
@@ -139,16 +145,21 @@ namespace BlossomApi.Controllers
 
 
         [HttpPost]
-        public async Task<ActionResult<ProductResponseDto>> PostProduct([FromBody] ProductCreateDto productDto)
+        public async Task<IActionResult> CreateProduct([FromBody] ProductCreateDto productCreateDto)
         {
-            var product = new Product();
-            await UpdateProductAsync(product, productDto, null);
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
 
-            _context.Products.Add(product);
-            await _context.SaveChangesAsync();
+            var (isSuccess, errorMessage, product) = await _productCreateService.CreateProductAsync(productCreateDto);
 
-            var productResponse = _mapper.Map<ProductResponseDto>(product);
-            return CreatedAtAction(nameof(GetProduct), new { id = product.ProductId }, productResponse);
+            if (!isSuccess)
+            {
+                return BadRequest(errorMessage);
+            }
+
+            return CreatedAtAction(nameof(GetProduct), new { id = product.Id }, product);
         }
 
         [HttpPost("{id}/images")]
@@ -184,35 +195,15 @@ namespace BlossomApi.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutProduct(int id, [FromBody] ProductCreateDto productDto)
+        public async Task<IActionResult> UpdateProduct(int id, [FromBody] ProductUpdateDto productUpdateDto)
         {
-            var product = await _context.Products.Include(p => p.Categories).FirstOrDefaultAsync(p => p.ProductId == id);
-            if (product == null)
+            var success = await _productUpdateService.UpdateProductAsync(id, productUpdateDto);
+            if (!success)
             {
-                return NotFound();
+                return NotFound("Product not found.");
             }
 
-            await UpdateProductAsync(product, productDto, null);
-
-            _context.Entry(product).State = EntityState.Modified;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!ProductExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
-            return Ok();
+            return Ok("Product updated successfully.");
         }
 
         [HttpDelete("{id}")]
@@ -235,65 +226,10 @@ namespace BlossomApi.Controllers
             return _context.Products.Any(e => e.ProductId == id);
         }
 
-        private async Task UpdateProductAsync(Product product, ProductCreateDto productDto, List<IFormFile>? imageFiles)
+
+        public class FileModel
         {
-            product.Name = productDto?.Name ?? product.Name;
-            product.NameEng = productDto?.NameEng ?? product.NameEng;
-            product.Brand = productDto?.Brand ?? product.Brand;
-            product.Price = productDto?.Price ?? product.Price;
-            product.Discount = productDto?.Discount ?? product.Discount;
-            product.IsNew = productDto?.IsNew ?? product.IsNew;
-            product.InStock = (productDto?.AvailableAmount ?? product.AvailableAmount) > 0;
-            product.AvailableAmount = productDto?.AvailableAmount ?? product.AvailableAmount;
-            product.Article = productDto?.Article ?? product.Article;
-            product.DieNumbers = productDto?.DieNumbers ?? product.DieNumbers;
-            product.Description = productDto?.Description ?? product.Description;
-
-            if (imageFiles != null && imageFiles.Count > 0)
-            {
-                var uploadedImageUrls = new List<string>();
-
-                foreach (var imageFile in imageFiles)
-                {
-                    if (imageFile.Length == 0)
-                    {
-                        continue; // Skip empty files
-                    }
-
-                    using (var stream = new MemoryStream())
-                    {
-                        await imageFile.CopyToAsync(stream);
-                        stream.Position = 0;
-
-                        var imageUrl = await _imageService.UploadImageAsync(imageFile.FileName, stream);
-                        uploadedImageUrls.Add(imageUrl);
-                    }
-                }
-
-                product.Images = uploadedImageUrls; // This will automatically serialize to ImagesSerialized
-            }
-            else
-            {
-                product.Images ??= new(); // Ensure Images is not null
-            }
-
-            if (productDto?.CategoryIds != null)
-            {
-                product.Categories.Clear();
-                foreach (var categoryId in productDto.CategoryIds)
-                {
-                    var category = _context.Categories.Find(categoryId);
-                    if (category != null)
-                    {
-                        product.Categories.Add(category);
-                    }
-                }
-            }
+            public IFormFile ExcelFile { get; set; }
         }
-    }
-
-    public class FileModel
-    {
-        public IFormFile ExcelFile { get; set; }
     }
 }

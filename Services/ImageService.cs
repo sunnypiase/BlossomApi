@@ -36,6 +36,19 @@ namespace BlossomApi.Services
             }
         }
 
+        public async Task DeleteImageAsync(string fileName)
+        {
+            string url = GetBunnyCDNUrl(fileName);
+
+            var httpClient = new BunnyCdnHttpClient();
+            var deleteResponse = await httpClient.DeleteAsync(url);
+
+            if (!deleteResponse.IsSuccessStatusCode)
+            {
+                throw new Exception("Failed to delete image from BunnyCDN.");
+            }
+        }
+
         private string GetBunnyCDNUrl(string fileName)
         {
             return $"https://storage.bunnycdn.com/{STORAGE_ZONE_NAME}/{fileName}";

@@ -14,6 +14,8 @@ namespace BlossomApi.Extensions
             services.AddScoped<ProductImageService>();
             services.AddScoped<ProductImportService>();
             services.AddScoped<ProductRecommendationService>();
+            services.AddScoped<ProductUpdateService>();
+            services.AddScoped<ProductCreateService>();
         }
     }
 }

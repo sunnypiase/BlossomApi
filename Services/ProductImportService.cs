@@ -53,10 +53,10 @@ namespace BlossomApi.Services
                                 AvailableAmount = int.Parse(worksheet.Cells[row, 7].Value?.ToString() ?? "0"),
                                 Article = worksheet.Cells[row, 8].Value?.ToString(),
                                 Description = worksheet.Cells[row, 9].Value?.ToString(),
-                                CategoryIds = worksheet.Cells[row, 10].Value?.ToString()
-                                    ?.Split(',')
-                                    .Select(int.Parse)
-                                    .ToList() ?? new List<int>(),
+                                //CategoryIds = worksheet.Cells[row, 10].Value?.ToString()
+                                //    ?.Split(',')
+                                //    .Select(int.Parse)
+                                //    .ToList() ?? new List<int>(),
                             };
 
                             var product = new Product();
@@ -90,23 +90,23 @@ namespace BlossomApi.Services
             product.InStock = (productDto?.AvailableAmount ?? product.AvailableAmount) > 0;
             product.AvailableAmount = productDto?.AvailableAmount ?? product.AvailableAmount;
             product.Article = productDto?.Article ?? product.Article;
-            product.DieNumbers = productDto?.DieNumbers ?? product.DieNumbers;
+           // product.DieNumbers = productDto?.DieNumbers ?? product.DieNumbers;
             product.Description = productDto?.Description ?? product.Description;
             product.Images ??= new(); // Ensure Images is not null
 
             // Update categories
-            if (productDto?.CategoryIds != null)
-            {
-                product.Categories.Clear();
-                foreach (var categoryId in productDto.CategoryIds)
-                {
-                    var category = _context.Categories.Find(categoryId);
-                    if (category != null)
-                    {
-                        product.Categories.Add(category);
-                    }
-                }
-            }
+            //if (productDto?.CategoryIds != null)
+            //{
+            //    product.Categories.Clear();
+            //    foreach (var categoryId in productDto.CategoryIds)
+            //    {
+            //        var category = _context.Categories.Find(categoryId);
+            //        if (category != null)
+            //        {
+            //            product.Categories.Add(category);
+            //        }
+            //    }
+            //}
         }
     }
 }

@@ -31,7 +31,24 @@ namespace BlossomApi.Controllers
             return Ok(new { FileName = fileName });
         }
 
+        // DELETE: api/images/delete/{fileName}
+        [HttpDelete("delete/{fileName}")]
+        public async Task<IActionResult> DeleteImage(string fileName)
+        {
+            if (string.IsNullOrWhiteSpace(fileName))
+            {
+                return BadRequest("File name is required.");
+            }
 
-        
+            try
+            {
+                await _imageService.DeleteImageAsync(fileName);
+                return Ok(new { Message = "Image deleted successfully." });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, new { Message = ex.Message });
+            }
+        }
     }
 }
