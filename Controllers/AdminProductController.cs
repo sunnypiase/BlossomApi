@@ -6,6 +6,8 @@ using BlossomApi.Dtos;
 using BlossomApi.Services;
 using System.Linq.Expressions;
 using System.Linq;
+using AutoMapper.QueryableExtensions;
+using AutoMapper;
 
 namespace BlossomApi.Controllers
 {
@@ -15,11 +17,16 @@ namespace BlossomApi.Controllers
     {
         private readonly BlossomContext _context;
         private readonly ProductQueryService _productQueryService;
+        private readonly IMapper _mapper;
 
-        public AdminProductController(BlossomContext context, ProductQueryService productQueryService)
+        public AdminProductController(
+            BlossomContext context,
+            ProductQueryService productQueryService,
+            IMapper mapper)
         {
             _context = context;
             _productQueryService = productQueryService;
+            _mapper = mapper;
         }
 
         // POST: api/AdminProduct/ToggleIsNew/{id}
@@ -84,7 +91,7 @@ namespace BlossomApi.Controllers
             var products = await query
                 .Skip(request.Start)
                 .Take(request.Amount)
-                .Select(p => MapToProductResponseDto(p))
+                .ProjectTo<ProductResponseDto>(_mapper.ConfigurationProvider)
                 .ToListAsync();
 
             var response = new GetProductsByFilterResponse
@@ -94,43 +101,6 @@ namespace BlossomApi.Controllers
             };
 
             return Ok(response);
-        }
-
-        private static ProductResponseDto MapToProductResponseDto(Product p)
-        {
-            return new ProductResponseDto
-            {
-                Id = p.ProductId,
-                Name = p.Name,
-                NameEng = p.NameEng,
-                Amount = p.AvailableAmount,
-                Images = p.Images,
-                Brand = p.Brand,
-                Price = p.Price,
-                Discount = p.Discount,
-                IsNew = p.IsNew,
-                Rating = p.Rating,
-                NumberOfReviews = p.NumberOfReviews,
-                NumberOfPurchases = p.NumberOfPurchases,
-                NumberOfViews = p.NumberOfViews,
-                Article = p.Article,
-                Categories = p.Categories.Select(c => new CategoryResponseDto { CategoryId = c.CategoryId, Name = c.Name, ParentCategoryId = c.ParentCategoryId }).ToList(),
-                DieNumbers = p.DieNumbers,
-                Reviews = p.Reviews.Select(r => new ReviewDto
-                {
-                    Name = r.Name,
-                    Review = r.ReviewText,
-                    Rating = r.Rating,
-                    Date = r.Date.ToString("dd.MM.yyyy")
-                }).ToList(),
-                Characteristics = p.Characteristics.Select(c => new CharacteristicDto
-                {
-                    Title = c.Title,
-                    Desc = c.Desc
-                }).ToList(),
-                Description = p.Description,
-                InStock = p.InStock
-            };
         }
     }
 }

@@ -1,3 +1,5 @@
+using AutoMapper;
+using AutoMapper.QueryableExtensions;
 using BlossomApi.DB;
 using BlossomApi.Dtos;
 using BlossomApi.Models;
@@ -22,6 +24,7 @@ namespace BlossomApi.Controllers
         private readonly ProductImageService _productImageService;
         private readonly ProductImportService _productImportService;
         private readonly ProductRecommendationService _productRecommendationService;
+        private readonly IMapper _mapper;
 
         public ProductController(
             BlossomContext context,
@@ -32,7 +35,8 @@ namespace BlossomApi.Controllers
             ProductQueryService productQueryService,
             ProductImageService productImageService,
             ProductImportService productImportService,
-            ProductRecommendationService productRecommendationService)
+            ProductRecommendationService productRecommendationService,
+            IMapper mapper)
         {
             _context = context;
             _categoryService = categoryService;
@@ -43,18 +47,16 @@ namespace BlossomApi.Controllers
             _productImageService = productImageService;
             _productImportService = productImportService;
             _productRecommendationService = productRecommendationService;
+            _mapper = mapper;
         }
 
-        // GET: api/Product
         [HttpGet]
         public async Task<ActionResult<IEnumerable<ProductResponseDto>>> GetProducts()
         {
-            return await _context.Products
-                .Select(p => MapToProductResponseDto(p))
-                .ToListAsync();
+            var products = await _context.Products.ToListAsync();
+            return Ok(_mapper.Map<IEnumerable<ProductResponseDto>>(products));
         }
 
-        // GET: api/Product/{id}
         [HttpGet("{id:int}")]
         public async Task<ActionResult<ProductResponseDto>> GetProduct(int id)
         {
@@ -69,10 +71,9 @@ namespace BlossomApi.Controllers
                 return NotFound();
             }
 
-            return Ok(MapToProductResponseDto(product));
+            return Ok(_mapper.Map<ProductResponseDto>(product));
         }
 
-        // GET: api/Product/ByIds
         [HttpGet("ByIds")]
         public ActionResult<IEnumerable<ProductResponseDto>> GetProductByIds([FromQuery] List<int> ids)
         {
@@ -88,7 +89,7 @@ namespace BlossomApi.Controllers
                 return NotFound();
             }
 
-            return Ok(products.Select(MapToProductResponseDto));
+            return Ok(_mapper.Map<IEnumerable<ProductResponseDto>>(products));
         }
 
         [HttpGet("AlsoBought/{id:int}")]
@@ -103,7 +104,6 @@ namespace BlossomApi.Controllers
             return Ok(products);
         }
 
-        // POST: api/Product/GetProductsByFilter
         [HttpPost("GetProductsByFilter")]
         public async Task<ActionResult<GetProductsByFilterResponse>> GetProductsByFilter(GetProductsByFilterRequestDto request)
         {
@@ -124,7 +124,7 @@ namespace BlossomApi.Controllers
             var products = await query
                 .Skip(request.Start)
                 .Take(request.Amount)
-                .Select(p => MapToProductResponseDto(p))
+                .ProjectTo<ProductResponseDto>(_mapper.ConfigurationProvider)
                 .ToListAsync();
 
             var response = new GetProductsByFilterResponse
@@ -136,7 +136,6 @@ namespace BlossomApi.Controllers
             return Ok(response);
         }
 
-        // POST: api/Product
         [HttpPost]
         public async Task<ActionResult<ProductResponseDto>> PostProduct([FromBody] ProductCreateDto productDto)
         {
@@ -146,7 +145,7 @@ namespace BlossomApi.Controllers
             _context.Products.Add(product);
             await _context.SaveChangesAsync();
 
-            var productResponse = MapToProductResponseDto(product);
+            var productResponse = _mapper.Map<ProductResponseDto>(product);
             return CreatedAtAction(nameof(GetProduct), new { id = product.ProductId }, productResponse);
         }
 
@@ -182,7 +181,6 @@ namespace BlossomApi.Controllers
             }
         }
 
-        // PUT: api/Product/5
         [HttpPut("{id}")]
         public async Task<IActionResult> PutProduct(int id, [FromBody] ProductCreateDto productDto)
         {
@@ -215,7 +213,6 @@ namespace BlossomApi.Controllers
             return Ok();
         }
 
-        // DELETE: api/Product/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteProduct(int id)
         {
@@ -278,7 +275,6 @@ namespace BlossomApi.Controllers
                 product.Images ??= new(); // Ensure Images is not null
             }
 
-            // Update categories
             if (productDto?.CategoryIds != null)
             {
                 product.Categories.Clear();
@@ -292,44 +288,8 @@ namespace BlossomApi.Controllers
                 }
             }
         }
-
-        private static ProductResponseDto MapToProductResponseDto(Product p)
-        {
-            return new ProductResponseDto
-            {
-                Id = p.ProductId,
-                Name = p.Name,
-                NameEng = p.NameEng,
-                Amount = p.AvailableAmount,
-                Images = p.Images,
-                Brand = p.Brand,
-                Price = p.Price,
-                Discount = p.Discount,
-                IsNew = p.IsNew,
-                Rating = p.Rating,
-                NumberOfReviews = p.NumberOfReviews,
-                NumberOfPurchases = p.NumberOfPurchases,
-                NumberOfViews = p.NumberOfViews,
-                Article = p.Article,
-                Categories = p.Categories.Select(c => new CategoryResponseDto { CategoryId = c.CategoryId, Name = c.Name, ParentCategoryId = c.ParentCategoryId }).ToList(),
-                DieNumbers = p.DieNumbers,
-                Reviews = p.Reviews.Select(r => new ReviewDto
-                {
-                    Name = r.Name,
-                    Review = r.ReviewText,
-                    Rating = r.Rating,
-                    Date = r.Date.ToString("dd.MM.yyyy")
-                }).ToList(),
-                Characteristics = p.Characteristics.Select(c => new CharacteristicDto
-                {
-                    Title = c.Title,
-                    Desc = c.Desc
-                }).ToList(),
-                Description = p.Description,
-                InStock = p.InStock
-            };
-        }
     }
+
     public class FileModel
     {
         public IFormFile ExcelFile { get; set; }

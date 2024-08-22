@@ -11,6 +11,8 @@ namespace BlossomApi.Dtos
         public decimal Price { get; set; }
         public decimal Discount { get; set; }
         public bool IsNew { get; set; }
+        public bool IsHit { get; set; }
+        public bool IsShown { get; set; }
         public double Rating { get; set; }
         public int NumberOfReviews { get; set; }
         public int NumberOfPurchases { get; set; }

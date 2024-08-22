@@ -1,3 +1,5 @@
+using AutoMapper;
+using AutoMapper.QueryableExtensions;
 using BlossomApi.DB;
 using BlossomApi.Dtos;
 using BlossomApi.Models;
@@ -14,35 +16,33 @@ namespace BlossomApi.Controllers
     {
         private readonly BlossomContext _context;
         private readonly IShownProductRepository _shownProductRepository;
+        private readonly IMapper _mapper;
 
-        public HomePageController(BlossomContext context, IShownProductRepository shownProductRepository)
+        public HomePageController(BlossomContext context, IShownProductRepository shownProductRepository, IMapper mapper)
         {
             _context = context;
             _shownProductRepository = shownProductRepository;
+            _mapper = mapper;
         }
 
-        // GET: api/HomePage/New
         [HttpGet("New")]
         public async Task<ActionResult<IEnumerable<ProductResponseDto>>> GetNewProducts()
         {
             return await GetProductsAsync(p => p.IsNew, 10, "New products not found");
         }
 
-        // GET: api/HomePage/Discounts
         [HttpGet("Discounts")]
         public async Task<ActionResult<IEnumerable<ProductResponseDto>>> GetDiscountedProducts()
         {
             return await GetProductsAsync(p => p.Discount > 0, 10, "Discounted products not found");
         }
 
-        // GET: api/HomePage/Popular
         [HttpGet("Popular")]
         public async Task<ActionResult<IEnumerable<ProductResponseDto>>> GetPopularProducts()
         {
             return await GetProductsAsync(p => p.IsHit, 10, "Popular products not found", orderBy: p => p.OrderByDescending(p => p.Rating));
         }
 
-        // GET: api/HomePage/PopularByCategory/5
         [HttpGet("PopularByCategory/{categoryId}")]
         public async Task<ActionResult<IEnumerable<ProductResponseDto>>> GetPopularProductsByCategory(int categoryId)
         {
@@ -71,39 +71,7 @@ namespace BlossomApi.Controllers
 
             var products = await query
                 .Take(take)
-                .Select(p => new ProductResponseDto
-                {
-                    Id = p.ProductId,
-                    Name = p.Name,
-                    NameEng = p.NameEng,
-                    Amount = p.AvailableAmount,
-                    Images = p.Images,
-                    Brand = p.Brand,
-                    Price = p.Price,
-                    Discount = p.Discount,
-                    IsNew = p.IsNew,
-                    Rating = p.Rating,
-                    NumberOfReviews = p.NumberOfReviews,
-                    NumberOfPurchases = p.NumberOfPurchases,
-                    NumberOfViews = p.NumberOfViews,
-                    Article = p.Article,
-                    Categories = p.Categories.Select(c => new CategoryResponseDto { CategoryId = c.CategoryId, Name = c.Name, ParentCategoryId = c.ParentCategoryId }).ToList(),
-                    DieNumbers = p.DieNumbers,
-                    Reviews = p.Reviews.Select(r => new ReviewDto
-                    {
-                        Name = r.Name,
-                        Review = r.ReviewText,
-                        Rating = r.Rating,
-                        Date = r.Date.ToString("dd.MM.yyyy")
-                    }).ToList(),
-                    Characteristics = p.Characteristics.Select(c => new CharacteristicDto
-                    {
-                        Title = c.Title,
-                        Desc = c.Desc
-                    }).ToList(),
-                    Description = p.Description,
-                    InStock = p.InStock
-                })
+                .ProjectTo<ProductResponseDto>(_mapper.ConfigurationProvider)
                 .ToListAsync();
 
             if (products == null || products.Count == 0)

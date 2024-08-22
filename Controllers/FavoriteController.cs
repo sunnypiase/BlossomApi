@@ -6,6 +6,7 @@ using BlossomApi.Dtos;
 using BlossomApi.Repositories;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
+using AutoMapper;
 
 namespace BlossomApi.Controllers
 {
@@ -16,12 +17,18 @@ namespace BlossomApi.Controllers
         private readonly BlossomContext _context;
         private readonly IShownProductRepository _shownProductRepository;
         private readonly UserManager<IdentityUser> _userManager;
+        private readonly IMapper _mapper;
 
-        public FavoriteController(BlossomContext context, IShownProductRepository shownProductRepository, UserManager<IdentityUser> userManager)
+        public FavoriteController(
+            BlossomContext context,
+            IShownProductRepository shownProductRepository,
+            UserManager<IdentityUser> userManager,
+            IMapper mapper)
         {
             _context = context;
             _shownProductRepository = shownProductRepository;
             _userManager = userManager;
+            _mapper = mapper;
         }
 
         [Authorize]
@@ -70,7 +77,6 @@ namespace BlossomApi.Controllers
         }
 
         [Authorize]
-        // GET: api/Favorite
         [HttpGet]
         public async Task<ActionResult<IEnumerable<ProductResponseDto>>> GetFavoriteProducts()
         {
@@ -80,47 +86,11 @@ namespace BlossomApi.Controllers
                 .FirstOrDefaultAsync(u => u.UserId == userId);
             if (user == null) return NotFound("User not found");
 
-            var favoriteProducts = user.FavoriteProducts.Select(p => MapToProductResponseDto(p)).ToList();
+            var favoriteProducts = _mapper.Map<List<ProductResponseDto>>(user.FavoriteProducts);
 
             return Ok(favoriteProducts);
         }
 
-        private static ProductResponseDto MapToProductResponseDto(Product p)
-        {
-            return new ProductResponseDto
-            {
-                Id = p.ProductId,
-                Name = p.Name,
-                NameEng = p.NameEng,
-                Amount = p.AvailableAmount,
-                Images = p.Images,
-                Brand = p.Brand,
-                Price = p.Price,
-                Discount = p.Discount,
-                IsNew = p.IsNew,
-                Rating = p.Rating,
-                NumberOfReviews = p.NumberOfReviews,
-                NumberOfPurchases = p.NumberOfPurchases,
-                NumberOfViews = p.NumberOfViews,
-                Article = p.Article,
-                Categories = p.Categories.Select(c => new CategoryResponseDto { CategoryId = c.CategoryId, Name = c.Name, ParentCategoryId = c.ParentCategoryId }).ToList(),
-                DieNumbers = p.DieNumbers,
-                Reviews = p.Reviews.Select(r => new ReviewDto
-                {
-                    Name = r.Name,
-                    Review = r.ReviewText,
-                    Rating = r.Rating,
-                    Date = r.Date.ToString("dd.MM.yyyy")
-                }).ToList(),
-                Characteristics = p.Characteristics.Select(c => new CharacteristicDto
-                {
-                    Title = c.Title,
-                    Desc = c.Desc
-                }).ToList(),
-                Description = p.Description,
-                InStock = p.InStock
-            };
-        }
         private async Task<SiteUser?> GetCurrentUserAsync()
         {
             var identityUserId = _userManager.GetUserId(User);
