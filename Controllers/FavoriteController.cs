@@ -58,7 +58,7 @@ namespace BlossomApi.Controllers
 
         [Authorize]
         // DELETE: api/Favorite/Remove/{productId}
-        [HttpDelete("/Remove/{productId}")]
+        [HttpDelete("Remove/{productId}")]
         public async Task<IActionResult> RemoveFavoriteProduct(int productId)
         {
             var userId = (await GetCurrentUserAsync())?.UserId;
