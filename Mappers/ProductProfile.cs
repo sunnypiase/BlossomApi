@@ -1,6 +1,8 @@
 ﻿using AutoMapper;
 using BlossomApi.Dtos;
+using BlossomApi.Dtos.Characteristic;
 using BlossomApi.Models;
+using System.Reflection.PortableExecutable;
 
 public class ProductProfile : Profile
 {
@@ -35,7 +37,8 @@ public class ProductProfile : Profile
             .ForMember(dest => dest.Characteristics, opt => opt.MapFrom(src => src.Characteristics.Select(c => new CharacteristicDto
             {
                 Title = c.Title,
-                Desc = c.Desc
+                Desc = c.Desc,
+                CharacteristicId = c.CharacteristicId
             }).ToList()));
 
         CreateMap<ProductUpdateDto, Product>()
@@ -104,10 +107,5 @@ public class ProductProfile : Profile
             .ForMember(dest => dest.CategoryId, opt => opt.MapFrom(src => src.CategoryId))
             .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Name))
             .ForMember(dest => dest.ParentCategoryId, opt => opt.MapFrom(src => src.ParentCategoryId));
-
-        // Map from Characteristic to CharacteristicDto
-        CreateMap<Characteristic, CharacteristicDto>()
-            .ForMember(dest => dest.Title, opt => opt.MapFrom(src => src.Title))
-            .ForMember(dest => dest.Desc, opt => opt.MapFrom(src => src.Desc));
     }
 }

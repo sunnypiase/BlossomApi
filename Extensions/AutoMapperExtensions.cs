@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using System.Reflection;
 
 namespace BlossomApi.Extensions
 {
@@ -6,7 +7,7 @@ namespace BlossomApi.Extensions
     {
         public static void AddAutoMapperProfiles(this IServiceCollection services)
         {
-            services.AddAutoMapper(typeof(ProductProfile));
+            services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
         }
     }
 }

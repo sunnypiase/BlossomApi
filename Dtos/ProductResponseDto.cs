@@ -1,3 +1,5 @@
+using BlossomApi.Dtos.Characteristic;
+
 namespace BlossomApi.Dtos
 {
     public class ProductResponseDto
