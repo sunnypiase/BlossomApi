@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using BlossomApi.Dtos.Characteristic;
+using System.Reflection.PortableExecutable;
 
 namespace BlossomApi.Controllers
 {
@@ -101,15 +102,22 @@ namespace BlossomApi.Controllers
 
         // GET: api/Characteristic/search/{name}
         [HttpGet("search")]
-        public async Task<ActionResult<IEnumerable<CharacteristicDto>>> SearchCharacteristicsByName(string? name)
+        public async Task<ActionResult<IEnumerable<string>>> SearchCharacteristicsByName(string? name)
         {
-            var characteristics = name != null ? await _context.Characteristics
-                .Where(c => c.Title.ToLower().Contains(name.ToLower()))
-                .ToListAsync()
-            : await _context.Characteristics
-                .ToListAsync();
+            var characteristics = name != null
+                ? (await _context.Characteristics
+                    .Where(c => c.Title.ToLower().Contains(name.ToLower()))
+                    .ToListAsync())
+                    .DistinctBy(c => c.Title)
+                : (await _context.Characteristics
+                    .ToListAsync())
+                    .DistinctBy(c => c.Title);
 
-            return Ok(_mapper.Map<IEnumerable<CharacteristicDto>>(characteristics));
+            var values = characteristics
+                .Select(c => c.Title )
+                .ToList();
+
+            return Ok(values);
         }
 
         // GET: api/Characteristic/{id}/values
