@@ -61,7 +61,8 @@ namespace BlossomApi.Controllers
             {
                 return new FilterPanelResponseDto
                 {
-                    Categories = categoryTree
+                    Categories = categoryTree,
+                    Characteristics = new List<FilterPanelCharacteristicDto>()
                 };
             }
             var characteristics = products
