@@ -69,11 +69,12 @@ namespace BlossomApi.Controllers
                 query = orderBy(query);
             }
 
-            var products = await query
+            var productsCroped = await query
                 .Take(take)
-                .ProjectTo<ProductResponseDto>(_mapper.ConfigurationProvider)
                 .ToListAsync();
 
+
+             var products = _mapper.Map<List<ProductResponseDto>>(productsCroped);
             if (products == null || products.Count == 0)
             {
                 return NotFound(notFoundMessage);
