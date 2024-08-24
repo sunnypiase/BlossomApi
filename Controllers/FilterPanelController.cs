@@ -57,7 +57,13 @@ namespace BlossomApi.Controllers
                 .Include(p => p.Categories)
                 .Where(p => p.Categories.Any(c => categoryIds.Contains(c.CategoryId)))
                 .ToListAsync();
-
+            if (products == null || !products.Any())
+            {
+                return new FilterPanelResponseDto
+                {
+                    Categories = categoryTree
+                };
+            }
             var characteristics = products
                 .SelectMany(p => p.Characteristics)
                 .GroupBy(c => c.Title)

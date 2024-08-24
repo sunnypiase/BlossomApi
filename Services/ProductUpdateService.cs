@@ -74,7 +74,6 @@ namespace BlossomApi.Services
             {
                 product.AdditionalCategories = additionalCategories;
             }
-            product.InStock = product.AvailableAmount > 0;
             _context.Entry(product).State = EntityState.Modified;
             await _context.SaveChangesAsync();
             return true;

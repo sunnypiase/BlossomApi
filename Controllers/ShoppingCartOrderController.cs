@@ -164,14 +164,13 @@ namespace BlossomApi.Controllers
 
         private Product UpdateProductStockAfterAdd(Product product, int requestedAmount)
         {
-            product.AvailableAmount -= requestedAmount;
-
-            product.InStock = product.AvailableAmount switch
+            int avilableAmount = product.AvailableAmount - requestedAmount;
+            if (avilableAmount < 0)
             {
-                0 => false,
-                < 0 => throw new InvalidOperationException("Недостатня кількість товару на складі."),
-                _ => product.InStock
-            };
+                throw new InvalidOperationException("Недостатня кількість товару на складі.");
+            }
+
+            product.AvailableAmount = avilableAmount;
 
             return product;
         }

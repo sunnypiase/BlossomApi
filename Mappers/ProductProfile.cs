@@ -36,8 +36,7 @@ public class ProductProfile : Profile
             {
                 Title = c.Title,
                 Desc = c.Desc
-            }).ToList()))
-            .ForMember(dest => dest.InStock, opt => opt.MapFrom(src => src.InStock));
+            }).ToList()));
 
         CreateMap<ProductUpdateDto, Product>()
             .ForMember(dest => dest.Name, opt => opt.Condition(src => src.Name != null))
