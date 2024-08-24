@@ -27,7 +27,7 @@ namespace BlossomApi.Dtos
         public string Description { get; set; }
         public bool InStock { get; set; }
         public string Ingridients { get; set; }
-        public string? MetaKeys { get; set; }
-        public string? MetaDescription { get; set; }
+        public string MetaKeys { get; set; }
+        public string MetaDescription { get; set; }
     }
 }
