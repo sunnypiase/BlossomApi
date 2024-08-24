@@ -27,20 +27,25 @@ namespace BlossomApi.Services
                 query = query.Where(p => p.Name.Contains(request.SearchTerm) || p.NameEng.Contains(request.SearchTerm));
             }
 
-            // Filter by category and characteristics
-            if (request.CategoryId != null)
+            // Filter by multiple categories
+            if (request.CategoryIds != null && request.CategoryIds.Count > 0)
             {
-                var rootCategory = await _context.Categories
-                    .FirstOrDefaultAsync(c => c.CategoryId == request.CategoryId);
+                var allCategoryIds = new List<int>();
 
-                if (rootCategory != null)
+                foreach (var categoryId in request.CategoryIds)
                 {
-                    var allCategories = new List<Category> { rootCategory };
-                    allCategories.AddRange(await _categoryService.GetAllChildCategoriesAsync(rootCategory.CategoryId));
+                    var rootCategory = await _context.Categories
+                        .FirstOrDefaultAsync(c => c.CategoryId == categoryId);
 
-                    var categoryIds = allCategories.Select(c => c.CategoryId).ToList();
-                    query = query.Where(p => p.Categories.Any(c => categoryIds.Contains(c.CategoryId)));
+                    if (rootCategory != null)
+                    {
+                        var allCategories = new List<Category> { rootCategory };
+                        allCategories.AddRange(await _categoryService.GetAllChildCategoriesAsync(rootCategory.CategoryId));
+                        allCategoryIds.AddRange(allCategories.Select(c => c.CategoryId));
+                    }
                 }
+
+                query = query.Where(p => p.Categories.Any(c => allCategoryIds.Contains(c.CategoryId)));
             }
 
             if (request.SelectedCharacteristics != null && request.SelectedCharacteristics.Count != 0)
@@ -97,7 +102,7 @@ namespace BlossomApi.Services
                     {
                         "name" => sortDescending ? query.OrderByDescending(p => p.Name) : query.OrderBy(p => p.Name),
                         "discount" => sortDescending ? query.OrderByDescending(p => p.Discount) : query.OrderBy(p => p.Discount),
-                        "category" => sortDescending ? query.OrderByDescending(p => p.Categories.FirstOrDefault().Name) : query.OrderBy(p => p.Categories.FirstOrDefault().Name),
+                        "category" => sortDescending ? query.OrderByDescending(p => p.MainCategory.Name) : query.OrderBy(p => p.MainCategory.Name),
                         "price" => sortDescending ? query.OrderByDescending(p => p.Price) : query.OrderBy(p => p.Price),
                         "stock" => sortDescending ? query.OrderByDescending(p => p.AvailableAmount) : query.OrderBy(p => p.AvailableAmount),
                         "popularity" => sortDescending ? query.OrderByDescending(p => p.NumberOfPurchases) : query.OrderBy(p => p.NumberOfPurchases),
