@@ -93,6 +93,8 @@ namespace BlossomApi.Models
         public string? PensionFundLetter { get; set; } // Літера ставки збору ПФ + 
         public decimal? DocumentQuantity { get; set; } // Кількість згідно документу +
         public decimal? ActualQuantity { get; set; } // Фактична кількість +
+        public string? MetaKeys { get; set; }
+        public string? MetaDescription { get; set; }
 
         // Navigation properties
         public ICollection<Category> Categories { get; set; } = new List<Category>();

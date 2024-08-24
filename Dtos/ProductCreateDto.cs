@@ -66,5 +66,7 @@ namespace BlossomApi.Dtos
         public string? PensionFundLetter { get; set; }
         public decimal? DocumentQuantity { get; set; }
         public decimal? ActualQuantity { get; set; }
+        public string? MetaKeys { get; set; }
+        public string? MetaDescription { get; set; }
     }
 }

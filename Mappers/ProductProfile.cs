@@ -65,6 +65,8 @@ public class ProductProfile : Profile
             .ForMember(dest => dest.PensionFundRate, opt => opt.Condition(src => src.PensionFundRate.HasValue))
             .ForMember(dest => dest.VATLetter, opt => opt.Condition(src => src.VATLetter != null))
             .ForMember(dest => dest.ExciseTaxLetter, opt => opt.Condition(src => src.ExciseTaxLetter != null))
+            .ForMember(dest => dest.MetaKeys, opt => opt.Condition(src => src.MetaKeys != null))
+            .ForMember(dest => dest.MetaDescription, opt => opt.Condition(src => src.MetaDescription != null))
             .ForMember(dest => dest.PensionFundLetter, opt => opt.Condition(src => src.PensionFundLetter != null))
             .ForMember(dest => dest.DocumentQuantity, opt => opt.Condition(src => src.DocumentQuantity.HasValue))
             .ForMember(dest => dest.ActualQuantity, opt => opt.Condition(src => src.ActualQuantity.HasValue))

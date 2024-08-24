@@ -12,9 +12,10 @@ namespace BlossomApi.Controllers
         private readonly BlossomContext _context;
         private readonly IShownProductRepository _shownProductRepository;
 
-        public SearchController(BlossomContext context)
+        public SearchController(BlossomContext context, IShownProductRepository shownProductRepository)
         {
             _context = context;
+            _shownProductRepository = shownProductRepository;
         }
 
         [HttpGet("products")]
@@ -25,8 +26,10 @@ namespace BlossomApi.Controllers
                 return BadRequest("Query string cannot be empty.");
             }
 
+            var normalizedQuery = query.ToLower();
+
             var result = await _shownProductRepository.GetProducts()
-                .Where(p => p.Name.Contains(query) || p.NameEng.Contains(query))
+                .Where(p => p.Name.ToLower().Contains(normalizedQuery) || p.NameEng.ToLower().Contains(normalizedQuery))
                 .OrderBy(p => p.Name)
                 .ThenBy(p => p.Rating)
                 .Take(10)
@@ -34,13 +37,14 @@ namespace BlossomApi.Controllers
                 {
                     Id = p.ProductId,
                     Name = p.Name,
-                    Image = p.Images.FirstOrDefault() // Assuming Images is a list of image URLs
+                    Image = p.Images != null && p.Images.Any() ? p.Images.FirstOrDefault() : null
                 })
                 .ToListAsync();
 
             return Ok(result);
         }
     }
+
     public class ProductSearchResultDto
     {
         public int Id { get; set; }

@@ -1,112 +1,134 @@
-﻿using BlossomApi.Models;
-using BlossomApi.DB;
-using OfficeOpenXml;
-using Microsoft.AspNetCore.Http;
-using System.IO;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using OfficeOpenXml;
+using System.Globalization;
 using BlossomApi.Dtos;
+using BlossomApi.Models;
 
 namespace BlossomApi.Services
 {
     public class ProductImportService
     {
-        private readonly BlossomContext _context;
+        private readonly ProductCreateService _productCreateService;
 
-        public ProductImportService(BlossomContext context)
+        public ProductImportService(ProductCreateService productCreateService)
         {
-            _context = context;
+            _productCreateService = productCreateService;
         }
 
-        public async Task<List<int>> ImportFromExcelAsync(IFormFile excelFile)
+        public async Task<(bool IsSuccess, string ErrorMessage, List<int> ProductIds)> ImportProductsFromExcelAsync(Stream excelStream)
         {
-            if (excelFile == null || excelFile.Length == 0)
-            {
-                throw new ArgumentException("No file uploaded or file is empty.");
-            }
+            var productsToCreate = new List<ProductCreateDto>();
+            var rowErrors = new List<string>();
 
-            var productIds = new List<int>();
+            using var package = new ExcelPackage(excelStream);
+            var worksheet = package.Workbook.Worksheets[0];
 
-            try
+            for (int row = 2; row <= worksheet.Dimension.Rows; row++) // Assuming first row is header
             {
-                using (var stream = new MemoryStream())
+                try
                 {
-                    await excelFile.CopyToAsync(stream);
-                    using (var package = new ExcelPackage(stream))
+                    var productCreateDto = new ProductCreateDto
                     {
-                        var worksheet = package.Workbook.Worksheets[0];
-                        var rowCount = worksheet.Dimension.Rows;
+                        Article = GetValueOrNull(worksheet.Cells[row, 1]),
+                        Name = GetValueOrNull(worksheet.Cells[row, 2]),
+                        NameEng = GetValueOrNull(worksheet.Cells[row, 3]),
+                        Brand = GetValueOrNull(worksheet.Cells[row, 4]),
+                        Price = ParseDecimal(worksheet.Cells[row, 5], row, "Price", rowErrors),
+                        Discount = ParseDecimal(worksheet.Cells[row, 6], row, "Discount", rowErrors),
+                        IsNew = ParseBool(worksheet.Cells[row, 7], row, "IsNew", rowErrors),
+                        AvailableAmount = ParseInt(worksheet.Cells[row, 8], row, "AvailableAmount", rowErrors),
+                        IsHit = ParseBool(worksheet.Cells[row, 9], row, "IsHit", rowErrors),
+                        IsShown = ParseBool(worksheet.Cells[row, 10], row, "IsShown", rowErrors),
+                        Description = GetValueOrNull(worksheet.Cells[row, 11]),
+                        Ingridients = GetValueOrNull(worksheet.Cells[row, 12]),
+                        MainCategoryId = ParseInt(worksheet.Cells[row, 13], row, "MainCategoryId", rowErrors),
+                        PurchasePrice = ParseDecimal(worksheet.Cells[row, 14], row, "PurchasePrice", rowErrors),
+                        UnitOfMeasurement = GetValueOrNull(worksheet.Cells[row, 15]),
+                        ManufacturerBarcode = GetValueOrNull(worksheet.Cells[row, 16]),
+                        ActualQuantity = ParseDecimal(worksheet.Cells[row, 17], row, "ActualQuantity", rowErrors),
+                        DocumentQuantity = ParseDecimal(worksheet.Cells[row, 18], row, "DocumentQuantity", rowErrors),
+                        Group = GetValueOrNull(worksheet.Cells[row, 19]),
+                        Type = GetValueOrNull(worksheet.Cells[row, 20]),
+                        UKTZED = GetValueOrNull(worksheet.Cells[row, 21]),
+                        Markup = ParseDecimal(worksheet.Cells[row, 22], row, "Markup", rowErrors),
+                        VATRate = ParseDecimal(worksheet.Cells[row, 23], row, "VATRate", rowErrors),
+                        ExciseTaxRate = ParseDecimal(worksheet.Cells[row, 24], row, "ExciseTaxRate", rowErrors),
+                        PensionFundRate = ParseDecimal(worksheet.Cells[row, 25], row, "PensionFundRate", rowErrors),
+                        VATLetter = GetValueOrNull(worksheet.Cells[row, 26]),
+                        ExciseTaxLetter = GetValueOrNull(worksheet.Cells[row, 27]),
+                        PensionFundLetter = GetValueOrNull(worksheet.Cells[row, 28])
+                    };
 
-                        var products = new List<Product>();
-
-                        for (int row = 2; row <= rowCount; row++) // Assuming the first row is headers
-                        {
-                            var productDto = new ProductCreateDto
-                            {
-                                Name = worksheet.Cells[row, 1].Value?.ToString(),
-                                NameEng = worksheet.Cells[row, 2].Value?.ToString(),
-                                Brand = worksheet.Cells[row, 3].Value?.ToString(),
-                                Price = decimal.Parse(worksheet.Cells[row, 4].Value?.ToString() ?? "0"),
-                                Discount = decimal.Parse(worksheet.Cells[row, 5].Value?.ToString() ?? "0"),
-                                IsNew = bool.Parse(worksheet.Cells[row, 6].Value?.ToString() ?? "false"),
-                                AvailableAmount = int.Parse(worksheet.Cells[row, 7].Value?.ToString() ?? "0"),
-                                Article = worksheet.Cells[row, 8].Value?.ToString(),
-                                Description = worksheet.Cells[row, 9].Value?.ToString(),
-                                //CategoryIds = worksheet.Cells[row, 10].Value?.ToString()
-                                //    ?.Split(',')
-                                //    .Select(int.Parse)
-                                //    .ToList() ?? new List<int>(),
-                            };
-
-                            var product = new Product();
-                            UpdateProduct(product, productDto);
-                            products.Add(product);
-                        }
-
-                        _context.Products.AddRange(products);
-                        await _context.SaveChangesAsync();
-
-                        productIds = products.Select(p => p.ProductId).ToList();
+                    // Only add the product if there were no parsing errors for this row
+                    if (!rowErrors.Any(e => e.Contains($"Row {row}")))
+                    {
+                        productsToCreate.Add(productCreateDto);
                     }
                 }
-            }
-            catch (Exception ex)
-            {
-                throw new InvalidOperationException("Error during Excel import", ex);
+                catch (Exception ex)
+                {
+                    rowErrors.Add($"Error parsing row {row}: {ex.Message}");
+                }
             }
 
-            return productIds;
+            // If there were any row errors, return them without creating any products
+            if (rowErrors.Any())
+            {
+                return (false, string.Join("; ", rowErrors), null);
+            }
+
+            // Validate and create the batch of products
+            var (isSuccess, createdProducts, errorMessage) = await _productCreateService.CreateProductBatchAsync(productsToCreate);
+
+            if (!isSuccess)
+            {
+                return (false, errorMessage, null);
+            }
+
+            return (true, string.Empty, createdProducts.Select(x => x.Id).ToList());
         }
 
-        private void UpdateProduct(Product product, ProductCreateDto productDto)
+        private string? GetValueOrNull(ExcelRange cell)
         {
-            product.Name = productDto?.Name ?? product.Name;
-            product.NameEng = productDto?.NameEng ?? product.NameEng;
-            product.Brand = productDto?.Brand ?? product.Brand;
-            product.Price = productDto?.Price ?? product.Price;
-            product.Discount = productDto?.Discount ?? product.Discount;
-            product.IsNew = productDto?.IsNew ?? product.IsNew;
-            product.InStock = (productDto?.AvailableAmount ?? product.AvailableAmount) > 0;
-            product.AvailableAmount = productDto?.AvailableAmount ?? product.AvailableAmount;
-            product.Article = productDto?.Article ?? product.Article;
-           // product.DieNumbers = productDto?.DieNumbers ?? product.DieNumbers;
-            product.Description = productDto?.Description ?? product.Description;
-            product.Images ??= new(); // Ensure Images is not null
+            return string.IsNullOrEmpty(cell.Text) ? null : cell.Text;
+        }
 
-            // Update categories
-            //if (productDto?.CategoryIds != null)
-            //{
-            //    product.Categories.Clear();
-            //    foreach (var categoryId in productDto.CategoryIds)
-            //    {
-            //        var category = _context.Categories.Find(categoryId);
-            //        if (category != null)
-            //        {
-            //            product.Categories.Add(category);
-            //        }
-            //    }
-            //}
+        private decimal ParseDecimal(ExcelRange cell, int row, string columnName, List<string> rowErrors)
+        {
+            if (decimal.TryParse(cell.Text, NumberStyles.Any, CultureInfo.InvariantCulture, out var value))
+            {
+                return value;
+            }
+            else
+            {
+                rowErrors.Add($"Row {row}: Invalid decimal value in column '{columnName}'.");
+                return 0;
+            }
+        }
+
+        private int ParseInt(ExcelRange cell, int row, string columnName, List<string> rowErrors)
+        {
+            if (int.TryParse(cell.Text, out var value))
+            {
+                return value;
+            }
+            else
+            {
+                rowErrors.Add($"Row {row}: Invalid integer value in column '{columnName}'.");
+                return 0;
+            }
+        }
+
+        private bool ParseBool(ExcelRange cell, int row, string columnName, List<string> rowErrors)
+        {
+            if (bool.TryParse(cell.Text, out var value))
+            {
+                return value;
+            }
+            else
+            {
+                rowErrors.Add($"Row {row}: Invalid boolean value in column '{columnName}'.");
+                return false;
+            }
         }
     }
 }

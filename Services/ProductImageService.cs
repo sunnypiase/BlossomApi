@@ -50,7 +50,7 @@ namespace BlossomApi.Services
                 }
             }
 
-            product.Images.AddRange(uploadedImageUrls);
+            product.Images = [.. product.Images, .. uploadedImageUrls];
             _context.Entry(product).State = EntityState.Modified;
             await _context.SaveChangesAsync();
 

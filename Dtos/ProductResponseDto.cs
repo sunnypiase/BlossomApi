@@ -26,5 +26,8 @@ namespace BlossomApi.Dtos
         public List<CharacteristicDto> Characteristics { get; set; }
         public string Description { get; set; }
         public bool InStock { get; set; }
+        public string Ingridients { get; set; }
+        public string? MetaKeys { get; set; }
+        public string? MetaDescription { get; set; }
     }
 }

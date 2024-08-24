@@ -179,19 +179,58 @@ namespace BlossomApi.Controllers
         [HttpPost("ImportFromExcel")]
         public async Task<ActionResult<IEnumerable<int>>> ImportFromExcel([FromForm] FileModel fileModel)
         {
+            if (fileModel.ExcelFile == null || fileModel.ExcelFile.Length == 0)
+            {
+                return BadRequest("Invalid file.");
+            }
+
+            using var stream = fileModel.ExcelFile.OpenReadStream();
+            var (isSuccess, errorMessage, products) = await _productImportService.ImportProductsFromExcelAsync(stream);
+
+            if (!isSuccess)
+            {
+                return BadRequest(new { Message = "Failed to import products", Errors = errorMessage });
+            }
+
+            return Ok(new { Message = "Products imported successfully", Products = products });
+
+        }
+
+        // POST: api/AdminProduct/RemoveImage/{productId}
+        [HttpPost("RemoveImage/{productId}")]
+        public async Task<IActionResult> RemoveProductImage(int productId, [FromBody] string imageUrl)
+        {
+            var product = await _context.Products.FindAsync(productId);
+            if (product == null)
+            {
+                return NotFound();
+            }
+
+            if (string.IsNullOrEmpty(imageUrl) || !product.Images.Contains(imageUrl))
+            {
+                return BadRequest("Image URL is not valid or does not exist in the product's images.");
+            }
+            var remainingImages = product.Images.Where(i => i != imageUrl).ToList();
+            // Remove the image from the product's image list
+            product.Images = remainingImages;
+            _context.Entry(product).State = EntityState.Modified;
+
+            // Extract the filename from the URL
+            var fileName = imageUrl.Split('/').Last();
+
             try
             {
-                var productIds = await _productImportService.ImportFromExcelAsync(fileModel.ExcelFile);
-                return Ok(productIds);
+                // Delete the image from BunnyCDN
+                await _imageService.DeleteImageAsync(fileName);
             }
-            catch (ArgumentException ex)
+            catch (Exception ex)
             {
-                return BadRequest(ex.Message);
+                return StatusCode(500, $"Failed to delete image: {ex.Message}");
             }
-            catch (InvalidOperationException ex)
-            {
-                return StatusCode(500, ex.Message);
-            }
+
+            await _context.SaveChangesAsync();
+
+            return Ok(new { Message = "Image removed successfully." });
         }
 
         [HttpPut("{id}")]

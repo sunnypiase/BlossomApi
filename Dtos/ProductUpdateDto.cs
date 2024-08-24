@@ -35,5 +35,7 @@ namespace BlossomApi.Dtos
         public int? MainCategoryId { get; set; }
         public List<int>? AdditionalCategoryIds { get; set; }
         public List<int>? CharacteristicIds { get; set; }
+        public string? MetaKeys { get; set; }
+        public string? MetaDescription { get; set; }
     }
 }
