@@ -1,5 +1,6 @@
-using System.ComponentModel.DataAnnotations;
+using AutoMapper;
 using BlossomApi.DB;
+using BlossomApi.Dtos.Orders;
 using BlossomApi.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -14,11 +15,13 @@ namespace BlossomApi.Controllers
     {
         private readonly BlossomContext _context;
         private readonly UserManager<IdentityUser> _userManager;
+        private readonly IMapper _mapper;
 
-        public OrdersController(BlossomContext context, UserManager<IdentityUser> userManager)
+        public OrdersController(BlossomContext context, UserManager<IdentityUser> userManager, IMapper mapper)
         {
             _context = context;
             _userManager = userManager;
+            _mapper = mapper;
         }
 
         // GET: api/orders/user
@@ -37,10 +40,11 @@ namespace BlossomApi.Controllers
                 .Include(o => o.DeliveryInfo)
                 .Include(o => o.ShoppingCart)
                 .Where(o => o.ShoppingCart.SiteUserId == siteUser.UserId)
-                .Select(o => ToOrderDto(o))
                 .ToListAsync();
 
-            return Ok(orders);
+            var orderDtos = _mapper.Map<List<OrderDto>>(orders);
+
+            return Ok(orderDtos);
         }
 
         // GET: api/orders/statuses
@@ -53,10 +57,11 @@ namespace BlossomApi.Controllers
                 .Include(o => o.DeliveryInfo)
                 .Include(o => o.ShoppingCart)
                 .Where(o => statuses.Contains(o.Status))
-                .Select(o => ToOrderDto(o))
                 .ToListAsync();
 
-            return Ok(orders);
+            var orderDtos = _mapper.Map<List<OrderDto>>(orders);
+
+            return Ok(orderDtos);
         }
 
         // GET: api/orders
@@ -68,10 +73,11 @@ namespace BlossomApi.Controllers
                 .Include(o => o.Promocode)
                 .Include(o => o.DeliveryInfo)
                 .Include(o => o.ShoppingCart)
-                .Select(o => ToOrderDto(o))
                 .ToListAsync();
 
-            return Ok(orders);
+            var orderDtos = _mapper.Map<List<OrderDto>>(orders);
+
+            return Ok(orderDtos);
         }
 
         // GET: api/orders/user/{userId}
@@ -84,10 +90,11 @@ namespace BlossomApi.Controllers
                 .Include(o => o.DeliveryInfo)
                 .Include(o => o.ShoppingCart)
                 .Where(o => o.ShoppingCart.SiteUserId == userId)
-                .Select(o => ToOrderDto(o))
                 .ToListAsync();
 
-            return Ok(orders);
+            var orderDtos = _mapper.Map<List<OrderDto>>(orders);
+
+            return Ok(orderDtos);
         }
 
         // PUT: api/orders/{orderId}/status
@@ -104,70 +111,40 @@ namespace BlossomApi.Controllers
             order.Status = request.Status;
             await _context.SaveChangesAsync();
 
-            return Ok(ToOrderDto(order));
+            var orderDto = _mapper.Map<OrderDto>(order);
+
+            return Ok(orderDto);
+        }
+
+        // GET: api/orders/{orderId}
+        [Authorize]
+        [HttpGet("{orderId}")]
+        public async Task<IActionResult> GetOrderById(int orderId)
+        {
+            var order = await _context.Orders
+                .Include(o => o.Promocode)
+                .Include(o => o.DeliveryInfo)
+                .Include(o => o.ShoppingCart)
+                .ThenInclude(sc => sc.ShoppingCartProducts)
+                .ThenInclude(scp => scp.Product)
+                .FirstOrDefaultAsync(o => o.OrderId == orderId);
+
+            if (order == null)
+            {
+                return NotFound("Order not found.");
+            }
+
+            var orderDetailsDto = _mapper.Map<OrderDetailsDto>(order);
+
+            return Ok(orderDetailsDto);
         }
 
         private async Task<SiteUser?> GetCurrentUserAsync()
         {
             var identityUserId = _userManager.GetUserId(User);
-            return await _context.SiteUsers.FirstOrDefaultAsync(u => u.IdentityUserId == identityUserId);
+            return await _context.SiteUsers
+                .Include(u => u.IdentityUser)
+                .FirstOrDefaultAsync(u => u.IdentityUserId == identityUserId);
         }
-
-        private static OrderDto ToOrderDto(Order order) => new OrderDto
-        {
-            OrderId = order.OrderId,
-            OrderDate = order.OrderDate,
-            Status = order.Status,
-            Username = order.Username,
-            Surname = order.Surname,
-            Email = order.Email,
-            PhoneNumber = order.PhoneNumber,
-            DontCallMe = order.DontCallMe,
-            EcoPackaging = order.EcoPackaging,
-            TotalPrice = order.TotalPrice,
-            TotalDiscount = order.TotalDiscount,
-            TotalPriceWithDiscount = order.TotalPriceWithDiscount,
-            DiscountFromPromocode = order.DiscountFromPromocode,
-            DiscountFromProductAction = order.DiscountFromProductAction,
-            ShoppingCartId = order.ShoppingCartId,
-            PromocodeId = order.PromocodeId,
-            DeliveryInfo = order.DeliveryInfo != null ? new DeliveryInfoDto
-            {
-                City = order.DeliveryInfo.City,
-                DepartmentNumber = order.DeliveryInfo.DepartmentNumber
-            } : new DeliveryInfoDto()
-        };
-    }
-
-    public class ChangeOrderStatusRequest
-    {
-        [Required] public OrderStatus Status { get; set; }
-    }
-
-    public class OrderDto
-    {
-        public int OrderId { get; set; }
-        public DateTime OrderDate { get; set; }
-        public OrderStatus Status { get; set; }
-        public string Username { get; set; }
-        public string Surname { get; set; }
-        public string Email { get; set; }
-        public string PhoneNumber { get; set; }
-        public bool DontCallMe { get; set; }
-        public bool EcoPackaging { get; set; }
-        public decimal TotalPrice { get; set; }
-        public decimal TotalDiscount { get; set; }
-        public decimal TotalPriceWithDiscount { get; set; }
-        public decimal DiscountFromPromocode { get; set; }
-        public decimal DiscountFromProductAction { get; set; }
-        public int ShoppingCartId { get; set; }
-        public int? PromocodeId { get; set; }
-        public DeliveryInfoDto DeliveryInfo { get; set; }
-    }
-
-    public class DeliveryInfoDto
-    {
-        public string City { get; set; }
-        public string DepartmentNumber { get; set; }
     }
 }
