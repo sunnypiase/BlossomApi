@@ -100,33 +100,34 @@ namespace BlossomApi.Controllers
         }
 
         // GET: api/Characteristic/search/{name}
-        [HttpGet("search/{name}")]
-        public async Task<ActionResult<IEnumerable<CharacteristicDto>>> SearchCharacteristicsByName(string name)
+        [HttpGet("search")]
+        public async Task<ActionResult<IEnumerable<CharacteristicDto>>> SearchCharacteristicsByName(string? name)
         {
-            var characteristics = await _context.Characteristics
-                .Where(c => c.Title.Contains(name))
+            var characteristics = name != null ? await _context.Characteristics
+                .Where(c => c.Title.ToLower().Contains(name.ToLower()))
+                .ToListAsync()
+            : await _context.Characteristics
                 .ToListAsync();
 
             return Ok(_mapper.Map<IEnumerable<CharacteristicDto>>(characteristics));
         }
 
         // GET: api/Characteristic/{id}/values
-        [HttpGet("{id}/values")]
-        public async Task<ActionResult<IEnumerable<string>>> GetCharacteristicValues(int id)
+        [HttpGet("{Title}/values")]
+        public async Task<ActionResult<IEnumerable<string>>> GetCharacteristicValues(string Title)
         {
             var characteristic = await _context.Characteristics
-                .Include(c => c.Products)
-                .FirstOrDefaultAsync(c => c.CharacteristicId == id);
+                .Where(c => c.Title == Title)
+                .ToListAsync();
 
-            if (characteristic == null)
+            if (characteristic == null || characteristic.Count == 0)
             {
-                return NotFound();
+                return Ok();
             }
 
             // Assuming characteristic values are stored in Desc field for simplicity
-            var values = characteristic.Products
-                .Select(p => p.Description)
-                .Distinct()
+            var values = characteristic
+                .Select(c => new { Desc = c.Desc, Id = c.CharacteristicId })
                 .ToList();
 
             return Ok(values);
