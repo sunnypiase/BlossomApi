@@ -64,7 +64,16 @@ namespace BlossomApi.Models
         public decimal Price { get; set; } //+
         public decimal Discount { get; set; } // Percentage of discount +
         public double Rating { get; set; }//-
-        public int AvailableAmount { get; set; }// +
+        private int _availableAmount;
+        public int AvailableAmount
+        {
+            get => _availableAmount;
+            set
+            {
+                _availableAmount = value;
+                InStock = _availableAmount > 0;
+            }
+        }
         public int NumberOfReviews { get; set; }//-
         public int NumberOfPurchases { get; set; }//-
         public int NumberOfViews { get; set; }//-
@@ -72,7 +81,7 @@ namespace BlossomApi.Models
         public string DieNumbersSerialized { get; set; } = "[]"; // Serialized die numbers-
         public string Description { get; set; } //+
         public string? Ingridients { get; set; }//+
-        public bool InStock { get => AvailableAmount > 0; }//не треба
+        public bool InStock { get; set;  }//не треба
         public bool IsNew { get; set; } // +
         public bool IsHit { get; set; }// +
         public bool IsShown { get; set; } //+
