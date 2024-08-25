@@ -44,6 +44,7 @@ namespace BlossomApi.Mappers
                 }).ToList()));
 
             CreateMap<ProductUpdateDto, Product>()
+                .ForMember(dest => dest.MainCategoryId, opt => opt.Ignore())
                 .ForMember(dest => dest.Name, opt => opt.Condition(src => src.Name != null))
                 .ForMember(dest => dest.NameEng, opt => opt.Condition(src => src.NameEng != null))
                 .ForMember(dest => dest.Images, opt => opt.Condition(src => src.Images != null))
@@ -73,31 +74,7 @@ namespace BlossomApi.Mappers
                 .ForMember(dest => dest.MetaDescription, opt => opt.Condition(src => src.MetaDescription != null))
                 .ForMember(dest => dest.PensionFundLetter, opt => opt.Condition(src => src.PensionFundLetter != null))
                 .ForMember(dest => dest.DocumentQuantity, opt => opt.Condition(src => src.DocumentQuantity.HasValue))
-                .ForMember(dest => dest.ActualQuantity, opt => opt.Condition(src => src.ActualQuantity.HasValue))
-                .ForMember(dest => dest.MainCategory, opt => opt.MapFrom((src, dest, _, context) =>
-                {
-                    if (context.Items.TryGetValue("MainCategory", out object? value) && value is Category mainCategory)
-                    {
-                        return mainCategory;
-                    }
-                    return dest.MainCategory;
-                }))
-                .ForMember(dest => dest.AdditionalCategories, opt => opt.MapFrom((src, dest, _, context) =>
-                {
-                    if (context.Items.TryGetValue("AdditionalCategories", out object? value) && value is List<Category> additionalCategories)
-                    {
-                        return additionalCategories;
-                    }
-                    return dest.AdditionalCategories;
-                }))
-                .ForMember(dest => dest.Characteristics, opt => opt.MapFrom((src, dest, _, context) =>
-                {
-                    if (context.Items.TryGetValue("Characteristics", out object? value) && value is List<Characteristic> characteristics)
-                    {
-                        return characteristics;
-                    }
-                    return dest.Characteristics;
-                }));
+                .ForMember(dest => dest.ActualQuantity, opt => opt.Condition(src => src.ActualQuantity.HasValue));
 
             // Map from ProductCreateDto to Product
             CreateMap<ProductCreateDto, Product>()

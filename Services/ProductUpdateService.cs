@@ -56,23 +56,24 @@ namespace BlossomApi.Services
                     .ToListAsync();
             }
 
-            // Map the DTO to the existing product, passing related entities in the context
-            _mapper.Map(productUpdateDto, product, opts =>
-            {
-                opts.Items["MainCategory"] = mainCategory;
-                opts.Items["AdditionalCategories"] = additionalCategories;
-                opts.Items["Characteristics"] = characteristics;
-            });
 
-            // Ensure product's categories are not null
+
+            // Map the remaining properties
+            _mapper.Map(productUpdateDto, product);
+
+            // Handle Characteristics separately
+            if (characteristics != null)
+            {
+                product.Characteristics = characteristics;
+            }
             if (mainCategory != null)
             {
-                product.MainCategory = mainCategory;
+                product.MainCategory = mainCategory; // This will update MainCategoryId and rearrange the Categories list
             }
 
             if (additionalCategories != null)
             {
-                product.AdditionalCategories = additionalCategories;
+                product.AdditionalCategories = additionalCategories; // This will update the Categories list
             }
             _context.Entry(product).State = EntityState.Modified;
             await _context.SaveChangesAsync();

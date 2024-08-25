@@ -105,6 +105,9 @@ namespace BlossomApi.Models
         public string? MetaKeys { get; set; }
         public string? MetaDescription { get; set; }
 
+        // Explicit foreign key for main category
+        public int MainCategoryId { get; set; }
+
         // Navigation properties
         public ICollection<Category> Categories { get; set; } = new List<Category>();
         public ICollection<Review> Reviews { get; set; } = new List<Review>();
@@ -137,27 +140,31 @@ namespace BlossomApi.Models
             set => DieNumbersSerialized = JsonSerializer.Serialize(value ?? new List<int>());
         }
 
-        // Main Category Management
         [NotMapped]
         public Category MainCategory
         {
-            get => Categories.FirstOrDefault();
+            get
+            {
+                return Categories.FirstOrDefault(c => c.CategoryId == MainCategoryId);
+            }
             set
             {
                 if (value == null)
                 {
                     throw new ArgumentNullException(nameof(MainCategory), "Main category cannot be null.");
                 }
+                var categoryToRemove = MainCategoryId;
 
-                Categories = [value, .. AdditionalCategories];
+                MainCategoryId = value.CategoryId;
+
+                Categories = [value, .. Categories.Where(c => c.CategoryId != MainCategoryId && c.CategoryId != categoryToRemove)];
             }
         }
 
-        // Additional Categories Management
         [NotMapped]
         public List<Category> AdditionalCategories
         {
-            get => Categories.Skip(1).ToList();
+            get => Categories.Where(c => c.CategoryId != MainCategoryId).ToList();
             set
             {
                 if (value == null)
@@ -165,6 +172,7 @@ namespace BlossomApi.Models
                     throw new ArgumentNullException(nameof(AdditionalCategories), "Additional categories cannot be null.");
                 }
 
+                // Remove all non-main categories
                 Categories = [MainCategory, .. value];
             }
         }
