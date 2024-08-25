@@ -58,6 +58,30 @@ namespace BlossomApi.Controllers
             return category;
         }
 
+        // GET: api/Category/Search
+        [HttpGet("Search")]
+        public async Task<ActionResult<IEnumerable<CategoryResponseDto>>> SearchCategories([FromQuery] string? searchTerm)
+        {
+            var categoriesQuery = _context.Categories.AsQueryable();
+
+            if (!string.IsNullOrEmpty(searchTerm))
+            {
+                var lowerSearchTerm = searchTerm.ToLower();
+                categoriesQuery = categoriesQuery.Where(c => c.Name.ToLower().Contains(lowerSearchTerm));
+            }
+
+            var categories = await categoriesQuery
+                .Select(c => new CategoryResponseDto
+                {
+                    CategoryId = c.CategoryId,
+                    Name = c.Name,
+                    ParentCategoryId = c.ParentCategoryId
+                })
+                .ToListAsync();
+
+            return Ok(categories);
+        }
+
         // PUT: api/Category/5
         [HttpPut("{id}")]
         public async Task<IActionResult> PutCategory(int id, CategoryCreateDto categoryDto)
