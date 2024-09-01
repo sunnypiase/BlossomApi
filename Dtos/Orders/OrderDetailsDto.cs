@@ -13,6 +13,7 @@ namespace BlossomApi.Dtos.Orders
         public string PhoneNumber { get; set; }
         public string City { get; set; }
         public string DepartmentNumber { get; set; }
+        public int? PromocodeId { get; set; }
         public string Promocode { get; set; }
         public decimal PromocodeDiscount { get; set; }
         public decimal ProductDiscount { get; set; }
