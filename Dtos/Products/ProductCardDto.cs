@@ -8,6 +8,7 @@
         public string EngName { get; set; }
         public decimal Price { get; set; }
         public bool IsHit { get; set; }
+        public bool IsNew { get; set; }
         public bool InStock { get; set; }
         public decimal Discount { get; set; }
     }

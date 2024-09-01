@@ -37,6 +37,7 @@ namespace BlossomApi.Mappers
                 .ForMember(dest => dest.EngName, opt => opt.MapFrom(src => src.NameEng))
                 .ForMember(dest => dest.Price, opt => opt.MapFrom(src => src.Price))
                 .ForMember(dest => dest.IsHit, opt => opt.MapFrom(src => src.IsHit))
+                .ForMember(dest => dest.IsNew, opt => opt.MapFrom(src => src.IsNew))
                 .ForMember(dest => dest.InStock, opt => opt.MapFrom(src => src.InStock))
                 .ForMember(dest => dest.Discount, opt => opt.MapFrom(src => src.Discount));
         }

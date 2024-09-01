@@ -117,9 +117,12 @@ namespace BlossomApi.Controllers
             var query = await _productQueryService.ApplyFilterAndSortAsync(new GetProductsByAdminFilterRequestDto
             {
                 CategoryIds = request.CategoryId.HasValue ? [request.CategoryId.Value] : [],
-                SortOption = request.SortBy == "popularity" ? "popularity_dsc" : request.SortBy,
+                SortOption = request.SortBy,
                 Amount = request.Amount,
                 Start = request.Start,
+                IsHit = request.IsHit,
+                IsNew = request.IsNew,
+                HasDiscount = request.HasDiscount,
                 MaxPrice = request.MaxPrice,
                 MinPrice = request.MinPrice,
                 SelectedCharacteristics = request.SelectedCharacteristics,
