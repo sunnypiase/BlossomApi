@@ -81,7 +81,7 @@ namespace BlossomApi.Models
         public string DieNumbersSerialized { get; set; } = "[]"; // Serialized die numbers-
         public string Description { get; set; } //+
         public string? Ingridients { get; set; }//+
-        public bool InStock { get; set;  }//не треба
+        public bool InStock { get; set;  }
         public bool IsNew { get; set; } // +
         public bool IsHit { get; set; }// +
         public bool IsShown { get; set; } //+
@@ -114,6 +114,8 @@ namespace BlossomApi.Models
         public ICollection<Characteristic> Characteristics { get; set; } = new List<Characteristic>();
         public ICollection<ShoppingCartProduct> ShoppingCartProducts { get; set; } = new List<ShoppingCartProduct>();
         public ICollection<SiteUser> UsersWhoFavorited { get; set; } = new List<SiteUser>(); // Many-to-many with SiteUser
+        public ICollection<Banner> Banners { get; set; } = new List<Banner>();
+        public ICollection<Blog> Blogs { get; set; } = new List<Blog>();
 
         // Not mapped properties for lists
         [NotMapped]
@@ -264,5 +266,54 @@ namespace BlossomApi.Models
         public int OrderId { get; set; }
         // Navigation property
         public Order Order { get; set; }
+    }
+
+    public class Banner
+    {
+        [Key] public int BannerId { get; set; }
+
+        [Required] public string Title { get; set; } // Banner title
+        [Required] public string Description { get; set; } // Banner description
+
+        // Images for different screen sizes
+        [Required] public string DesktopImageUrl { get; set; } // Image for desktop
+        [Required] public string LaptopImageUrl { get; set; } // Image for laptop
+        [Required] public string TabletImageUrl { get; set; } // Image for tablet
+        [Required] public string PhoneImageUrl { get; set; } // Image for phone
+
+        // Alt text for each image size
+        [Required] public string DesktopAltText { get; set; }
+        [Required] public string LaptopAltText { get; set; }
+        [Required] public string TabletAltText { get; set; }
+        [Required] public string PhoneAltText { get; set; }
+
+        // Navigation properties for associated products
+        public ICollection<Product> Products { get; set; } = new List<Product>();
+    }
+    public class Blog
+    {
+        [Key] public int BlogId { get; set; }
+
+        [Required] public string Title { get; set; } // Blog title
+        [Required] public string Description { get; set; } // Blog description
+
+        // Images for different screen sizes
+        [Required] public string DesktopImageUrl { get; set; } // Image for desktop
+        [Required] public string LaptopImageUrl { get; set; } // Image for laptop
+        [Required] public string TabletImageUrl { get; set; } // Image for tablet
+        [Required] public string PhoneImageUrl { get; set; } // Image for phone
+
+        // Alt text for each image size
+        [Required] public string DesktopAltText { get; set; }
+        [Required] public string LaptopAltText { get; set; }
+        [Required] public string TabletAltText { get; set; }
+        [Required] public string PhoneAltText { get; set; }
+
+        // SEO fields
+        public string? MetaKeywords { get; set; }
+        public string? MetaDescription { get; set; }
+
+        // Navigation properties for associated products
+        public ICollection<Product> Products { get; set; } = new List<Product>();
     }
 }

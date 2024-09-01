@@ -2,6 +2,7 @@ using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using BlossomApi.DB;
 using BlossomApi.Dtos;
+using BlossomApi.Dtos.Product;
 using BlossomApi.Models;
 using BlossomApi.Repositories;
 using BlossomApi.Services;
@@ -132,7 +133,7 @@ namespace BlossomApi.Controllers
                 .Take(request.Amount)
                 .ToListAsync();
 
-            var productDtos = _mapper.Map<List<ProductResponseDto>>(products);
+            var productDtos = _mapper.Map<List<ProductCardDto>>(products);
 
             var response = new GetProductsByFilterResponse
             {

@@ -1,8 +1,7 @@
-﻿using BlossomApi.Models;
-using BlossomApi.Dtos;
+﻿using BlossomApi.DB;
+using BlossomApi.Models;
 using System.Linq.Expressions;
 using Microsoft.EntityFrameworkCore;
-using BlossomApi.DB;
 
 namespace BlossomApi.Services
 {
@@ -17,9 +16,18 @@ namespace BlossomApi.Services
             _categoryService = categoryService;
         }
 
-        public async Task<IQueryable<Product>> ApplyFilterAndSortAsync(GetProductsByAdminFilterRequestDto request)
+        public async Task<IQueryable<Product>> ApplyFilterAndSortAsync(
+            GetProductsByAdminFilterRequestDto request,
+            Expression<Func<Product, bool>>? additionalFilter = null)
         {
+            // Start with a base query
             var query = _context.Products.AsQueryable();
+
+            // Apply additional filter if provided
+            if (additionalFilter != null)
+            {
+                query = query.Where(additionalFilter);
+            }
 
             // Search by name
             if (!string.IsNullOrEmpty(request.SearchTerm))
@@ -48,7 +56,8 @@ namespace BlossomApi.Services
                 query = query.Where(p => p.Categories.Any(c => allCategoryIds.Contains(c.CategoryId)));
             }
 
-            if (request.SelectedCharacteristics != null && request.SelectedCharacteristics.Count != 0)
+            // Filter by characteristics
+            if (request.SelectedCharacteristics != null && request.SelectedCharacteristics.Count > 0)
             {
                 var characteristicIds = request.SelectedCharacteristics;
                 Expression<Func<Product, bool>> predicate = p => false;
@@ -88,30 +97,37 @@ namespace BlossomApi.Services
                 query = query.Where(p => p.Discount > 0 == request.HasDiscount.Value);
             }
 
-            // Sorting logic based on SortOption
+            // Apply sorting
             if (!string.IsNullOrEmpty(request.SortOption))
             {
-                var sortOption = request.SortOption.Split('_');
-                if (sortOption.Length == 2)
-                {
-                    var sortBy = sortOption[0];
-                    var sortDirection = sortOption[1];
-                    bool sortDescending = sortDirection.Equals("desc", StringComparison.OrdinalIgnoreCase);
+                query = ApplySorting(query, request.SortOption);
+            }
 
-                    query = sortBy switch
-                    {
-                        "name" => sortDescending ? query.OrderByDescending(p => p.Name) : query.OrderBy(p => p.Name),
-                        "discount" => sortDescending ? query.OrderByDescending(p => p.Discount) : query.OrderBy(p => p.Discount),
-                        "category" => sortDescending ? query.OrderByDescending(p => p.MainCategory.Name) : query.OrderBy(p => p.MainCategory.Name),
-                        "price" => sortDescending ? query.OrderByDescending(p => p.Price) : query.OrderBy(p => p.Price),
-                        "stock" => sortDescending ? query.OrderByDescending(p => p.AvailableAmount) : query.OrderBy(p => p.AvailableAmount),
-                        "popularity" => sortDescending ? query.OrderByDescending(p => p.NumberOfPurchases) : query.OrderBy(p => p.NumberOfPurchases),
-                        "views" => sortDescending ? query.OrderByDescending(p => p.NumberOfViews) : query.OrderBy(p => p.NumberOfViews),
-                        "rating" => sortDescending ? query.OrderByDescending(p => p.Rating) : query.OrderBy(p => p.Rating),
-                        "reviews" => sortDescending ? query.OrderByDescending(p => p.NumberOfReviews) : query.OrderBy(p => p.NumberOfReviews),
-                        _ => query
-                    };
-                }
+            return query;
+        }
+
+        private IQueryable<Product> ApplySorting(IQueryable<Product> query, string sortOption)
+        {
+            var sortParams = sortOption.Split('_');
+            if (sortParams.Length == 2)
+            {
+                var sortBy = sortParams[0];
+                var sortDirection = sortParams[1];
+                bool sortDescending = sortDirection.Equals("desc", StringComparison.OrdinalIgnoreCase);
+
+                query = sortBy switch
+                {
+                    "name" => sortDescending ? query.OrderByDescending(p => p.Name) : query.OrderBy(p => p.Name),
+                    "discount" => sortDescending ? query.OrderByDescending(p => p.Discount) : query.OrderBy(p => p.Discount),
+                    "category" => sortDescending ? query.OrderByDescending(p => p.MainCategory.Name) : query.OrderBy(p => p.MainCategory.Name),
+                    "price" => sortDescending ? query.OrderByDescending(p => p.Price) : query.OrderBy(p => p.Price),
+                    "stock" => sortDescending ? query.OrderByDescending(p => p.AvailableAmount) : query.OrderBy(p => p.AvailableAmount),
+                    "popularity" => sortDescending ? query.OrderByDescending(p => p.NumberOfPurchases) : query.OrderBy(p => p.NumberOfPurchases),
+                    "views" => sortDescending ? query.OrderByDescending(p => p.NumberOfViews) : query.OrderBy(p => p.NumberOfViews),
+                    "rating" => sortDescending ? query.OrderByDescending(p => p.Rating) : query.OrderBy(p => p.Rating),
+                    "reviews" => sortDescending ? query.OrderByDescending(p => p.NumberOfReviews) : query.OrderBy(p => p.NumberOfReviews),
+                    _ => query
+                };
             }
 
             return query;

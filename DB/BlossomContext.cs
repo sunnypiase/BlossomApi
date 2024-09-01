@@ -41,6 +41,8 @@ namespace BlossomApi.DB
         public DbSet<Review> Reviews { get; set; }
         public DbSet<Characteristic> Characteristics { get; set; }
         public DbSet<Promocode> Promocodes { get; set; }
+        public DbSet<Banner> Banners { get; set; }
+        public DbSet<Blog> Blogs { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -142,6 +144,15 @@ namespace BlossomApi.DB
                     j => j.HasOne<Product>().WithMany().HasForeignKey("ProductId"),
                     j => j.HasOne<Characteristic>().WithMany().HasForeignKey("CharacteristicId"))
                 .HasData(DatabaseProductCharacteristicSeeder.GetProductCharacteristicConnections());
+
+            modelBuilder.Entity<Blog>()
+                .HasMany(b => b.Products)
+                .WithMany(p => p.Blogs) // Adding Banners collection in Product
+                .UsingEntity<Dictionary<string, object>>(
+                    "BlogProduct",
+                    j => j.HasOne<Product>().WithMany().HasForeignKey("ProductId"),
+                    j => j.HasOne<Blog>().WithMany().HasForeignKey("BlogId"))
+                .ToTable("BlogProducts");
 
             modelBuilder.Entity<Category>().HasData(DatabaseCategorySeeder.GetCategories());
             modelBuilder.Entity<Product>().HasData(DatabaseProductSeeder.GetProducts());

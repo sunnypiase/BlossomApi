@@ -55,6 +55,25 @@ namespace BlossomApi.Services
             return allChildCategories;
         }
 
+        // Updated method to handle building a forest (list of trees) from multiple root categories
+        public List<CategoryNode> BuildCategoryForestFromList(List<Category> categories)
+        {
+            var lookup = categories.ToLookup(c => c.ParentCategoryId);
+
+            // Find categories that don't have a parent in the list (they are roots)
+            var rootCategories = categories.Where(c => !categories.Any(p => p.CategoryId == c.ParentCategoryId)).ToList();
+
+            List<CategoryNode> categoryForest = new List<CategoryNode>();
+
+            foreach (var root in rootCategories)
+            {
+                var rootNode = BuildCategoryTreeFromLookup(root, lookup);
+                categoryForest.Add(rootNode);
+            }
+
+            return categoryForest;
+        }
+
         private void TraverseCategoryTree(CategoryNode node, List<int> ids)
         {
             if (node == null) return;
@@ -81,6 +100,25 @@ namespace BlossomApi.Services
             foreach (var child in childCategories)
             {
                 rootNode.Children.Add(BuildCategoryTree(child, allCategories));
+            }
+
+            return rootNode;
+        }
+
+        private CategoryNode BuildCategoryTreeFromLookup(Category root, ILookup<int, Category> lookup)
+        {
+            var rootNode = new CategoryNode
+            {
+                CategoryId = root.CategoryId,
+                Name = root.Name,
+                Children = new List<CategoryNode>()
+            };
+
+            var childCategories = lookup[root.CategoryId];
+
+            foreach (var child in childCategories)
+            {
+                rootNode.Children.Add(BuildCategoryTreeFromLookup(child, lookup));
             }
 
             return rootNode;

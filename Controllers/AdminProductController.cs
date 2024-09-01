@@ -8,6 +8,7 @@ using System.Linq.Expressions;
 using System.Linq;
 using AutoMapper.QueryableExtensions;
 using AutoMapper;
+using BlossomApi.Dtos.Product;
 
 namespace BlossomApi.Controllers
 {
@@ -82,7 +83,7 @@ namespace BlossomApi.Controllers
 
         // POST: api/AdminProduct/GetProductsByAdminFilter
         [HttpPost("GetProductsByAdminFilter")]
-        public async Task<ActionResult<GetProductsByFilterResponse>> GetProductsByAdminFilter(GetProductsByAdminFilterRequestDto request)
+        public async Task<IActionResult> GetProductsByAdminFilter(GetProductsByAdminFilterRequestDto request)
         {
             var query = await _productQueryService.ApplyFilterAndSortAsync(request);
 
@@ -95,7 +96,7 @@ namespace BlossomApi.Controllers
 
             var productDtos = _mapper.Map<List<ProductResponseDto>>(products);
 
-            var response = new GetProductsByFilterResponse
+            var response = new
             {
                 Products = productDtos,
                 TotalCount = totalCount

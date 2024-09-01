@@ -6,6 +6,8 @@ using BlossomApi.Services;
 using System.Linq;
 using System.Threading.Tasks;
 using BlossomApi.Repositories;
+using BlossomApi.Models;
+using BlossomApi.Dtos.Banners;
 
 namespace BlossomApi.Controllers
 {
@@ -31,7 +33,7 @@ namespace BlossomApi.Controllers
         [HttpGet("{categoryId}")]
         public async Task<ActionResult<FilterPanelResponseDto>> GetFilterPanel(int categoryId)
         {
-            var filterPanelData = await FetchFilterPanelData(categoryId);
+            var filterPanelData = await FetchFilterPanelDataByCategory(categoryId);
             if (filterPanelData == null)
             {
                 return NotFound();
@@ -39,7 +41,56 @@ namespace BlossomApi.Controllers
             return Ok(filterPanelData);
         }
 
-        private async Task<FilterPanelResponseDto> FetchFilterPanelData(int categoryId)
+        // GET: api/FilterPanel/Banner/{bannerId}
+        [HttpGet("Banner/{bannerId}")]
+        public async Task<ActionResult<BannerFilterPanelResponseDto>> GetFilterPanelByBanner(int bannerId)
+        {
+            var filterPanelData = await FetchFilterPanelDataByBanner(bannerId);
+            if (filterPanelData == null)
+            {
+                return NotFound();
+            }
+            return Ok(filterPanelData);
+        }
+
+        private async Task<BannerFilterPanelResponseDto> FetchFilterPanelDataByBanner(int bannerId)
+        {
+            var banner = await _context.Banners
+                .Include(b => b.Products)
+                .ThenInclude(p => p.Characteristics)
+                .Include(b => b.Products)
+                .ThenInclude(p => p.Categories)
+                .FirstOrDefaultAsync(b => b.BannerId == bannerId);
+
+            if (banner == null || !banner.Products.Any())
+            {
+                return null;
+            }
+
+            var categoryIds = banner.Products
+                .Where(p => p.IsShown)
+                .SelectMany(p => p.Categories)
+                .Select(c => c.CategoryId)
+                .Distinct()
+                .ToList();
+
+            var categories = await _context.Categories
+                .Where(c => categoryIds.Contains(c.CategoryId))
+                .ToListAsync();
+
+            var categoryTree = _categoryService.BuildCategoryForestFromList(categories);
+
+            var response = GenerateFilterPanelResponse(banner.Products.Where(x => x.IsShown).ToList());
+            return new BannerFilterPanelResponseDto
+            {
+                Categories = categoryTree,
+                Characteristics = response.Characteristics,
+                MinPrice = response.MinPrice,
+                MaxPrice = response.MaxPrice,
+            };
+        }
+
+        private async Task<FilterPanelResponseDto> FetchFilterPanelDataByCategory(int categoryId)
         {
             var rootCategory = await _context.Categories
                 .FirstOrDefaultAsync(c => c.CategoryId == categoryId);
@@ -57,11 +108,28 @@ namespace BlossomApi.Controllers
                 .Include(p => p.Categories)
                 .Where(p => p.Categories.Any(c => categoryIds.Contains(c.CategoryId)))
                 .ToListAsync();
+
             if (products == null || !products.Any())
             {
                 return new FilterPanelResponseDto
                 {
                     Categories = categoryTree,
+                    Characteristics = new List<FilterPanelCharacteristicDto>()
+                };
+            }
+
+            var response = GenerateFilterPanelResponse(products);
+            response.Categories = categoryTree;
+
+            return response;
+        }
+
+        private FilterPanelResponseDto GenerateFilterPanelResponse(List<Product> products)
+        {
+            if(products == null || !products.Any())
+            {
+                return new FilterPanelResponseDto
+                {
                     Characteristics = new List<FilterPanelCharacteristicDto>()
                 };
             }
@@ -87,7 +155,6 @@ namespace BlossomApi.Controllers
 
             return new FilterPanelResponseDto
             {
-                Categories = categoryTree,
                 Characteristics = characteristics,
                 MinPrice = minPrice,
                 MaxPrice = maxPrice,
