@@ -116,6 +116,7 @@ public class GetProductsByAdminFilterRequestDto
     public decimal? MaxPrice { get; set; }
     public bool? IsShown { get; set; }
     public bool? IsHit { get; set; }
+    public bool? IsNew { get; set; }
     public bool? HasDiscount { get; set; }
 
     public string? SortOption { get; set; }

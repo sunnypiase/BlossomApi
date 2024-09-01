@@ -91,6 +91,11 @@ namespace BlossomApi.Services
                 query = query.Where(p => p.IsHit == request.IsHit.Value);
             }
 
+            if (request.IsNew.HasValue)
+            {
+                query = query.Where(p => p.IsNew == request.IsNew.Value);
+            }
+
             // Filter by HasDiscount
             if (request.HasDiscount.HasValue)
             {
