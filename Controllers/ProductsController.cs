@@ -149,7 +149,7 @@ namespace BlossomApi.Controllers
 
 
         [HttpPost]
-        public async Task<IActionResult> CreateProduct([FromBody] ProductCreateDto productCreateDto)
+        public async Task<IActionResult> CreateProduct([FromForm] ProductCreateDto productCreateDto)
         {
             if (!ModelState.IsValid)
             {
@@ -162,12 +162,19 @@ namespace BlossomApi.Controllers
             {
                 return BadRequest(errorMessage);
             }
-
-            return CreatedAtAction(nameof(GetProduct), new { id = product.Id }, product);
+            try
+            {
+                await _productImageService.AddProductImagesAsync(product.Id, productCreateDto.Images);
+                return CreatedAtAction(nameof(GetProduct), new { id = product.Id }, product);
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         [HttpPost("{id}/images")]
-        public async Task<IActionResult> AddProductImages(int id, [FromForm] List<IFormFile> imageFiles)
+        public async Task<IActionResult> AddProductImages(int id, [FromForm] IFormFileCollection imageFiles)
         {
             try
             {

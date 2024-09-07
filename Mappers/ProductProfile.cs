@@ -47,7 +47,7 @@ namespace BlossomApi.Mappers
                 .ForMember(dest => dest.MainCategoryId, opt => opt.Ignore())
                 .ForMember(dest => dest.Name, opt => opt.Condition(src => src.Name != null))
                 .ForMember(dest => dest.NameEng, opt => opt.Condition(src => src.NameEng != null))
-                .ForMember(dest => dest.Images, opt => opt.Condition(src => src.Images != null))
+                //.ForMember(dest => dest.Images, opt => opt.Condition(src => src.Images != null))
                 .ForMember(dest => dest.Brand, opt => opt.Condition(src => src.Brand != null))
                 .ForMember(dest => dest.Price, opt => opt.Condition(src => src.Price.HasValue))
                 .ForMember(dest => dest.Discount, opt => opt.Condition(src => src.Discount.HasValue))

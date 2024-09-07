@@ -17,7 +17,6 @@ namespace BlossomApi.Dtos
         [Range(0.01, double.MaxValue, ErrorMessage = "Price must be greater than 0.")]
         public decimal Price { get; set; }
 
-        [Required(ErrorMessage = "PurchasePrice is required.")]
         [Range(0.01, double.MaxValue, ErrorMessage = "PurchasePrice must be greater than 0.")]
         public decimal PurchasePrice { get; set; }
 
@@ -35,13 +34,10 @@ namespace BlossomApi.Dtos
         [Range(0, 100, ErrorMessage = "Discount must be between 0 and 100.")]
         public decimal Discount { get; set; }
 
-        [Required(ErrorMessage = "IsNew is required.")]
         public bool IsNew { get; set; }
 
-        [Required(ErrorMessage = "IsHit is required.")]
         public bool IsHit { get; set; }
 
-        [Required(ErrorMessage = "IsShown is required.")]
         public bool IsShown { get; set; }
 
         [Required(ErrorMessage = "MainCategoryId is required.")]
@@ -49,7 +45,7 @@ namespace BlossomApi.Dtos
 
         public List<int> AdditionalCategoryIds { get; set; } = new();
         public List<int> CharacteristicIds { get; set; } = new();
-        public List<string> Images { get; set; } = new();
+        public IFormFileCollection Images { get; set; } = new FormFileCollection();
 
         public string? Ingridients { get; set; }
         public string? UnitOfMeasurement { get; set; }

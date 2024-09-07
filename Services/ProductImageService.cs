@@ -18,7 +18,7 @@ namespace BlossomApi.Services
             _imageService = imageService;
         }
 
-        public async Task<List<string>> AddProductImagesAsync(int productId, List<IFormFile> imageFiles)
+        public async Task<List<string>> AddProductImagesAsync(int productId, IFormFileCollection imageFiles)
         {
             var product = await _context.Products.FirstOrDefaultAsync(p => p.ProductId == productId);
             if (product == null)
