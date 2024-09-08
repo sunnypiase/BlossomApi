@@ -13,7 +13,8 @@ namespace BlossomApi.Services
 
         public async Task<string> UploadImageAsync(string fileName, Stream imageStream)
         {
-            var uniqueFileName = $"{Guid.NewGuid()}_{fileName}";
+            var uniqueFileName = $"{Guid.NewGuid()}_{fileName}".Replace(" ", "_");
+            
             string url = GetBunnyCDNUrl(uniqueFileName);
             string contentType = GetContentType(fileName[fileName.LastIndexOf('.')..]);
 
