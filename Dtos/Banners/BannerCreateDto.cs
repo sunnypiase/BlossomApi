@@ -24,6 +24,8 @@ namespace BlossomApi.Dtos.Banners
 
         [Required]
         public string AltText { get; set; }
+        public string? MetaKeywords { get; set; }
+        public string? MetaDescription { get; set; }
 
         public List<int> ProductIds { get; set; } = new();
     }

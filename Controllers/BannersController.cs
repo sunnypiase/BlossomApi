@@ -43,7 +43,10 @@ namespace BlossomApi.Controllers
             {
                 Title = bannerDto.Title,
                 Description = bannerDto.Description,
-                AltText = bannerDto.AltText
+                AltText = bannerDto.AltText,
+                MetaDescription = bannerDto.MetaDescription,
+                MetaKeywords = bannerDto.MetaKeywords
+                
             };
 
             // Upload images
@@ -174,6 +177,15 @@ namespace BlossomApi.Controllers
             if (bannerUpdateDto.Description != null)
             {
                 banner.Description = bannerUpdateDto.Description;
+            }
+            if (bannerUpdateDto.MetaKeywords != null)
+            {
+                banner.MetaKeywords = bannerUpdateDto.MetaKeywords;
+            }
+
+            if (bannerUpdateDto.MetaDescription != null)
+            {
+                banner.MetaDescription = bannerUpdateDto.MetaDescription;
             }
             if(bannerUpdateDto.AltText != null)
             {

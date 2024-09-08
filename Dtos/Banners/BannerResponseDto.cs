@@ -10,5 +10,7 @@
         public string TabletImageUrl { get; set; }
         public string PhoneImageUrl { get; set; }
         public string AltText { get; set; }
+        public string? MetaKeywords { get; set; }
+        public string? MetaDescription { get; set; }
     }
 }

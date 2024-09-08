@@ -10,5 +10,7 @@
         public IFormFile? LaptopImage { get; set; }
         public IFormFile? TabletImage { get; set; }
         public IFormFile? PhoneImage { get; set; }
+        public string? MetaKeywords { get; set; }
+        public string? MetaDescription { get; set; }
     }
 }

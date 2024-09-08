@@ -284,6 +284,8 @@ namespace BlossomApi.Models
 
         // Alt text for each image size
         [Required] public string AltText { get; set; }
+        public string? MetaKeywords { get; set; }
+        public string? MetaDescription { get; set; }
 
         // Navigation properties for associated products
         public ICollection<Product> Products { get; set; } = new List<Product>();
