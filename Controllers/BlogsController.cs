@@ -121,7 +121,7 @@ namespace BlossomApi.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateBlog(int id, [FromForm] BlogUpdateDto blogUpdateDto)
         {
-            var blog = await _context.Blogs.FindAsync(id);
+            var blog = await _context.Blogs.Include(b => b.Products).FirstOrDefaultAsync(b => b.BlogId == id);
             if (blog == null)
             {
                 return NotFound();
@@ -131,42 +131,70 @@ namespace BlossomApi.Controllers
             {
                 blog.Title = blogUpdateDto.Title;
             }
+
             if (blogUpdateDto.Description != null)
             {
                 blog.Description = blogUpdateDto.Description;
             }
+
             if (blogUpdateDto.MetaKeywords != null)
             {
                 blog.MetaKeywords = blogUpdateDto.MetaKeywords;
             }
+
             if (blogUpdateDto.MetaDescription != null)
             {
                 blog.MetaDescription = blogUpdateDto.MetaDescription;
             }
+
             if (blogUpdateDto.DesktopAltText != null)
             {
                 blog.DesktopAltText = blogUpdateDto.DesktopAltText;
             }
+
             if (blogUpdateDto.LaptopAltText != null)
             {
                 blog.LaptopAltText = blogUpdateDto.LaptopAltText;
             }
+
             if (blogUpdateDto.TabletAltText != null)
             {
                 blog.TabletAltText = blogUpdateDto.TabletAltText;
             }
+
             if (blogUpdateDto.PhoneAltText != null)
             {
                 blog.PhoneAltText = blogUpdateDto.PhoneAltText;
             }
+
+            // Update product associations
             if (blogUpdateDto.ProductIds != null && blogUpdateDto.ProductIds.Count != 0)
             {
-                var products = await _context.Products
-                    .Where(p => blogUpdateDto.ProductIds.Contains(p.ProductId))
-                    .ToListAsync();
+                // Get the products currently associated with the blog
+                var currentProductIds = blog.Products.Select(p => p.ProductId).ToList();
 
-                blog.Products = products;
+                // Find the products to remove (those that are in the current collection but not in the update list)
+                var productsToRemove = blog.Products.Where(p => !blogUpdateDto.ProductIds.Contains(p.ProductId)).ToList();
+                foreach (var productToRemove in productsToRemove)
+                {
+                    blog.Products.Remove(productToRemove);
+                }
+
+                // Find the products to add (those that are in the update list but not in the current collection)
+                var newProductIds = blogUpdateDto.ProductIds.Except(currentProductIds).ToList();
+                if (newProductIds.Count > 0)
+                {
+                    var productsToAdd = await _context.Products
+                        .Where(p => newProductIds.Contains(p.ProductId))
+                        .ToListAsync();
+
+                    foreach (var productToAdd in productsToAdd)
+                    {
+                        blog.Products.Add(productToAdd);
+                    }
+                }
             }
+
             // Delete old images if new ones are provided
             if (blogUpdateDto.DesktopImage != null)
             {
@@ -197,6 +225,7 @@ namespace BlossomApi.Controllers
 
             return Ok();
         }
+
 
         private async Task<string> UploadImageAsync(IFormFile imageFile)
         {
