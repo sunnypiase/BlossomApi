@@ -16,12 +16,14 @@ namespace BlossomApi.Controllers
         private readonly BlossomContext _context;
         private readonly IMapper _mapper;
         private readonly ImageService _imageService;
+        private readonly ProductAssociationService _productAssociationService;
 
-        public BlogsController(BlossomContext context, IMapper mapper, ImageService imageService)
+        public BlogsController(BlossomContext context, IMapper mapper, ImageService imageService, ProductAssociationService productAssociationService)
         {
             _context = context;
             _mapper = mapper;
             _imageService = imageService;
+            _productAssociationService = productAssociationService;
         }
 
         // POST: api/Blogs
@@ -39,10 +41,7 @@ namespace BlossomApi.Controllers
                 Description = blogDto.Description,
                 MetaKeywords = blogDto.MetaKeywords,
                 MetaDescription = blogDto.MetaDescription,
-                DesktopAltText = blogDto.DesktopAltText,
-                LaptopAltText = blogDto.LaptopAltText,
-                TabletAltText = blogDto.TabletAltText,
-                PhoneAltText = blogDto.PhoneAltText
+                AltText = blogDto.AltText
             };
 
             // Upload images
@@ -147,52 +146,15 @@ namespace BlossomApi.Controllers
                 blog.MetaDescription = blogUpdateDto.MetaDescription;
             }
 
-            if (blogUpdateDto.DesktopAltText != null)
+            if (blogUpdateDto.AltText != null)
             {
-                blog.DesktopAltText = blogUpdateDto.DesktopAltText;
-            }
-
-            if (blogUpdateDto.LaptopAltText != null)
-            {
-                blog.LaptopAltText = blogUpdateDto.LaptopAltText;
-            }
-
-            if (blogUpdateDto.TabletAltText != null)
-            {
-                blog.TabletAltText = blogUpdateDto.TabletAltText;
-            }
-
-            if (blogUpdateDto.PhoneAltText != null)
-            {
-                blog.PhoneAltText = blogUpdateDto.PhoneAltText;
+                blog.AltText = blogUpdateDto.AltText;
             }
 
             // Update product associations
             if (blogUpdateDto.ProductIds != null && blogUpdateDto.ProductIds.Count != 0)
             {
-                // Get the products currently associated with the blog
-                var currentProductIds = blog.Products.Select(p => p.ProductId).ToList();
-
-                // Find the products to remove (those that are in the current collection but not in the update list)
-                var productsToRemove = blog.Products.Where(p => !blogUpdateDto.ProductIds.Contains(p.ProductId)).ToList();
-                foreach (var productToRemove in productsToRemove)
-                {
-                    blog.Products.Remove(productToRemove);
-                }
-
-                // Find the products to add (those that are in the update list but not in the current collection)
-                var newProductIds = blogUpdateDto.ProductIds.Except(currentProductIds).ToList();
-                if (newProductIds.Count > 0)
-                {
-                    var productsToAdd = await _context.Products
-                        .Where(p => newProductIds.Contains(p.ProductId))
-                        .ToListAsync();
-
-                    foreach (var productToAdd in productsToAdd)
-                    {
-                        blog.Products.Add(productToAdd);
-                    }
-                }
+               await _productAssociationService.UpdateProductAssociationsAsync(blog, blogUpdateDto.ProductIds);
             }
 
             // Delete old images if new ones are provided

@@ -19,10 +19,7 @@ namespace BlossomApi.Mappers
                 .ForMember(dest => dest.LaptopImageUrl, opt => opt.MapFrom(src => src.LaptopImageUrl))
                 .ForMember(dest => dest.TabletImageUrl, opt => opt.MapFrom(src => src.TabletImageUrl))
                 .ForMember(dest => dest.PhoneImageUrl, opt => opt.MapFrom(src => src.PhoneImageUrl))
-                .ForMember(dest => dest.DesktopAltText, opt => opt.MapFrom(src => src.DesktopAltText))
-                .ForMember(dest => dest.LaptopAltText, opt => opt.MapFrom(src => src.LaptopAltText))
-                .ForMember(dest => dest.TabletAltText, opt => opt.MapFrom(src => src.TabletAltText))
-                .ForMember(dest => dest.PhoneAltText, opt => opt.MapFrom(src => src.PhoneAltText));
+                .ForMember(dest => dest.AltText, opt => opt.MapFrom(src => src.AltText));
 
             // Mapping from Banner to BannerWithProductsDto
             CreateMap<Banner, BannerWithProductsDto>()

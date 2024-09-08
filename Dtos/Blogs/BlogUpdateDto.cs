@@ -10,10 +10,7 @@
         public IFormFile? LaptopImage { get; set; }
         public IFormFile? TabletImage { get; set; }
         public IFormFile? PhoneImage { get; set; }
-        public string? DesktopAltText { get; set; }
-        public string? LaptopAltText { get; set; }
-        public string? TabletAltText { get; set; }
-        public string? PhoneAltText { get; set; }
+        public string? AltText { get; set; }
         public List<int>? ProductIds { get; set; }
     }
 }

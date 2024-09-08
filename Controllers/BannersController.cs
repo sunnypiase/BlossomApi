@@ -19,13 +19,15 @@ namespace BlossomApi.Controllers
         private readonly IMapper _mapper;
         private readonly ImageService _imageService;
         private readonly ProductQueryService _productQueryService;
+        private readonly ProductAssociationService _productAssociationService;
 
-        public BannersController(BlossomContext context, IMapper mapper, ImageService imageService, ProductQueryService productQueryService)
+        public BannersController(BlossomContext context, IMapper mapper, ImageService imageService, ProductQueryService productQueryService, ProductAssociationService productAssociationService)
         {
             _context = context;
             _mapper = mapper;
             _imageService = imageService;
             _productQueryService = productQueryService;
+            _productAssociationService = productAssociationService;
         }
 
         // POST: api/Banners
@@ -41,10 +43,7 @@ namespace BlossomApi.Controllers
             {
                 Title = bannerDto.Title,
                 Description = bannerDto.Description,
-                DesktopAltText = bannerDto.DesktopAltText,
-                LaptopAltText = bannerDto.LaptopAltText,
-                TabletAltText = bannerDto.TabletAltText,
-                PhoneAltText = bannerDto.PhoneAltText
+                AltText = bannerDto.AltText
             };
 
             // Upload images
@@ -176,29 +175,13 @@ namespace BlossomApi.Controllers
             {
                 banner.Description = bannerUpdateDto.Description;
             }
-            if(bannerUpdateDto.DesktopAltText != null)
+            if(bannerUpdateDto.AltText != null)
             {
-                banner.DesktopAltText = bannerUpdateDto.DesktopAltText;
-            }
-            if(bannerUpdateDto.LaptopAltText != null)
-            {
-                banner.LaptopAltText = bannerUpdateDto.LaptopAltText;
-            }
-            if(bannerUpdateDto.TabletAltText != null)
-            {
-                banner.TabletAltText = bannerUpdateDto.TabletAltText;
-            }
-            if(bannerUpdateDto.PhoneAltText != null)
-            {
-                banner.PhoneAltText = bannerUpdateDto.PhoneAltText;
+                banner.AltText = bannerUpdateDto.AltText;
             }
             if (bannerUpdateDto.ProductIds != null && bannerUpdateDto.ProductIds.Count != 0)
             {
-                var products = await _context.Products
-                    .Where(p => bannerUpdateDto.ProductIds.Contains(p.ProductId))
-                    .ToListAsync();
-
-                banner.Products = products;
+                await _productAssociationService.UpdateProductAssociationsAsync(banner, bannerUpdateDto.ProductIds);
             }
             // Delete old images if new ones are provided
             if (bannerUpdateDto.DesktopImage != null)

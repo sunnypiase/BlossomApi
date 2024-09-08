@@ -9,9 +9,6 @@
         public string LaptopImageUrl { get; set; }
         public string TabletImageUrl { get; set; }
         public string PhoneImageUrl { get; set; }
-        public string DesktopAltText { get; set; }
-        public string LaptopAltText { get; set; }
-        public string TabletAltText { get; set; }
-        public string PhoneAltText { get; set; }
+        public string AltText { get; set; }
     }
 }

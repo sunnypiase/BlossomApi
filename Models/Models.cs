@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json;
+using BlossomApi.Services;
 using Microsoft.AspNetCore.Identity;
 
 namespace BlossomApi.Models
@@ -192,7 +193,7 @@ namespace BlossomApi.Models
         public Product Product { get; set; }
     }
 
-    public class Characteristic
+    public class Characteristic : IHasProducts
     {
         [Key] public int CharacteristicId { get; set; }
         public string Title { get; set; }
@@ -268,7 +269,7 @@ namespace BlossomApi.Models
         public Order Order { get; set; }
     }
 
-    public class Banner
+    public class Banner : IHasProducts
     {
         [Key] public int BannerId { get; set; }
 
@@ -282,15 +283,12 @@ namespace BlossomApi.Models
         [Required] public string PhoneImageUrl { get; set; } // Image for phone
 
         // Alt text for each image size
-        [Required] public string DesktopAltText { get; set; }
-        [Required] public string LaptopAltText { get; set; }
-        [Required] public string TabletAltText { get; set; }
-        [Required] public string PhoneAltText { get; set; }
+        [Required] public string AltText { get; set; }
 
         // Navigation properties for associated products
         public ICollection<Product> Products { get; set; } = new List<Product>();
     }
-    public class Blog
+    public class Blog : IHasProducts
     {
         [Key] public int BlogId { get; set; }
 
@@ -304,10 +302,7 @@ namespace BlossomApi.Models
         [Required] public string PhoneImageUrl { get; set; } // Image for phone
 
         // Alt text for each image size
-        [Required] public string DesktopAltText { get; set; }
-        [Required] public string LaptopAltText { get; set; }
-        [Required] public string TabletAltText { get; set; }
-        [Required] public string PhoneAltText { get; set; }
+        [Required] public string AltText { get; set; }
 
         // SEO fields
         public string? MetaKeywords { get; set; }

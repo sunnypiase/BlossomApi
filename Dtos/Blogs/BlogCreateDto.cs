@@ -26,16 +26,7 @@ namespace BlossomApi.Dtos.Blogs
         public IFormFile PhoneImage { get; set; }
 
         [Required]
-        public string DesktopAltText { get; set; }
-
-        [Required]
-        public string LaptopAltText { get; set; }
-
-        [Required]
-        public string TabletAltText { get; set; }
-
-        [Required]
-        public string PhoneAltText { get; set; }
+        public string AltText { get; set; }
 
         public List<int> ProductIds { get; set; } = new List<int>();
     }
