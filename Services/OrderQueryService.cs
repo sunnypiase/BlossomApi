@@ -18,7 +18,7 @@ namespace BlossomApi.Services
 
         public async Task<IQueryable<Order>> ApplyFilterAndSortAsync(GetOrdersByAdminFilterRequestDto request)
         {
-            var query = _context.Orders.AsQueryable();
+            var query = _context.Orders.Include(x =>x.DeliveryInfo).AsQueryable();
 
             // Case-insensitive search by Username, Surname, PhoneNumber, Email, or City
             if (!string.IsNullOrEmpty(request.SearchTerm))
@@ -62,23 +62,25 @@ namespace BlossomApi.Services
             }
 
             // Sorting logic
-            if (!string.IsNullOrEmpty(request.SortOption))
+            if (string.IsNullOrEmpty(request.SortOption))
             {
-                var sortOption = request.SortOption.Split('_');
-                if (sortOption.Length == 2)
-                {
-                    var sortBy = sortOption[0];
-                    var sortDirection = sortOption[1];
-                    bool sortDescending = sortDirection.Equals("desc", StringComparison.OrdinalIgnoreCase);
-
-                    query = sortBy switch
-                    {
-                        "date" => sortDescending ? query.OrderByDescending(o => o.OrderDate) : query.OrderBy(o => o.OrderDate),
-                        "price" => sortDescending ? query.OrderByDescending(o => o.TotalPrice) : query.OrderBy(o => o.TotalPrice),
-                        _ => query
-                    };
-                }
+                return query;
             }
+            var sortOption = request.SortOption.Split('_');
+            if (sortOption.Length != 2)
+            {
+                return query;
+            }
+            var sortBy = sortOption[0];
+            var sortDirection = sortOption[1];
+            bool sortDescending = sortDirection.Equals("desc", StringComparison.OrdinalIgnoreCase);
+
+            query = sortBy switch
+            {
+                "date" => sortDescending ? query.OrderByDescending(o => o.OrderDate) : query.OrderBy(o => o.OrderDate),
+                "price" => sortDescending ? query.OrderByDescending(o => o.TotalPrice) : query.OrderBy(o => o.TotalPrice),
+                _ => query
+            };
 
             return query;
         }
