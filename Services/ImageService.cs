@@ -39,7 +39,7 @@ namespace BlossomApi.Services
 
         public async Task DeleteImageAsync(string fileName)
         {
-            string url = GetBunnyCDNUrl(fileName);
+            string url = GetBunnyCDNUrl(fileName.Split('/').Last());
 
             var httpClient = new BunnyCdnHttpClient();
             var deleteResponse = await httpClient.DeleteAsync(url);
