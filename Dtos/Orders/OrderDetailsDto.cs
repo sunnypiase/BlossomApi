@@ -16,6 +16,7 @@ namespace BlossomApi.Dtos.Orders
         public int? PromocodeId { get; set; }
         public string Promocode { get; set; }
         public decimal PromocodeDiscount { get; set; }
+        public decimal DiscountFromPromocode { get; set; }
         public decimal ProductDiscount { get; set; }
         public decimal TotalDiscount { get; set; }
         public decimal TotalPrice { get; set; }
