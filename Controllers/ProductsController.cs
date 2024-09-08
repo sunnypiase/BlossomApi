@@ -1,14 +1,10 @@
 using AutoMapper;
-using AutoMapper.QueryableExtensions;
 using BlossomApi.DB;
 using BlossomApi.Dtos;
 using BlossomApi.Dtos.Product;
-using BlossomApi.Models;
-using BlossomApi.Repositories;
 using BlossomApi.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Caching.Memory;
 
 namespace BlossomApi.Controllers
 {
@@ -17,11 +13,8 @@ namespace BlossomApi.Controllers
     public class ProductController : ControllerBase
     {
         private readonly BlossomContext _context;
-        private readonly CategoryService _categoryService;
         private readonly ImageService _imageService;
         private readonly ProductQueryService _productQueryService;
-        private readonly IShownProductRepository _shownProductRepository;
-        private readonly IMemoryCache _cache;
         private readonly ProductImageService _productImageService;
         private readonly ProductImportService _productImportService;
         private readonly ProductRecommendationService _productRecommendationService;
@@ -31,10 +24,7 @@ namespace BlossomApi.Controllers
 
         public ProductController(
             BlossomContext context,
-            CategoryService categoryService,
             ImageService imageService,
-            IShownProductRepository shownProductRepository,
-            IMemoryCache cache,
             ProductQueryService productQueryService,
             ProductImageService productImageService,
             ProductImportService productImportService,
@@ -44,10 +34,7 @@ namespace BlossomApi.Controllers
             ProductCreateService productCreateService)
         {
             _context = context;
-            _categoryService = categoryService;
             _imageService = imageService;
-            _shownProductRepository = shownProductRepository;
-            _cache = cache;
             _productQueryService = productQueryService;
             _productImageService = productImageService;
             _productImportService = productImportService;
@@ -116,7 +103,7 @@ namespace BlossomApi.Controllers
         {
             var query = await _productQueryService.ApplyFilterAndSortAsync(new GetProductsByAdminFilterRequestDto
             {
-                CategoryIds = request.CategoryId.HasValue ? [request.CategoryId.Value] : [],
+                CategoryIds = request.CategoryIds,
                 SortOption = request.SortBy,
                 Amount = request.Amount,
                 Start = request.Start,
