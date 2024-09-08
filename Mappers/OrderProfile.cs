@@ -25,6 +25,7 @@ namespace BlossomApi.Mappers
                 .ForMember(dest => dest.Promocode, opt => opt.MapFrom(src => src.Promocode != null ? src.Promocode.Code : string.Empty))
                 .ForMember(dest => dest.PromocodeId, opt => opt.MapFrom(src => src.PromocodeId))
                 .ForMember(dest => dest.TotalDiscount, opt => opt.MapFrom(src => src.DiscountFromPromocode + src.DiscountFromProductAction))
+                .ForMember(dest => dest.ProductsDiscount, opt => opt.MapFrom(src => src.DiscountFromProductAction))
                 .ForMember(dest => dest.TotalPriceWithDiscount, opt => opt.MapFrom(src => src.TotalPrice - (src.DiscountFromPromocode + src.DiscountFromProductAction)))
                 .ForMember(dest => dest.Products, opt => opt.MapFrom(src => src.ShoppingCart.ShoppingCartProducts.Select(scp => new ProductInOrderDto
                 {
