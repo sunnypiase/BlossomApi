@@ -2,9 +2,11 @@ using AutoMapper;
 using BlossomApi.DB;
 using BlossomApi.Dtos;
 using BlossomApi.Dtos.Product;
+using BlossomApi.Models;
 using BlossomApi.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Linq.Expressions;
 
 namespace BlossomApi.Controllers
 {
@@ -101,6 +103,8 @@ namespace BlossomApi.Controllers
         [HttpPost("GetProductsByFilter")]
         public async Task<ActionResult<GetProductsByFilterResponse>> GetProductsByFilter(GetProductsByFilterRequestDto request)
         {
+            Expression<Func<Product, bool>>? categoryFilter = product => product.IsShown && product.Categories.Any(b => b.CategoryId == request.CategoryId);
+
             var query = await _productQueryService.ApplyFilterAndSortAsync(new GetProductsByAdminFilterRequestDto
             {
                 CategoryIds = request.CategoryIds,
@@ -114,7 +118,7 @@ namespace BlossomApi.Controllers
                 MinPrice = request.MinPrice,
                 SelectedCharacteristics = request.SelectedCharacteristics,
                 IsShown = true
-            });
+            }, categoryFilter);
 
             var totalCount = await query.CountAsync();
 

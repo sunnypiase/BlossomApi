@@ -4,6 +4,7 @@ namespace BlossomApi.Dtos
 {
     public class GetProductsByFilterRequestDto
     {
+        public int CategoryId { get; set; }
         public List<int>? CategoryIds { get; set; }
         public string? SortBy { get; set; }
         public bool? IsHit { get; set; }
