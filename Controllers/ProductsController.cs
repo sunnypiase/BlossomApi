@@ -77,6 +77,7 @@ namespace BlossomApi.Controllers
                 .Include(x => x.Categories)
                 .Include(x => x.Reviews)
                 .Include(x => x.Characteristics)
+                .Include(x => x.Brand)
                 .Where(x => ids.Contains(x.ProductId))
                 .ToList();
 
