@@ -1,4 +1,6 @@
 ﻿using BlossomApi.Models;
+using System;
+using System.Collections.Generic;
 
 namespace BlossomApi.Dtos.Orders
 {
@@ -11,19 +13,24 @@ namespace BlossomApi.Dtos.Orders
         public string Surname { get; set; }
         public string Email { get; set; }
         public string PhoneNumber { get; set; }
+
         public string City { get; set; }
         public string DepartmentNumber { get; set; }
+
         public int? PromocodeId { get; set; }
         public string Promocode { get; set; }
         public decimal PromocodeDiscount { get; set; }
         public decimal DiscountFromPromocode { get; set; }
+        public decimal DiscountFromCashback { get; set; }
+        public decimal CashbackEarned { get; set; }
+
         public decimal ProductsDiscount { get; set; }
         public decimal TotalDiscount { get; set; }
         public decimal TotalPrice { get; set; }
         public decimal TotalPriceWithDiscount { get; set; }
+
         public List<ProductInOrderDto> Products { get; set; }
         public bool DontCallMe { get; set; }
         public bool EcoPackaging { get; set; }
     }
-
 }

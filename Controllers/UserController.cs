@@ -108,6 +108,7 @@ namespace BlossomApi.Controllers
             var identityUserId = _userManager.GetUserId(User);
             return await _context.SiteUsers
                 .Include(u => u.FavoriteProducts)
+                .Include(u => u.Cashback)
                 .FirstOrDefaultAsync(u => u.IdentityUserId == identityUserId);
         }
     }

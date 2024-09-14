@@ -1,11 +1,14 @@
-using AutoMapper;
+﻿using AutoMapper;
 using BlossomApi.DB;
 using BlossomApi.Dtos.Orders;
 using BlossomApi.Models;
+using BlossomApi.Extensions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace BlossomApi.Controllers
 {
@@ -39,6 +42,8 @@ namespace BlossomApi.Controllers
                 .Include(o => o.Promocode)
                 .Include(o => o.DeliveryInfo)
                 .Include(o => o.ShoppingCart)
+                    .ThenInclude(sc => sc.ShoppingCartProducts)
+                        .ThenInclude(scp => scp.Product)
                 .Where(o => o.ShoppingCart.SiteUserId == siteUser.UserId)
                 .ToListAsync();
 
@@ -47,7 +52,7 @@ namespace BlossomApi.Controllers
             return Ok(orderDtos);
         }
 
-        // GET: api/orders/statuses
+        // GET: api/orders/statuses?statuses=Created&statuses=Processing
         [Authorize(Roles = "Admin")]
         [HttpGet("statuses")]
         public async Task<IActionResult> GetOrdersByStatuses([FromQuery] List<OrderStatus> statuses)
@@ -56,6 +61,8 @@ namespace BlossomApi.Controllers
                 .Include(o => o.Promocode)
                 .Include(o => o.DeliveryInfo)
                 .Include(o => o.ShoppingCart)
+                    .ThenInclude(sc => sc.ShoppingCartProducts)
+                        .ThenInclude(scp => scp.Product)
                 .Where(o => statuses.Contains(o.Status))
                 .ToListAsync();
 
@@ -73,6 +80,8 @@ namespace BlossomApi.Controllers
                 .Include(o => o.Promocode)
                 .Include(o => o.DeliveryInfo)
                 .Include(o => o.ShoppingCart)
+                    .ThenInclude(sc => sc.ShoppingCartProducts)
+                        .ThenInclude(scp => scp.Product)
                 .ToListAsync();
 
             var orderDtos = _mapper.Map<List<OrderDto>>(orders);
@@ -89,6 +98,8 @@ namespace BlossomApi.Controllers
                 .Include(o => o.Promocode)
                 .Include(o => o.DeliveryInfo)
                 .Include(o => o.ShoppingCart)
+                    .ThenInclude(sc => sc.ShoppingCartProducts)
+                        .ThenInclude(scp => scp.Product)
                 .Where(o => o.ShoppingCart.SiteUserId == userId)
                 .ToListAsync();
 
@@ -102,10 +113,15 @@ namespace BlossomApi.Controllers
         [HttpPut("{orderId}/status")]
         public async Task<IActionResult> ChangeOrderStatus(int orderId, [FromBody] ChangeOrderStatusRequest request)
         {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
             var order = await _context.Orders.FindAsync(orderId);
             if (order == null)
             {
-                return NotFound("Order not found.");
+                return NotFound("Замовлення не знайдено.");
             }
 
             order.Status = request.Status;
@@ -125,13 +141,13 @@ namespace BlossomApi.Controllers
                 .Include(o => o.Promocode)
                 .Include(o => o.DeliveryInfo)
                 .Include(o => o.ShoppingCart)
-                .ThenInclude(sc => sc.ShoppingCartProducts)
-                .ThenInclude(scp => scp.Product)
+                    .ThenInclude(sc => sc.ShoppingCartProducts)
+                        .ThenInclude(scp => scp.Product)
                 .FirstOrDefaultAsync(o => o.OrderId == orderId);
 
             if (order == null)
             {
-                return NotFound("Order not found.");
+                return NotFound("Замовлення не знайдено.");
             }
 
             var orderDetailsDto = _mapper.Map<OrderDetailsDto>(order);

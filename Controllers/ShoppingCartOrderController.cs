@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations;
-using BlossomApi.AttributeValidations;
 using BlossomApi.DB;
 using BlossomApi.Models;
+using BlossomApi.Services; // Додано для використання сервісів
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -15,11 +15,19 @@ namespace BlossomApi.Controllers
     {
         private readonly BlossomContext _context;
         private readonly UserManager<IdentityUser> _userManager;
+        private readonly CashbackService _cashbackService;
+        private readonly PromocodeService _promocodeService;
 
-        public ShoppingCartOrderController(BlossomContext context, UserManager<IdentityUser> userManager)
+        public ShoppingCartOrderController(
+            BlossomContext context,
+            UserManager<IdentityUser> userManager,
+            CashbackService cashbackService,
+            PromocodeService promocodeService)
         {
             _context = context;
             _userManager = userManager;
+            _cashbackService = cashbackService;
+            _promocodeService = promocodeService;
         }
 
         [HttpPost("CreateOrderForGuest")]
@@ -77,16 +85,35 @@ namespace BlossomApi.Controllers
 
                 var order = CreateOrderFromRequest(request, shoppingCart.ShoppingCartId);
 
-                var promocodeError = await ValidateAndApplyPromocode(request.UsedPromocode, order);
+                // Отримання або створення запису кешбеку
+                string phoneNumber = request.UserInfo.Phone;
+                var cashback = await _cashbackService.GetOrCreateCashbackAsync(siteUser, phoneNumber);
+
+                // Перевірка та застосування кешбеку
+                var cashbackError = _cashbackService.ValidateAndApplyCashback(request, order, cashback);
+                if (!string.IsNullOrEmpty(cashbackError))
+                {
+                    return BadRequest(cashbackError);
+                }
+
+                // Перевірка та застосування промокоду
+                var promocodeError = await _promocodeService.ValidateAndApplyPromocode(request.UsedPromocode, order);
                 if (!string.IsNullOrEmpty(promocodeError))
                 {
                     return BadRequest(promocodeError);
                 }
 
-                CalculateTotalPrice(order, shoppingCart, order.Promocode);
+                // Розрахунок загальної ціни з урахуванням кешбеку та промокоду
+                CalculateTotalPrice(order, shoppingCart, order.Promocode, cashback);
+
+                // Оновлення залишків товарів
                 UpdateProductStock(shoppingCart);
 
+                // Збереження замовлення та оновлення балансу кешбеку
                 await SaveOrderAndCommitTransaction(order, siteUser);
+
+                // Оновлення балансу кешбеку після оформлення замовлення
+                _cashbackService.UpdateCashbackBalance(order, cashback);
 
                 await transaction.CommitAsync();
 
@@ -97,18 +124,20 @@ namespace BlossomApi.Controllers
                 await transaction.RollbackAsync();
                 return BadRequest(ex.Message);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 await transaction.RollbackAsync();
                 return StatusCode(500, "Сталася помилка під час створення замовлення.");
             }
         }
 
+
         private async Task SaveOrderAndCommitTransaction(Order order, SiteUser? siteUser)
         {
             _context.Orders.Add(order);
             if (siteUser != null)
             {
+                // Створення нового кошика покупок для користувача
                 _context.ShoppingCarts.Add(new ShoppingCart { SiteUserId = siteUser.UserId, CreatedDate = DateTime.UtcNow });
             }
 
@@ -140,7 +169,7 @@ namespace BlossomApi.Controllers
             await _context.ShoppingCartProducts.AddRangeAsync(shoppingCartProducts);
             await _context.SaveChangesAsync();
 
-            // Reload the ShoppingCart with the products to ensure the relationships are correctly established
+            // Перезавантаження кошика з продуктами для забезпечення коректних зв'язків
             addedShoppingCart = await _context.ShoppingCarts
                 .Include(sc => sc.ShoppingCartProducts)
                 .ThenInclude(scp => scp.Product)
@@ -164,13 +193,13 @@ namespace BlossomApi.Controllers
 
         private Product UpdateProductStockAfterAdd(Product product, int requestedAmount)
         {
-            int avilableAmount = product.AvailableAmount - requestedAmount;
-            if (avilableAmount < 0)
+            int availableAmount = product.AvailableAmount - requestedAmount;
+            if (availableAmount < 0)
             {
                 throw new InvalidOperationException("Недостатня кількість товару на складі.");
             }
 
-            product.AvailableAmount = avilableAmount;
+            product.AvailableAmount = availableAmount;
 
             return product;
         }
@@ -200,37 +229,6 @@ namespace BlossomApi.Controllers
                 .FirstOrDefaultAsync(sc => sc.SiteUserId == userId && sc.Order == null);
         }
 
-        private async Task<string> ValidateAndApplyPromocode(string? usedPromocode, Order order)
-        {
-            if (string.IsNullOrEmpty(usedPromocode))
-            {
-                return string.Empty;
-            }
-
-            var promocode = await _context.Promocodes.FirstOrDefaultAsync(p => p.Code == usedPromocode);
-            if (promocode == null)
-            {
-                return "Промокод не знайдено.";
-            }
-
-            if (promocode.ExpirationDate < DateTime.UtcNow)
-            {
-                return "Промокод прострочений.";
-            }
-
-            if (promocode.UsageLeft <= 0)
-            {
-                return "Промокод більше не доступний.";
-            }
-
-            order.PromocodeId = promocode.PromocodeId;
-            order.Promocode = promocode;
-            promocode.UsageLeft--;
-            _context.Promocodes.Update(promocode);
-
-            return string.Empty;
-        }
-
         private Order CreateOrderFromRequest(OrderBaseRequest request, int shoppingCartId)
         {
             var order = new Order
@@ -258,7 +256,7 @@ namespace BlossomApi.Controllers
             return order;
         }
 
-        private void CalculateTotalPrice(Order order, ShoppingCart shoppingCart, Promocode? promocode)
+        private void CalculateTotalPrice(Order order, ShoppingCart shoppingCart, Promocode? promocode, Cashback cashback)
         {
             decimal totalPrice = 0;
             decimal discountFromProductAction = 0;
@@ -279,22 +277,27 @@ namespace BlossomApi.Controllers
                 discountFromPromocode = (totalPrice - discountFromProductAction) * promocode.Discount / 100;
             }
 
+            // Загальна знижка з урахуванням кешбеку
             order.TotalPrice = totalPrice;
-            order.TotalDiscount = discountFromProductAction + discountFromPromocode;
-            order.DiscountFromPromocode = discountFromPromocode;
             order.DiscountFromProductAction = discountFromProductAction;
+            order.DiscountFromPromocode = discountFromPromocode;
+            order.TotalDiscount = discountFromProductAction + discountFromPromocode + order.DiscountFromCashback;
             order.TotalPriceWithDiscount = totalPrice - order.TotalDiscount;
         }
 
+        // Модель запиту для гостьових замовлень, включає використання кешбеку
         public class GuestOrderRequest : OrderBaseRequest
         {
             [Required(ErrorMessage = "Список товарів є обов'язковим.")]
             public List<OrderProductRequest> Products { get; set; }
+
+            public decimal CashbackToUse { get; set; } // Сума кешбеку, яку гість хоче використати
         }
 
+        // Модель запиту для замовлень авторизованих користувачів, включає використання кешбеку
         public class AuthenticatedOrderRequest : OrderBaseRequest
         {
-            // No additional properties needed for authenticated requests
+            public decimal CashbackToUse { get; set; } // Сума кешбеку, яку користувач хоче використати
         }
 
         public abstract class OrderBaseRequest
@@ -326,7 +329,7 @@ namespace BlossomApi.Controllers
             public string Name { get; set; }
 
             [Required(ErrorMessage = "Номер телефону є обов'язковим.")]
-            [PhoneNumber(ErrorMessage = "Неправильний формат номера телефону.")]
+            [Phone(ErrorMessage = "Неправильний формат номера телефону.")]
             public string Phone { get; set; }
 
             [Required(ErrorMessage = "Прізвище є обов'язковим.")]

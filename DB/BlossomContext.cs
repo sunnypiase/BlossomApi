@@ -43,33 +43,55 @@ namespace BlossomApi.DB
         public DbSet<Promocode> Promocodes { get; set; }
         public DbSet<Banner> Banners { get; set; }
         public DbSet<Blog> Blogs { get; set; }
-        public DbSet<Brand> Brands { get; set; } // New DbSet for the Brand model
+        public DbSet<Brand> Brands { get; set; }
+
+        // Added DbSet for Cashback
+        public DbSet<Cashback> Cashbacks { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
 
-            // One-to-one relationship between User and IdentityUser
+            // One-to-one relationship between SiteUser and IdentityUser
             modelBuilder.Entity<SiteUser>()
                 .HasOne(u => u.IdentityUser)
                 .WithOne()
                 .HasForeignKey<SiteUser>(u => u.IdentityUserId);
 
-            // Many-to-one relationship between ShoppingCart and User
+            // One-to-one relationship between SiteUser and Cashback
+            modelBuilder.Entity<SiteUser>()
+                .HasOne(su => su.Cashback)
+                .WithOne(c => c.SiteUser)
+                .HasForeignKey<Cashback>(c => c.SiteUserId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            // Configure decimal precision for Cashback Balance
+            modelBuilder.Entity<Cashback>()
+                .Property(c => c.Balance)
+                .HasColumnType("decimal(18,2)");
+
+            // Many-to-one relationship between Order and Cashback
+            modelBuilder.Entity<Order>()
+                .HasOne(o => o.Cashback)
+                .WithMany()
+                .HasForeignKey(o => o.CashbackId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            // Many-to-one relationship between ShoppingCart and SiteUser
             modelBuilder.Entity<ShoppingCart>()
                 .HasOne(sc => sc.SiteUser)
                 .WithMany(u => u.ShoppingCarts)
                 .HasForeignKey(sc => sc.SiteUserId)
-                .OnDelete(DeleteBehavior.Restrict); // Avoid cascade delete
+                .OnDelete(DeleteBehavior.Restrict);
 
             // One-to-many relationship between Brand and Product
             modelBuilder.Entity<Brand>()
                 .HasMany(b => b.Products)
                 .WithOne(p => p.Brand)
                 .HasForeignKey(p => p.BrandId)
-                .OnDelete(DeleteBehavior.NoAction); // Default behavior
+                .OnDelete(DeleteBehavior.NoAction);
 
-            // Many-to-many relationship between Product and Category using a join table
+            // Many-to-many relationship between Product and Category
             modelBuilder.Entity<Product>()
                 .HasMany(p => p.Categories)
                 .WithMany(c => c.Products)
@@ -88,7 +110,7 @@ namespace BlossomApi.DB
                     j => j.HasOne<Product>().WithMany().HasForeignKey("ProductId"),
                     j => j.HasOne<SiteUser>().WithMany().HasForeignKey("UserId"));
 
-            // Configure decimal property precision and scale
+            // Configure decimal properties
             modelBuilder.Entity<Product>()
                 .Property(p => p.Price)
                 .HasColumnType("decimal(18,2)");
@@ -97,7 +119,36 @@ namespace BlossomApi.DB
                 .Property(p => p.Discount)
                 .HasColumnType("decimal(18,2)");
 
-            // Map serialized properties to specific column names
+            // Configure decimal properties in Order
+            modelBuilder.Entity<Order>()
+                .Property(o => o.TotalPrice)
+                .HasColumnType("decimal(18,2)");
+
+            modelBuilder.Entity<Order>()
+                .Property(o => o.TotalDiscount)
+                .HasColumnType("decimal(18,2)");
+
+            modelBuilder.Entity<Order>()
+                .Property(o => o.TotalPriceWithDiscount)
+                .HasColumnType("decimal(18,2)");
+
+            modelBuilder.Entity<Order>()
+                .Property(o => o.DiscountFromPromocode)
+                .HasColumnType("decimal(18,2)");
+
+            modelBuilder.Entity<Order>()
+                .Property(o => o.DiscountFromProductAction)
+                .HasColumnType("decimal(18,2)");
+
+            modelBuilder.Entity<Order>()
+                .Property(o => o.DiscountFromCashback)
+                .HasColumnType("decimal(18,2)");
+
+            modelBuilder.Entity<Order>()
+                .Property(o => o.CashbackEarned)
+                .HasColumnType("decimal(18,2)");
+
+            // Map serialized properties
             modelBuilder.Entity<Product>()
                 .Property(p => p.ImagesSerialized)
                 .HasColumnName("Images");
@@ -111,37 +162,37 @@ namespace BlossomApi.DB
                 .HasOne(scp => scp.ShoppingCart)
                 .WithMany(sc => sc.ShoppingCartProducts)
                 .HasForeignKey(scp => scp.ShoppingCartId)
-                .OnDelete(DeleteBehavior.Restrict); // Avoid cascade delete
+                .OnDelete(DeleteBehavior.Restrict);
 
             // Many-to-one relationship between ShoppingCartProduct and Product
             modelBuilder.Entity<ShoppingCartProduct>()
                 .HasOne(scp => scp.Product)
                 .WithMany(p => p.ShoppingCartProducts)
                 .HasForeignKey(scp => scp.ProductId)
-                .OnDelete(DeleteBehavior.Restrict); // Avoid cascade delete
+                .OnDelete(DeleteBehavior.Restrict);
 
             // One-to-one relationship between Order and ShoppingCart
             modelBuilder.Entity<Order>()
                 .HasOne(o => o.ShoppingCart)
                 .WithOne(sc => sc.Order)
                 .HasForeignKey<Order>(o => o.ShoppingCartId)
-                .OnDelete(DeleteBehavior.Cascade); // Default behavior
+                .OnDelete(DeleteBehavior.Cascade);
 
             // One-to-one relationship between Order and DeliveryInfo
             modelBuilder.Entity<Order>()
                 .HasOne(o => o.DeliveryInfo)
                 .WithOne(di => di.Order)
                 .HasForeignKey<DeliveryInfo>(di => di.OrderId)
-                .OnDelete(DeleteBehavior.Cascade); // Default behavior
+                .OnDelete(DeleteBehavior.Cascade);
 
             // One-to-many relationship between Product and Review
             modelBuilder.Entity<Review>()
                 .HasOne(r => r.Product)
                 .WithMany(p => p.Reviews)
                 .HasForeignKey(r => r.ProductId)
-                .OnDelete(DeleteBehavior.Cascade); // Default behavior
+                .OnDelete(DeleteBehavior.Cascade);
 
-            // Many-to-many relationship between Product and Characteristic using a join table
+            // Many-to-many relationship between Product and Characteristic
             modelBuilder.Entity<Characteristic>()
                 .HasMany(c => c.Products)
                 .WithMany(p => p.Characteristics)
@@ -151,15 +202,17 @@ namespace BlossomApi.DB
                     j => j.HasOne<Characteristic>().WithMany().HasForeignKey("CharacteristicId"))
                 .HasData(DatabaseProductCharacteristicSeeder.GetProductCharacteristicConnections());
 
+            // Many-to-many relationship between Blog and Product
             modelBuilder.Entity<Blog>()
                 .HasMany(b => b.Products)
-                .WithMany(p => p.Blogs) // Adding Banners collection in Product
+                .WithMany(p => p.Blogs)
                 .UsingEntity<Dictionary<string, object>>(
                     "BlogProduct",
                     j => j.HasOne<Product>().WithMany().HasForeignKey("ProductId"),
                     j => j.HasOne<Blog>().WithMany().HasForeignKey("BlogId"))
                 .ToTable("BlogProducts");
 
+            // Seed data
             modelBuilder.Entity<Category>().HasData(DatabaseCategorySeeder.GetCategories());
             modelBuilder.Entity<Product>().HasData(DatabaseProductSeeder.GetProducts());
             modelBuilder.Entity<Characteristic>().HasData(DatabaseCharacteristicSeeder.GetCharacteristics());
@@ -170,7 +223,7 @@ namespace BlossomApi.DB
                 .HasOne(o => o.Promocode)
                 .WithMany()
                 .HasForeignKey(o => o.PromocodeId)
-                .OnDelete(DeleteBehavior.Restrict); // Avoid cascade delete
+                .OnDelete(DeleteBehavior.Restrict);
 
             // Configure DateTime properties to use UTC
             var dateTimeConverter = new ValueConverter<DateTime, DateTime>(

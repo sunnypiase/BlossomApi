@@ -21,7 +21,10 @@ namespace BlossomApi.Services
             Expression<Func<Product, bool>>? additionalFilter = null)
         {
             // Start with a base query
-            var query = _context.Products.AsQueryable();
+            var query = _context.Products
+                .Include(x => x.Categories)
+                .Include(x => x.Characteristics)
+                .AsQueryable();
 
             // Apply additional filter if provided
             if (additionalFilter != null)

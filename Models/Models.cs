@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json;
+using BlossomApi.AttributeValidations;
 using BlossomApi.Services;
 using Microsoft.AspNetCore.Identity;
 
@@ -12,19 +13,37 @@ namespace BlossomApi.Models
         public string Username { get; set; }
         public string Surname { get; set; }
         public string Email { get; set; }
+
+        [PhoneNumber(ErrorMessage = "Invalid phone number format.")]
         public string PhoneNumber { get; set; }
         public string? City { get; set; }
         public string? DepartmentNumber { get; set; }
 
         // Navigation properties
         public string IdentityUserId { get; set; }
-
-        // Navigation properties
         [ForeignKey("IdentityUserId")] public IdentityUser IdentityUser { get; set; }
-        public ICollection<ShoppingCart> ShoppingCarts { get; set; } = new List<ShoppingCart>();
 
-        // Many-to-many relationship with Product for favorites
+        public ICollection<ShoppingCart> ShoppingCarts { get; set; } = new List<ShoppingCart>();
         public ICollection<Product> FavoriteProducts { get; set; } = new List<Product>();
+
+        // One-to-one relationship with Cashback
+        public Cashback Cashback { get; set; }
+    }
+
+    public class Cashback
+    {
+        [Key] public int CashbackId { get; set; }
+
+        [Required]
+        [PhoneNumber(ErrorMessage = "Invalid phone number format.")]
+        public string PhoneNumber { get; set; }
+
+        [Required]
+        public decimal Balance { get; set; }
+
+        // Optional relationship with SiteUser for online accounts
+        public int? SiteUserId { get; set; }
+        public SiteUser SiteUser { get; set; }
     }
 
     public class ShoppingCart
@@ -263,6 +282,12 @@ namespace BlossomApi.Models
         public Promocode Promocode { get; set; }
         public ShoppingCart ShoppingCart { get; set; }
         public DeliveryInfo DeliveryInfo { get; set; }
+        public decimal DiscountFromCashback { get; set; } // Discount from cashback
+        public decimal CashbackEarned { get; set; } // Cashback earned from this order
+
+        // Navigation properties
+        public int? CashbackId { get; set; }
+        public Cashback Cashback { get; set; }
     }
 
     public class Promocode

@@ -5,6 +5,7 @@ using BlossomApi.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore; // Added for EF Core methods
 
 namespace BlossomApi.Controllers
 {
@@ -37,6 +38,14 @@ namespace BlossomApi.Controllers
                 return BadRequest(ModelState);
             }
 
+            // Check if the email is already in use
+            var existingUser = await _userManager.FindByEmailAsync(model.Email);
+            if (existingUser != null)
+            {
+                ModelState.AddModelError(string.Empty, "Користувач з такою електронною поштою вже існує.");
+                return BadRequest(ModelState);
+            }
+
             var user = new IdentityUser { UserName = model.Email, Email = model.Email };
             var result = await _userManager.CreateAsync(user, model.Password);
 
@@ -50,17 +59,52 @@ namespace BlossomApi.Controllers
                 return BadRequest(ModelState);
             }
 
-            var siteUser = _context.SiteUsers.Add(new SiteUser
+            var siteUser = new SiteUser
             {
                 IdentityUserId = user.Id,
                 Username = model.Username,
                 Surname = model.Surname,
                 Email = model.Email,
                 PhoneNumber = model.PhoneNumber
-            });
-
+            };
+            _context.SiteUsers.Add(siteUser);
             await _context.SaveChangesAsync();
-            await _context.ShoppingCarts.AddAsync(new ShoppingCart { SiteUserId = siteUser.Entity.UserId, CreatedDate = DateTime.UtcNow });
+
+            // Link or create Cashback record based on phone number
+            var cashback = await _context.Cashbacks
+                .FirstOrDefaultAsync(c => c.PhoneNumber == model.PhoneNumber);
+
+            if (cashback != null)
+            {
+                // If cashback exists and is not linked to any SiteUser, link it
+                if (cashback.SiteUserId == null)
+                {
+                    cashback.SiteUserId = siteUser.UserId;
+                    _context.Cashbacks.Update(cashback);
+                    await _context.SaveChangesAsync();
+                }
+                else if (cashback.SiteUserId != siteUser.UserId)
+                {
+                    // If cashback is linked to another user, handle accordingly
+                    ModelState.AddModelError(string.Empty, "Цей номер телефону вже пов'язаний з іншим обліковим записом.");
+                    return BadRequest(ModelState);
+                }
+            }
+            else
+            {
+                // If no cashback record exists, create a new one
+                cashback = new Cashback
+                {
+                    PhoneNumber = model.PhoneNumber,
+                    Balance = 0,
+                    SiteUserId = siteUser.UserId
+                };
+                _context.Cashbacks.Add(cashback);
+                await _context.SaveChangesAsync();
+            }
+
+            // Create a new ShoppingCart for the user
+            await _context.ShoppingCarts.AddAsync(new ShoppingCart { SiteUserId = siteUser.UserId, CreatedDate = DateTime.UtcNow });
             await _context.SaveChangesAsync();
 
             await _signInManager.SignInAsync(user, isPersistent: true);
@@ -76,9 +120,17 @@ namespace BlossomApi.Controllers
             }
 
             var adminSecret = Environment.GetEnvironmentVariable("ADMIN_SECRET");
-            if (model.Secret != null && model.Secret != adminSecret)
+            if (string.IsNullOrEmpty(adminSecret) || model.Secret != adminSecret)
             {
-                return Unauthorized(new { Message = "Invalid admin secret." });
+                return Unauthorized(new { Message = "Недійсний секретний ключ адміністратора." });
+            }
+
+            // Check if the email is already in use
+            var existingUser = await _userManager.FindByEmailAsync(model.Email);
+            if (existingUser != null)
+            {
+                ModelState.AddModelError(string.Empty, "Користувач з такою електронною поштою вже існує.");
+                return BadRequest(ModelState);
             }
 
             var user = new IdentityUser { UserName = model.Email, Email = model.Email };
@@ -94,19 +146,52 @@ namespace BlossomApi.Controllers
                 return BadRequest(ModelState);
             }
 
-            var siteUser = _context.SiteUsers.Add(new SiteUser
+            var siteUser = new SiteUser
             {
                 IdentityUserId = user.Id,
                 Username = model.Username,
                 Surname = model.Surname,
                 Email = model.Email,
                 PhoneNumber = model.PhoneNumber
-            });
-
-            await _context.SaveChangesAsync();
-            await _context.ShoppingCarts.AddAsync(new ShoppingCart { SiteUserId = siteUser.Entity.UserId, CreatedDate = DateTime.UtcNow });
+            };
+            _context.SiteUsers.Add(siteUser);
             await _context.SaveChangesAsync();
 
+            // Link or create Cashback record based on phone number
+            var cashback = await _context.Cashbacks
+                .FirstOrDefaultAsync(c => c.PhoneNumber == model.PhoneNumber);
+
+            if (cashback != null)
+            {
+                if (cashback.SiteUserId == null)
+                {
+                    cashback.SiteUserId = siteUser.UserId;
+                    _context.Cashbacks.Update(cashback);
+                    await _context.SaveChangesAsync();
+                }
+                else if (cashback.SiteUserId != siteUser.UserId)
+                {
+                    ModelState.AddModelError(string.Empty, "Цей номер телефону вже пов'язаний з іншим обліковим записом.");
+                    return BadRequest(ModelState);
+                }
+            }
+            else
+            {
+                cashback = new Cashback
+                {
+                    PhoneNumber = model.PhoneNumber,
+                    Balance = 0,
+                    SiteUserId = siteUser.UserId
+                };
+                _context.Cashbacks.Add(cashback);
+                await _context.SaveChangesAsync();
+            }
+
+            // Create a new ShoppingCart for the user
+            await _context.ShoppingCarts.AddAsync(new ShoppingCart { SiteUserId = siteUser.UserId, CreatedDate = DateTime.UtcNow });
+            await _context.SaveChangesAsync();
+
+            // Assign Admin role
             var adminRole = "Admin";
             if (!await _roleManager.RoleExistsAsync(adminRole))
             {
@@ -115,7 +200,7 @@ namespace BlossomApi.Controllers
             await _userManager.AddToRoleAsync(user, adminRole);
 
             await _signInManager.SignInAsync(user, isPersistent: true);
-            return Ok(new { Message = "Admin registration successful" });
+            return Ok(new { Message = "Реєстрація адміністратора успішна" });
         }
 
         [HttpPost("Login")]
@@ -177,14 +262,16 @@ namespace BlossomApi.Controllers
         public string ConfirmPassword { get; set; }
 
         [Required(ErrorMessage = "Номер телефону є обов'язковим.")]
-        [PhoneNumber(ErrorMessage = "Неправильний формат номера телефону.")]
+        [Phone(ErrorMessage = "Неправильний формат номера телефону.")]
         public string PhoneNumber { get; set; }
 
         public string? Secret { get; set; }
     }
+
     public class RegisterAdminModel : RegisterModel
     {
-        public string? Secret { get; set; }
+        [Required(ErrorMessage = "Секретний ключ адміністратора є обов'язковим.")]
+        public new string Secret { get; set; }
     }
 
     public class LoginRequest

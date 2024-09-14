@@ -19,6 +19,8 @@ namespace BlossomApi.Extensions
             services.AddScoped<OrderFilterPanelService>();
             services.AddScoped<OrderQueryService>();
             services.AddScoped<ProductAssociationService>();
+            services.AddScoped<PromocodeService>();
+            services.AddScoped<CashbackService>();
         }
     }
 }
