@@ -111,6 +111,7 @@ public class GetProductsByAdminFilterRequestDto
     public string? SearchTerm { get; set; }
 
     public List<int>? CategoryIds { get; set; }
+    public List<int>? BrandIds { get; set; }
     public List<int>? SelectedCharacteristics { get; set; }
     public decimal? MinPrice { get; set; }
     public decimal? MaxPrice { get; set; }

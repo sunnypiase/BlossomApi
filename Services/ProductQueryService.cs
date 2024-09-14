@@ -56,6 +56,12 @@ namespace BlossomApi.Services
                 query = query.Where(p => p.Categories.Any(c => allCategoryIds.Contains(c.CategoryId)));
             }
 
+            // Filter by brand
+            if (request.BrandIds != null && request.BrandIds.Count > 0)
+            {
+                query = query.Where(p => request.BrandIds.Contains(p.Brand.BrandId));
+            }
+
             // Filter by characteristics
             if (request.SelectedCharacteristics != null && request.SelectedCharacteristics.Count > 0)
             {
@@ -91,6 +97,7 @@ namespace BlossomApi.Services
                 query = query.Where(p => p.IsHit == request.IsHit.Value);
             }
 
+            // Filter by IsNew
             if (request.IsNew.HasValue)
             {
                 query = query.Where(p => p.IsNew == request.IsNew.Value);

@@ -84,6 +84,7 @@ namespace BlossomApi.Controllers
             return new BannerFilterPanelResponseDto
             {
                 Categories = categoryTree,
+                Brands = response.Brands,
                 Characteristics = response.Characteristics,
                 MinPrice = response.MinPrice,
                 MaxPrice = response.MaxPrice,
@@ -149,12 +150,22 @@ namespace BlossomApi.Controllers
                         .ToList()
                 })
                 .ToList();
-
+            var brends = products
+                .Select(p => p.Brand)
+                .DistinctBy(b => b.BrandId)
+                .Select(g => new FilterPanelOptionDto
+                {
+                    Id = g.BrandId,
+                    Option = g.Title,
+                    ProductsAmount = products.Count(p => p.Brand.Title == g.Title)
+                })
+                .ToList();
             var minPrice = products.Min(p => p.Price);
             var maxPrice = products.Max(p => p.Price);
 
             return new FilterPanelResponseDto
             {
+                Brands = brends,
                 Characteristics = characteristics,
                 MinPrice = minPrice,
                 MaxPrice = maxPrice,

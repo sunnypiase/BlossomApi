@@ -15,7 +15,7 @@ namespace BlossomApi.Seeders
                     Name = "Product 1",
                     NameEng = "Product 1 (English)",
                     ImagesSerialized = "[\"https://blossom-blob.b-cdn.net/cfcffdfa-4bc0-4c12-8c68-e84be0bc90d8_photo_2024-06-05_16-18-09.jpg\", \"https://blossom-blob.b-cdn.net/cfcffdfa-4bc0-4c12-8c68-e84be0bc90d8_photo_2024-06-05_16-18-09.jpg\"]",
-                    Brand = "Brand D",
+                    //Brand = "Brand D",
                     Price = 770.6m,
                     Discount = 20.58m,
                     IsNew = true,
@@ -28,7 +28,8 @@ namespace BlossomApi.Seeders
                     Article = "588900",
                     //OptionsSerialized = "[\"Option 1\", \"Option 2\"]",
                     DieNumbersSerialized = "[3, 4, 2, 1]",
-                    Description = "Description of Product 1"
+                    Description = "Description of Product 1",
+                    IsShown = true,
                 },
                 new Product
                 {
@@ -36,7 +37,7 @@ namespace BlossomApi.Seeders
                     Name = "Product 2",
                     NameEng = "Product 2 (English)",
                     ImagesSerialized = "[\"https://blossom-blob.b-cdn.net/cfcffdfa-4bc0-4c12-8c68-e84be0bc90d8_photo_2024-06-05_16-18-09.jpg\", \"https://blossom-blob.b-cdn.net/cfcffdfa-4bc0-4c12-8c68-e84be0bc90d8_photo_2024-06-05_16-18-09.jpg\", \"https://blossom-blob.b-cdn.net/cfcffdfa-4bc0-4c12-8c68-e84be0bc90d8_photo_2024-06-05_16-18-09.jpg\", \"https://blossom-blob.b-cdn.net/cfcffdfa-4bc0-4c12-8c68-e84be0bc90d8_photo_2024-06-05_16-18-09.jpg\"]",
-                    Brand = "Brand B",
+                    //Brand = "Brand B",
                     Price = 172.82m,
                     Discount = 43.26m,
                     IsNew = false,
@@ -49,7 +50,8 @@ namespace BlossomApi.Seeders
                     Article = "246719",
                     //OptionsSerialized = "[\"Option 1\"]",
                     DieNumbersSerialized = "[3, 1, 4]",
-                    Description = "Description of Product 2"
+                    Description = "Description of Product 2",
+                    IsShown = true,
                 },
                 new Product
                 {
@@ -57,7 +59,7 @@ namespace BlossomApi.Seeders
                     Name = "Product 3",
                     NameEng = "Product 3 (English)",
                     ImagesSerialized = "[\"https://blossom-blob.b-cdn.net/cfcffdfa-4bc0-4c12-8c68-e84be0bc90d8_photo_2024-06-05_16-18-09.jpg\", \"https://blossom-blob.b-cdn.net/cfcffdfa-4bc0-4c12-8c68-e84be0bc90d8_photo_2024-06-05_16-18-09.jpg\", \"https://blossom-blob.b-cdn.net/cfcffdfa-4bc0-4c12-8c68-e84be0bc90d8_photo_2024-06-05_16-18-09.jpg\"]",
-                    Brand = "Brand B",
+                    //Brand = "Brand B",
                     Price = 244.68m,
                     Discount = 33.49m,
                     IsNew = false,
@@ -70,7 +72,8 @@ namespace BlossomApi.Seeders
                     Article = "725598",
                     //OptionsSerialized = "[\"Option 1\", \"Option 2\", \"Option 3\", \"Option 4\"]",
                     DieNumbersSerialized = "[1, 2]",
-                    Description = "Description of Product 3"
+                    Description = "Description of Product 3",
+                    IsShown = true,
                 },
                 new Product
                 {
@@ -78,7 +81,7 @@ namespace BlossomApi.Seeders
                     Name = "Product 4",
                     NameEng = "Product 4 (English)",
                     ImagesSerialized = "[\"https://blossom-blob.b-cdn.net/cfcffdfa-4bc0-4c12-8c68-e84be0bc90d8_photo_2024-06-05_16-18-09.jpg\", \"https://blossom-blob.b-cdn.net/cfcffdfa-4bc0-4c12-8c68-e84be0bc90d8_photo_2024-06-05_16-18-09.jpg\", \"https://blossom-blob.b-cdn.net/cfcffdfa-4bc0-4c12-8c68-e84be0bc90d8_photo_2024-06-05_16-18-09.jpg\"]",
-                    Brand = "Brand A",
+                    //Brand = "Brand A",
                     Price = 808.04m,
                     Discount = 26.56m,
                     IsNew = true,
@@ -91,7 +94,8 @@ namespace BlossomApi.Seeders
                     Article = "285783",
                     //OptionsSerialized = "[\"Option 1\", \"Option 2\"]",
                     DieNumbersSerialized = "[1, 2, 3, 4]",
-                    Description = "Description of Product 4"
+                    Description = "Description of Product 4",
+                    IsShown = true,
                 },
                 new Product
                 {
@@ -99,7 +103,7 @@ namespace BlossomApi.Seeders
                     Name = "Product 5",
                     NameEng = "Product 5 (English)",
                     ImagesSerialized = "[\"https://blossom-blob.b-cdn.net/cfcffdfa-4bc0-4c12-8c68-e84be0bc90d8_photo_2024-06-05_16-18-09.jpg\"]",
-                    Brand = "Brand A",
+                    //Brand = "Brand A",
                     Price = 434.72m,
                     Discount = 0.58m,
                     IsNew = false,
@@ -112,7 +116,8 @@ namespace BlossomApi.Seeders
                     Article = "572043",
                     //OptionsSerialized = "[\"Option 1\", \"Option 2\", \"Option 3\", \"Option 4\"]",
                     DieNumbersSerialized = "[4]",
-                    Description = "Description of Product 5"
+                    Description = "Description of Product 5",
+                    IsShown = true,
                 },
                 new Product
                 {
@@ -120,7 +125,7 @@ namespace BlossomApi.Seeders
                     Name = "Product 6",
                     NameEng = "Product 6 (English)",
                     ImagesSerialized = "[\"https://blossom-blob.b-cdn.net/cfcffdfa-4bc0-4c12-8c68-e84be0bc90d8_photo_2024-06-05_16-18-09.jpg\", \"https://blossom-blob.b-cdn.net/cfcffdfa-4bc0-4c12-8c68-e84be0bc90d8_photo_2024-06-05_16-18-09.jpg\", \"https://blossom-blob.b-cdn.net/cfcffdfa-4bc0-4c12-8c68-e84be0bc90d8_photo_2024-06-05_16-18-09.jpg\", \"https://blossom-blob.b-cdn.net/cfcffdfa-4bc0-4c12-8c68-e84be0bc90d8_photo_2024-06-05_16-18-09.jpg\"]",
-                    Brand = "Brand B",
+                    //Brand = "Brand B",
                     Price = 402.47m,
                     Discount = 18.21m,
                     IsNew = false,
@@ -133,7 +138,8 @@ namespace BlossomApi.Seeders
                     Article = "883608",
                     //OptionsSerialized = "[\"Option 1\"]",
                     DieNumbersSerialized = "[3, 1]",
-                    Description = "Description of Product 6"
+                    Description = "Description of Product 6",
+                    IsShown = true,
                 },
                 new Product
                 {
@@ -141,7 +147,7 @@ namespace BlossomApi.Seeders
                     Name = "Product 7",
                     NameEng = "Product 7 (English)",
                     ImagesSerialized = "[\"https://blossom-blob.b-cdn.net/cfcffdfa-4bc0-4c12-8c68-e84be0bc90d8_photo_2024-06-05_16-18-09.jpg\", \"https://blossom-blob.b-cdn.net/cfcffdfa-4bc0-4c12-8c68-e84be0bc90d8_photo_2024-06-05_16-18-09.jpg\", \"https://blossom-blob.b-cdn.net/cfcffdfa-4bc0-4c12-8c68-e84be0bc90d8_photo_2024-06-05_16-18-09.jpg\", \"https://blossom-blob.b-cdn.net/cfcffdfa-4bc0-4c12-8c68-e84be0bc90d8_photo_2024-06-05_16-18-09.jpg\"]",
-                    Brand = "Brand B",
+                    //Brand = "Brand B",
                     Price = 357.57m,
                     Discount = 43.4m,
                     IsNew = true,
@@ -154,7 +160,8 @@ namespace BlossomApi.Seeders
                     Article = "315193",
                     //OptionsSerialized = "[\"Option 1\"]",
                     DieNumbersSerialized = "[4, 1, 2]",
-                    Description = "Description of Product 7"
+                    Description = "Description of Product 7",
+                    IsShown = true,
                 },
                 new Product
                 {
@@ -162,7 +169,7 @@ namespace BlossomApi.Seeders
                     Name = "Product 8",
                     NameEng = "Product 8 (English)",
                     ImagesSerialized = "[\"https://blossom-blob.b-cdn.net/cfcffdfa-4bc0-4c12-8c68-e84be0bc90d8_photo_2024-06-05_16-18-09.jpg\"]",
-                    Brand = "Brand D",
+                    //Brand = "Brand D",
                     Price = 113.07m,
                     Discount = 13.64m,
                     IsNew = true,
@@ -175,7 +182,8 @@ namespace BlossomApi.Seeders
                     Article = "826958",
                     //OptionsSerialized = "[\"Option 1\", \"Option 2\"]",
                     DieNumbersSerialized = "[5, 3]",
-                    Description = "Description of Product 8"
+                    Description = "Description of Product 8",
+                    IsShown = true,
                 },
                 new Product
                 {
@@ -183,7 +191,7 @@ namespace BlossomApi.Seeders
                     Name = "Product 9",
                     NameEng = "Product 9 (English)",
                     ImagesSerialized = "[\"https://blossom-blob.b-cdn.net/cfcffdfa-4bc0-4c12-8c68-e84be0bc90d8_photo_2024-06-05_16-18-09.jpg\"]",
-                    Brand = "Brand D",
+                    //Brand = "Brand D",
                     Price = 160.63m,
                     Discount = 47.33m,
                     IsNew = true,
@@ -196,7 +204,8 @@ namespace BlossomApi.Seeders
                     Article = "243906",
                     //OptionsSerialized = "[\"Option 1\", \"Option 2\"]",
                     DieNumbersSerialized = "[3, 5]",
-                    Description = "Description of Product 9"
+                    Description = "Description of Product 9",
+                    IsShown = true,
                 },
                 new Product
                 {
@@ -204,7 +213,7 @@ namespace BlossomApi.Seeders
                     Name = "Product 10",
                     NameEng = "Product 10 (English)",
                     ImagesSerialized = "[\"https://blossom-blob.b-cdn.net/cfcffdfa-4bc0-4c12-8c68-e84be0bc90d8_photo_2024-06-05_16-18-09.jpg\", \"https://blossom-blob.b-cdn.net/cfcffdfa-4bc0-4c12-8c68-e84be0bc90d8_photo_2024-06-05_16-18-09.jpg\"]",
-                    Brand = "Brand A",
+                    //Brand = "Brand A",
                     Price = 812.91m,
                     Discount = 27.63m,
                     IsNew = true,
@@ -217,7 +226,8 @@ namespace BlossomApi.Seeders
                     Article = "697442",
                     //OptionsSerialized = "[\"Option 1\"]",
                     DieNumbersSerialized = "[5, 4, 2, 1, 3]",
-                    Description = "Description of Product 10"
+                    Description = "Description of Product 10",
+                    IsShown = true,
                 },
                 new Product
                 {
@@ -225,7 +235,7 @@ namespace BlossomApi.Seeders
                     Name = "Product 11",
                     NameEng = "Product 11 (English)",
                     ImagesSerialized = "[\"https://blossom-blob.b-cdn.net/cfcffdfa-4bc0-4c12-8c68-e84be0bc90d8_photo_2024-06-05_16-18-09.jpg\", \"https://blossom-blob.b-cdn.net/cfcffdfa-4bc0-4c12-8c68-e84be0bc90d8_photo_2024-06-05_16-18-09.jpg\", \"https://blossom-blob.b-cdn.net/cfcffdfa-4bc0-4c12-8c68-e84be0bc90d8_photo_2024-06-05_16-18-09.jpg\", \"https://blossom-blob.b-cdn.net/cfcffdfa-4bc0-4c12-8c68-e84be0bc90d8_photo_2024-06-05_16-18-09.jpg\"]",
-                    Brand = "Brand A",
+                    //Brand = "Brand A",
                     Price = 109.71m,
                     Discount = 17.05m,
                     IsNew = true,
@@ -238,7 +248,8 @@ namespace BlossomApi.Seeders
                     Article = "478490",
                     //OptionsSerialized = "[\"Option 1\"]",
                     DieNumbersSerialized = "[4, 5]",
-                    Description = "Description of Product 11"
+                    Description = "Description of Product 11",
+                    IsShown = true,
                 },
                 new Product
                 {
@@ -246,7 +257,7 @@ namespace BlossomApi.Seeders
                     Name = "Product 12",
                     NameEng = "Product 12 (English)",
                     ImagesSerialized = "[\"https://blossom-blob.b-cdn.net/cfcffdfa-4bc0-4c12-8c68-e84be0bc90d8_photo_2024-06-05_16-18-09.jpg\", \"https://blossom-blob.b-cdn.net/cfcffdfa-4bc0-4c12-8c68-e84be0bc90d8_photo_2024-06-05_16-18-09.jpg\", \"https://blossom-blob.b-cdn.net/cfcffdfa-4bc0-4c12-8c68-e84be0bc90d8_photo_2024-06-05_16-18-09.jpg\"]",
-                    Brand = "Brand C",
+                    //Brand = "Brand C",
                     Price = 712.62m,
                     Discount = 4.85m,
                     IsNew = false,
@@ -259,7 +270,8 @@ namespace BlossomApi.Seeders
                     Article = "867237",
                     //OptionsSerialized = "[\"Option 1\", \"Option 2\", \"Option 3\"]",
                     DieNumbersSerialized = "[4, 3, 1]",
-                    Description = "Description of Product 12"
+                    Description = "Description of Product 12",
+                    IsShown = true,
                 },
                 new Product
                 {
@@ -267,7 +279,7 @@ namespace BlossomApi.Seeders
                     Name = "Product 13",
                     NameEng = "Product 13 (English)",
                     ImagesSerialized = "[\"https://blossom-blob.b-cdn.net/cfcffdfa-4bc0-4c12-8c68-e84be0bc90d8_photo_2024-06-05_16-18-09.jpg\"]",
-                    Brand = "Brand D",
+                    //Brand = "Brand D",
                     Price = 542.54m,
                     Discount = 36.73m,
                     IsNew = false,
@@ -280,7 +292,8 @@ namespace BlossomApi.Seeders
                     Article = "112039",
                     //OptionsSerialized = "[\"Option 1\"]",
                     DieNumbersSerialized = "[4, 5, 1]",
-                    Description = "Description of Product 13"
+                    Description = "Description of Product 13",
+                    IsShown = true,
                 },
                 new Product
                 {
@@ -288,7 +301,7 @@ namespace BlossomApi.Seeders
                     Name = "Product 14",
                     NameEng = "Product 14 (English)",
                     ImagesSerialized = "[\"https://blossom-blob.b-cdn.net/cfcffdfa-4bc0-4c12-8c68-e84be0bc90d8_photo_2024-06-05_16-18-09.jpg\"]",
-                    Brand = "Brand B",
+                    //Brand = "Brand B",
                     Price = 881.55m,
                     Discount = 15.1m,
                     IsNew = false,
@@ -301,7 +314,8 @@ namespace BlossomApi.Seeders
                     Article = "551657",
                     //OptionsSerialized = "[\"Option 1\"]",
                     DieNumbersSerialized = "[1, 2, 3, 5]",
-                    Description = "Description of Product 14"
+                    Description = "Description of Product 14",
+                    IsShown = true,
                 },
                 new Product
                 {
@@ -309,7 +323,7 @@ namespace BlossomApi.Seeders
                     Name = "Product 15",
                     NameEng = "Product 15 (English)",
                     ImagesSerialized = "[\"https://blossom-blob.b-cdn.net/cfcffdfa-4bc0-4c12-8c68-e84be0bc90d8_photo_2024-06-05_16-18-09.jpg\", \"https://blossom-blob.b-cdn.net/cfcffdfa-4bc0-4c12-8c68-e84be0bc90d8_photo_2024-06-05_16-18-09.jpg\", \"https://blossom-blob.b-cdn.net/cfcffdfa-4bc0-4c12-8c68-e84be0bc90d8_photo_2024-06-05_16-18-09.jpg\", \"https://blossom-blob.b-cdn.net/cfcffdfa-4bc0-4c12-8c68-e84be0bc90d8_photo_2024-06-05_16-18-09.jpg\"]",
-                    Brand = "Brand D",
+                    //Brand = "Brand D",
                     Price = 34.34m,
                     Discount = 4.01m,
                     IsNew = false,
@@ -322,7 +336,8 @@ namespace BlossomApi.Seeders
                     Article = "236229",
                     //OptionsSerialized = "[\"Option 1\"]",
                     DieNumbersSerialized = "[3]",
-                    Description = "Description of Product 15"
+                    Description = "Description of Product 15",
+                    IsShown = true,
                 },
                 new Product
                 {
@@ -330,7 +345,7 @@ namespace BlossomApi.Seeders
                     Name = "Product 16",
                     NameEng = "Product 16 (English)",
                     ImagesSerialized = "[\"https://blossom-blob.b-cdn.net/cfcffdfa-4bc0-4c12-8c68-e84be0bc90d8_photo_2024-06-05_16-18-09.jpg\", \"https://blossom-blob.b-cdn.net/cfcffdfa-4bc0-4c12-8c68-e84be0bc90d8_photo_2024-06-05_16-18-09.jpg\", \"https://blossom-blob.b-cdn.net/cfcffdfa-4bc0-4c12-8c68-e84be0bc90d8_photo_2024-06-05_16-18-09.jpg\"]",
-                    Brand = "Brand B",
+                    //Brand = "Brand B",
                     Price = 698.97m,
                     Discount = 41.58m,
                     IsNew = true,
@@ -343,7 +358,8 @@ namespace BlossomApi.Seeders
                     Article = "786374",
                     //OptionsSerialized = "[\"Option 1\", \"Option 2\", \"Option 3\", \"Option 4\"]",
                     DieNumbersSerialized = "[2, 5, 1, 3]",
-                    Description = "Description of Product 16"
+                    Description = "Description of Product 16",
+                    IsShown = true,
                 },
                 new Product
                 {
@@ -351,7 +367,7 @@ namespace BlossomApi.Seeders
                     Name = "Product 17",
                     NameEng = "Product 17 (English)",
                     ImagesSerialized = "[\"https://blossom-blob.b-cdn.net/cfcffdfa-4bc0-4c12-8c68-e84be0bc90d8_photo_2024-06-05_16-18-09.jpg\"]",
-                    Brand = "Brand B",
+                    //Brand = "Brand B",
                     Price = 996.37m,
                     Discount = 38.73m,
                     IsNew = false,
@@ -364,7 +380,8 @@ namespace BlossomApi.Seeders
                     Article = "117817",
                     //OptionsSerialized = "[\"Option 1\", \"Option 2\"]",
                     DieNumbersSerialized = "[2, 1, 5, 3, 4]",
-                    Description = "Description of Product 17"
+                    Description = "Description of Product 17",
+                    IsShown = true,
                 },
                 new Product
                 {
@@ -372,7 +389,7 @@ namespace BlossomApi.Seeders
                     Name = "Product 18",
                     NameEng = "Product 18 (English)",
                     ImagesSerialized = "[\"https://blossom-blob.b-cdn.net/cfcffdfa-4bc0-4c12-8c68-e84be0bc90d8_photo_2024-06-05_16-18-09.jpg\", \"https://blossom-blob.b-cdn.net/cfcffdfa-4bc0-4c12-8c68-e84be0bc90d8_photo_2024-06-05_16-18-09.jpg\"]",
-                    Brand = "Brand A",
+                    //Brand = "Brand A",
                     Price = 399.36m,
                     Discount = 9.19m,
                     IsNew = false,
@@ -385,7 +402,8 @@ namespace BlossomApi.Seeders
                     Article = "914004",
                     //OptionsSerialized = "[\"Option 1\", \"Option 2\"]",
                     DieNumbersSerialized = "[4]",
-                    Description = "Description of Product 18"
+                    Description = "Description of Product 18",
+                    IsShown = true,
                 },
                 new Product
                 {
@@ -393,7 +411,7 @@ namespace BlossomApi.Seeders
                     Name = "Product 19",
                     NameEng = "Product 19 (English)",
                     ImagesSerialized = "[\"https://blossom-blob.b-cdn.net/cfcffdfa-4bc0-4c12-8c68-e84be0bc90d8_photo_2024-06-05_16-18-09.jpg\", \"https://blossom-blob.b-cdn.net/cfcffdfa-4bc0-4c12-8c68-e84be0bc90d8_photo_2024-06-05_16-18-09.jpg\", \"https://blossom-blob.b-cdn.net/cfcffdfa-4bc0-4c12-8c68-e84be0bc90d8_photo_2024-06-05_16-18-09.jpg\"]",
-                    Brand = "Brand A",
+                    //Brand = "Brand A",
                     Price = 287.24m,
                     Discount = 21.58m,
                     IsNew = true,
@@ -406,7 +424,8 @@ namespace BlossomApi.Seeders
                     Article = "865717",
                     //OptionsSerialized = "[\"Option 1\", \"Option 2\", \"Option 3\"]",
                     DieNumbersSerialized = "[3, 4]",
-                    Description = "Description of Product 19"
+                    Description = "Description of Product 19",
+                    IsShown = true,
                 },
                 new Product
                 {
@@ -414,7 +433,7 @@ namespace BlossomApi.Seeders
                     Name = "Product 20",
                     NameEng = "Product 20 (English)",
                     ImagesSerialized = "[\"https://blossom-blob.b-cdn.net/cfcffdfa-4bc0-4c12-8c68-e84be0bc90d8_photo_2024-06-05_16-18-09.jpg\"]",
-                    Brand = "Brand D",
+                    //Brand = "Brand D",
                     Price = 341.28m,
                     Discount = 21.8m,
                     IsNew = false,
@@ -427,7 +446,8 @@ namespace BlossomApi.Seeders
                     Article = "815558",
                     //OptionsSerialized = "[\"Option 1\", \"Option 2\", \"Option 3\", \"Option 4\"]",
                     DieNumbersSerialized = "[1, 3, 5]",
-                    Description = "Description of Product 20"
+                    Description = "Description of Product 20",
+                    IsShown = true,
                 },
                 new Product
                 {
@@ -435,7 +455,7 @@ namespace BlossomApi.Seeders
                     Name = "Product 21",
                     NameEng = "Product 21 (English)",
                     ImagesSerialized = "[\"https://blossom-blob.b-cdn.net/cfcffdfa-4bc0-4c12-8c68-e84be0bc90d8_photo_2024-06-05_16-18-09.jpg\", \"https://blossom-blob.b-cdn.net/cfcffdfa-4bc0-4c12-8c68-e84be0bc90d8_photo_2024-06-05_16-18-09.jpg\"]",
-                    Brand = "Brand D",
+                    //Brand = "Brand D",
                     Price = 358.99m,
                     Discount = 43.48m,
                     IsNew = false,
@@ -448,7 +468,8 @@ namespace BlossomApi.Seeders
                     Article = "519889",
                     //OptionsSerialized = "[\"Option 1\", \"Option 2\", \"Option 3\", \"Option 4\"]",
                     DieNumbersSerialized = "[3]",
-                    Description = "Description of Product 21"
+                    Description = "Description of Product 21",
+                    IsShown = true,
                 },
                 new Product
                 {
@@ -456,7 +477,7 @@ namespace BlossomApi.Seeders
                     Name = "Product 22",
                     NameEng = "Product 22 (English)",
                     ImagesSerialized = "[\"https://blossom-blob.b-cdn.net/cfcffdfa-4bc0-4c12-8c68-e84be0bc90d8_photo_2024-06-05_16-18-09.jpg\", \"https://blossom-blob.b-cdn.net/cfcffdfa-4bc0-4c12-8c68-e84be0bc90d8_photo_2024-06-05_16-18-09.jpg\", \"https://blossom-blob.b-cdn.net/cfcffdfa-4bc0-4c12-8c68-e84be0bc90d8_photo_2024-06-05_16-18-09.jpg\", \"https://blossom-blob.b-cdn.net/cfcffdfa-4bc0-4c12-8c68-e84be0bc90d8_photo_2024-06-05_16-18-09.jpg\"]",
-                    Brand = "Brand B",
+                    //Brand = "Brand B",
                     Price = 309.22m,
                     Discount = 6.23m,
                     IsNew = true,
@@ -469,7 +490,8 @@ namespace BlossomApi.Seeders
                     Article = "535361",
                     //OptionsSerialized = "[\"Option 1\", \"Option 2\", \"Option 3\", \"Option 4\"]",
                     DieNumbersSerialized = "[5, 4, 3]",
-                    Description = "Description of Product 22"
+                    Description = "Description of Product 22",
+                    IsShown = true,
                 },
                 new Product
                 {
@@ -477,7 +499,7 @@ namespace BlossomApi.Seeders
                     Name = "Product 23",
                     NameEng = "Product 23 (English)",
                     ImagesSerialized = "[\"https://blossom-blob.b-cdn.net/cfcffdfa-4bc0-4c12-8c68-e84be0bc90d8_photo_2024-06-05_16-18-09.jpg\", \"https://blossom-blob.b-cdn.net/cfcffdfa-4bc0-4c12-8c68-e84be0bc90d8_photo_2024-06-05_16-18-09.jpg\", \"https://blossom-blob.b-cdn.net/cfcffdfa-4bc0-4c12-8c68-e84be0bc90d8_photo_2024-06-05_16-18-09.jpg\"]",
-                    Brand = "Brand B",
+                    //Brand = "Brand B",
                     Price = 791.63m,
                     Discount = 26.2m,
                     IsNew = false,
@@ -490,7 +512,8 @@ namespace BlossomApi.Seeders
                     Article = "697319",
                     //OptionsSerialized = "[\"Option 1\", \"Option 2\", \"Option 3\", \"Option 4\"]",
                     DieNumbersSerialized = "[5, 1]",
-                    Description = "Description of Product 23"
+                    Description = "Description of Product 23",
+                    IsShown = true,
                 },
                 new Product
                 {
@@ -498,7 +521,7 @@ namespace BlossomApi.Seeders
                     Name = "Product 24",
                     NameEng = "Product 24 (English)",
                     ImagesSerialized = "[\"https://blossom-blob.b-cdn.net/cfcffdfa-4bc0-4c12-8c68-e84be0bc90d8_photo_2024-06-05_16-18-09.jpg\"]",
-                    Brand = "Brand A",
+                    //Brand = "Brand A",
                     Price = 812.89m,
                     Discount = 45.88m,
                     IsNew = false,
@@ -511,7 +534,8 @@ namespace BlossomApi.Seeders
                     Article = "477784",
                     //OptionsSerialized = "[\"Option 1\", \"Option 2\"]",
                     DieNumbersSerialized = "[4]",
-                    Description = "Description of Product 24"
+                    Description = "Description of Product 24",
+                    IsShown = true,
                 },
                 new Product
                 {
@@ -519,7 +543,7 @@ namespace BlossomApi.Seeders
                     Name = "Product 25",
                     NameEng = "Product 25 (English)",
                     ImagesSerialized = "[\"https://blossom-blob.b-cdn.net/cfcffdfa-4bc0-4c12-8c68-e84be0bc90d8_photo_2024-06-05_16-18-09.jpg\", \"https://blossom-blob.b-cdn.net/cfcffdfa-4bc0-4c12-8c68-e84be0bc90d8_photo_2024-06-05_16-18-09.jpg\"]",
-                    Brand = "Brand A",
+                    //Brand = "Brand A",
                     Price = 698.29m,
                     Discount = 36.06m,
                     IsNew = true,
@@ -532,7 +556,8 @@ namespace BlossomApi.Seeders
                     Article = "731744",
                     //OptionsSerialized = "[\"Option 1\", \"Option 2\"]",
                     DieNumbersSerialized = "[5, 1]",
-                    Description = "Description of Product 25"
+                    Description = "Description of Product 25",
+                    IsShown = true,
                 },
                 new Product
                 {
@@ -540,7 +565,7 @@ namespace BlossomApi.Seeders
                     Name = "Product 26",
                     NameEng = "Product 26 (English)",
                     ImagesSerialized = "[\"https://blossom-blob.b-cdn.net/cfcffdfa-4bc0-4c12-8c68-e84be0bc90d8_photo_2024-06-05_16-18-09.jpg\"]",
-                    Brand = "Brand C",
+                    //Brand = "Brand C",
                     Price = 101.96m,
                     Discount = 19.84m,
                     IsNew = true,
@@ -553,7 +578,8 @@ namespace BlossomApi.Seeders
                     Article = "518046",
                     //OptionsSerialized = "[\"Option 1\", \"Option 2\"]",
                     DieNumbersSerialized = "[4, 5, 1, 2]",
-                    Description = "Description of Product 26"
+                    Description = "Description of Product 26",
+                    IsShown = true,
                 },
                 new Product
                 {
@@ -561,7 +587,7 @@ namespace BlossomApi.Seeders
                     Name = "Product 27",
                     NameEng = "Product 27 (English)",
                     ImagesSerialized = "[\"https://blossom-blob.b-cdn.net/cfcffdfa-4bc0-4c12-8c68-e84be0bc90d8_photo_2024-06-05_16-18-09.jpg\", \"https://blossom-blob.b-cdn.net/cfcffdfa-4bc0-4c12-8c68-e84be0bc90d8_photo_2024-06-05_16-18-09.jpg\", \"https://blossom-blob.b-cdn.net/cfcffdfa-4bc0-4c12-8c68-e84be0bc90d8_photo_2024-06-05_16-18-09.jpg\"]",
-                    Brand = "Brand B",
+                    //Brand = "Brand B",
                     Price = 560.23m,
                     Discount = 16.35m,
                     IsNew = true,
@@ -574,7 +600,8 @@ namespace BlossomApi.Seeders
                     Article = "934674",
                     //OptionsSerialized = "[\"Option 1\", \"Option 2\", \"Option 3\"]",
                     DieNumbersSerialized = "[4, 3, 5, 2]",
-                    Description = "Description of Product 27"
+                    Description = "Description of Product 27",
+                    IsShown = true,
                 },
                 new Product
                 {
@@ -582,7 +609,7 @@ namespace BlossomApi.Seeders
                     Name = "Product 28",
                     NameEng = "Product 28 (English)",
                     ImagesSerialized = "[\"https://blossom-blob.b-cdn.net/cfcffdfa-4bc0-4c12-8c68-e84be0bc90d8_photo_2024-06-05_16-18-09.jpg\", \"https://blossom-blob.b-cdn.net/cfcffdfa-4bc0-4c12-8c68-e84be0bc90d8_photo_2024-06-05_16-18-09.jpg\", \"https://blossom-blob.b-cdn.net/cfcffdfa-4bc0-4c12-8c68-e84be0bc90d8_photo_2024-06-05_16-18-09.jpg\", \"https://blossom-blob.b-cdn.net/cfcffdfa-4bc0-4c12-8c68-e84be0bc90d8_photo_2024-06-05_16-18-09.jpg\"]",
-                    Brand = "Brand D",
+                    //Brand = "Brand D",
                     Price = 370.04m,
                     Discount = 43.97m,
                     IsNew = true,
@@ -595,7 +622,8 @@ namespace BlossomApi.Seeders
                     Article = "659862",
                     //OptionsSerialized = "[\"Option 1\", \"Option 2\", \"Option 3\"]",
                     DieNumbersSerialized = "[4, 3]",
-                    Description = "Description of Product 28"
+                    Description = "Description of Product 28",
+                    IsShown = true,
                 },
                 new Product
                 {
@@ -603,7 +631,7 @@ namespace BlossomApi.Seeders
                     Name = "Product 29",
                     NameEng = "Product 29 (English)",
                     ImagesSerialized = "[\"https://blossom-blob.b-cdn.net/cfcffdfa-4bc0-4c12-8c68-e84be0bc90d8_photo_2024-06-05_16-18-09.jpg\", \"https://blossom-blob.b-cdn.net/cfcffdfa-4bc0-4c12-8c68-e84be0bc90d8_photo_2024-06-05_16-18-09.jpg\"]",
-                    Brand = "Brand C",
+                    //Brand = "Brand C",
                     Price = 927.06m,
                     Discount = 20.38m,
                     IsNew = false,
@@ -616,7 +644,8 @@ namespace BlossomApi.Seeders
                     Article = "810460",
                     //OptionsSerialized = "[\"Option 1\", \"Option 2\", \"Option 3\"]",
                     DieNumbersSerialized = "[1, 5, 4]",
-                    Description = "Description of Product 29"
+                    Description = "Description of Product 29",
+                    IsShown = true,
                 },
                 new Product
                 {
@@ -624,7 +653,7 @@ namespace BlossomApi.Seeders
                     Name = "Product 30",
                     NameEng = "Product 30 (English)",
                     ImagesSerialized = "[\"https://blossom-blob.b-cdn.net/cfcffdfa-4bc0-4c12-8c68-e84be0bc90d8_photo_2024-06-05_16-18-09.jpg\", \"https://blossom-blob.b-cdn.net/cfcffdfa-4bc0-4c12-8c68-e84be0bc90d8_photo_2024-06-05_16-18-09.jpg\", \"https://blossom-blob.b-cdn.net/cfcffdfa-4bc0-4c12-8c68-e84be0bc90d8_photo_2024-06-05_16-18-09.jpg\", \"https://blossom-blob.b-cdn.net/cfcffdfa-4bc0-4c12-8c68-e84be0bc90d8_photo_2024-06-05_16-18-09.jpg\"]",
-                    Brand = "Brand C",
+                    //Brand = "Brand C",
                     Price = 102.12m,
                     Discount = 13.68m,
                     IsNew = true,
@@ -637,7 +666,8 @@ namespace BlossomApi.Seeders
                     Article = "766744",
                     //OptionsSerialized = "[\"Option 1\", \"Option 2\"]",
                     DieNumbersSerialized = "[5, 4, 3, 2]",
-                    Description = "Description of Product 30"
+                    Description = "Description of Product 30",
+                    IsShown = true,
                 },
                 new Product
                 {
@@ -645,7 +675,7 @@ namespace BlossomApi.Seeders
                     Name = "Product 31",
                     NameEng = "Product 31 (English)",
                     ImagesSerialized = "[\"https://blossom-blob.b-cdn.net/cfcffdfa-4bc0-4c12-8c68-e84be0bc90d8_photo_2024-06-05_16-18-09.jpg\", \"https://blossom-blob.b-cdn.net/cfcffdfa-4bc0-4c12-8c68-e84be0bc90d8_photo_2024-06-05_16-18-09.jpg\"]",
-                    Brand = "Brand D",
+                    //Brand = "Brand D",
                     Price = 201.41m,
                     Discount = 30.58m,
                     IsNew = false,
@@ -658,7 +688,8 @@ namespace BlossomApi.Seeders
                     Article = "785039",
                     //OptionsSerialized = "[\"Option 1\", \"Option 2\", \"Option 3\", \"Option 4\"]",
                     DieNumbersSerialized = "[4, 1, 2]",
-                    Description = "Description of Product 31"
+                    Description = "Description of Product 31",
+                    IsShown = true,
                 },
                 new Product
                 {
@@ -666,7 +697,7 @@ namespace BlossomApi.Seeders
                     Name = "Product 32",
                     NameEng = "Product 32 (English)",
                     ImagesSerialized = "[\"https://blossom-blob.b-cdn.net/cfcffdfa-4bc0-4c12-8c68-e84be0bc90d8_photo_2024-06-05_16-18-09.jpg\"]",
-                    Brand = "Brand B",
+                    //Brand = "Brand B",
                     Price = 845.51m,
                     Discount = 35.13m,
                     IsNew = true,
@@ -679,7 +710,8 @@ namespace BlossomApi.Seeders
                     Article = "812900",
                     //OptionsSerialized = "[\"Option 1\", \"Option 2\", \"Option 3\", \"Option 4\"]",
                     DieNumbersSerialized = "[5, 3]",
-                    Description = "Description of Product 32"
+                    Description = "Description of Product 32",
+                    IsShown = true,
                 },
                 new Product
                 {
@@ -687,7 +719,7 @@ namespace BlossomApi.Seeders
                     Name = "Product 33",
                     NameEng = "Product 33 (English)",
                     ImagesSerialized = "[\"https://blossom-blob.b-cdn.net/cfcffdfa-4bc0-4c12-8c68-e84be0bc90d8_photo_2024-06-05_16-18-09.jpg\", \"https://blossom-blob.b-cdn.net/cfcffdfa-4bc0-4c12-8c68-e84be0bc90d8_photo_2024-06-05_16-18-09.jpg\"]",
-                    Brand = "Brand B",
+                    //Brand = "Brand B",
                     Price = 441.67m,
                     Discount = 13.56m,
                     IsNew = true,
@@ -700,7 +732,8 @@ namespace BlossomApi.Seeders
                     Article = "123656",
                     //OptionsSerialized = "[\"Option 1\", \"Option 2\"]",
                     DieNumbersSerialized = "[1, 3, 2, 4]",
-                    Description = "Description of Product 33"
+                    Description = "Description of Product 33",
+                    IsShown = true,
                 },
                 new Product
                 {
@@ -708,7 +741,7 @@ namespace BlossomApi.Seeders
                     Name = "Product 34",
                     NameEng = "Product 34 (English)",
                     ImagesSerialized = "[\"https://blossom-blob.b-cdn.net/cfcffdfa-4bc0-4c12-8c68-e84be0bc90d8_photo_2024-06-05_16-18-09.jpg\", \"https://blossom-blob.b-cdn.net/cfcffdfa-4bc0-4c12-8c68-e84be0bc90d8_photo_2024-06-05_16-18-09.jpg\"]",
-                    Brand = "Brand C",
+                    //Brand = "Brand C",
                     Price = 804.92m,
                     Discount = 4.92m,
                     IsNew = false,
@@ -721,7 +754,8 @@ namespace BlossomApi.Seeders
                     Article = "494677",
                     //OptionsSerialized = "[\"Option 1\", \"Option 2\"]",
                     DieNumbersSerialized = "[2, 4]",
-                    Description = "Description of Product 34"
+                    Description = "Description of Product 34",
+                    IsShown = true,
                 },
                 new Product
                 {
@@ -729,7 +763,7 @@ namespace BlossomApi.Seeders
                     Name = "Product 35",
                     NameEng = "Product 35 (English)",
                     ImagesSerialized = "[\"https://blossom-blob.b-cdn.net/cfcffdfa-4bc0-4c12-8c68-e84be0bc90d8_photo_2024-06-05_16-18-09.jpg\", \"https://blossom-blob.b-cdn.net/cfcffdfa-4bc0-4c12-8c68-e84be0bc90d8_photo_2024-06-05_16-18-09.jpg\", \"https://blossom-blob.b-cdn.net/cfcffdfa-4bc0-4c12-8c68-e84be0bc90d8_photo_2024-06-05_16-18-09.jpg\"]",
-                    Brand = "Brand C",
+                    //Brand = "Brand C",
                     Price = 679.76m,
                     Discount = 36.77m,
                     IsNew = true,
@@ -742,7 +776,8 @@ namespace BlossomApi.Seeders
                     Article = "445737",
                     //OptionsSerialized = "[\"Option 1\"]",
                     DieNumbersSerialized = "[1, 3, 5, 2, 4]",
-                    Description = "Description of Product 35"
+                    Description = "Description of Product 35",
+                    IsShown = true,
                 },
                 new Product
                 {
@@ -750,7 +785,7 @@ namespace BlossomApi.Seeders
                     Name = "Product 36",
                     NameEng = "Product 36 (English)",
                     ImagesSerialized = "[\"https://blossom-blob.b-cdn.net/cfcffdfa-4bc0-4c12-8c68-e84be0bc90d8_photo_2024-06-05_16-18-09.jpg\", \"https://blossom-blob.b-cdn.net/cfcffdfa-4bc0-4c12-8c68-e84be0bc90d8_photo_2024-06-05_16-18-09.jpg\"]",
-                    Brand = "Brand D",
+                    //Brand = "Brand D",
                     Price = 239.42m,
                     Discount = 17.71m,
                     IsNew = false,
@@ -763,7 +798,8 @@ namespace BlossomApi.Seeders
                     Article = "790689",
                     //OptionsSerialized = "[\"Option 1\", \"Option 2\", \"Option 3\"]",
                     DieNumbersSerialized = "[3, 5, 4, 2, 1]",
-                    Description = "Description of Product 36"
+                    Description = "Description of Product 36",
+                    IsShown = true,
                 },
                 new Product
                 {
@@ -771,7 +807,7 @@ namespace BlossomApi.Seeders
                     Name = "Product 37",
                     NameEng = "Product 37 (English)",
                     ImagesSerialized = "[\"https://blossom-blob.b-cdn.net/cfcffdfa-4bc0-4c12-8c68-e84be0bc90d8_photo_2024-06-05_16-18-09.jpg\", \"https://blossom-blob.b-cdn.net/cfcffdfa-4bc0-4c12-8c68-e84be0bc90d8_photo_2024-06-05_16-18-09.jpg\"]",
-                    Brand = "Brand A",
+                    //Brand = "Brand A",
                     Price = 907.33m,
                     Discount = 25.48m,
                     IsNew = false,
@@ -784,7 +820,8 @@ namespace BlossomApi.Seeders
                     Article = "433936",
                     //OptionsSerialized = "[\"Option 1\", \"Option 2\"]",
                     DieNumbersSerialized = "[1, 5]",
-                    Description = "Description of Product 37"
+                    Description = "Description of Product 37",
+                    IsShown = true,
                 },
                 new Product
                 {
@@ -792,7 +829,7 @@ namespace BlossomApi.Seeders
                     Name = "Product 38",
                     NameEng = "Product 38 (English)",
                     ImagesSerialized = "[\"https://blossom-blob.b-cdn.net/cfcffdfa-4bc0-4c12-8c68-e84be0bc90d8_photo_2024-06-05_16-18-09.jpg\", \"https://blossom-blob.b-cdn.net/cfcffdfa-4bc0-4c12-8c68-e84be0bc90d8_photo_2024-06-05_16-18-09.jpg\", \"https://blossom-blob.b-cdn.net/cfcffdfa-4bc0-4c12-8c68-e84be0bc90d8_photo_2024-06-05_16-18-09.jpg\", \"https://blossom-blob.b-cdn.net/cfcffdfa-4bc0-4c12-8c68-e84be0bc90d8_photo_2024-06-05_16-18-09.jpg\"]",
-                    Brand = "Brand C",
+                    //Brand = "Brand C",
                     Price = 741.06m,
                     Discount = 16.45m,
                     IsNew = false,
@@ -805,7 +842,8 @@ namespace BlossomApi.Seeders
                     Article = "616739",
                     //OptionsSerialized = "[\"Option 1\", \"Option 2\"]",
                     DieNumbersSerialized = "[1, 3, 5, 2]",
-                    Description = "Description of Product 38"
+                    Description = "Description of Product 38",
+                    IsShown = true,
                 },
                 new Product
                 {
@@ -813,7 +851,7 @@ namespace BlossomApi.Seeders
                     Name = "Product 39",
                     NameEng = "Product 39 (English)",
                     ImagesSerialized = "[\"https://blossom-blob.b-cdn.net/cfcffdfa-4bc0-4c12-8c68-e84be0bc90d8_photo_2024-06-05_16-18-09.jpg\", \"https://blossom-blob.b-cdn.net/cfcffdfa-4bc0-4c12-8c68-e84be0bc90d8_photo_2024-06-05_16-18-09.jpg\"]",
-                    Brand = "Brand D",
+                    //Brand = "Brand D",
                     Price = 665.1m,
                     Discount = 40.46m,
                     IsNew = true,
@@ -826,7 +864,8 @@ namespace BlossomApi.Seeders
                     Article = "171256",
                     //OptionsSerialized = "[\"Option 1\"]",
                     DieNumbersSerialized = "[4, 3, 2, 1, 5]",
-                    Description = "Description of Product 39"
+                    Description = "Description of Product 39",
+                    IsShown = true,
                 },
                 new Product
                 {
@@ -834,7 +873,7 @@ namespace BlossomApi.Seeders
                     Name = "Product 40",
                     NameEng = "Product 40 (English)",
                     ImagesSerialized = "[\"https://blossom-blob.b-cdn.net/cfcffdfa-4bc0-4c12-8c68-e84be0bc90d8_photo_2024-06-05_16-18-09.jpg\", \"https://blossom-blob.b-cdn.net/cfcffdfa-4bc0-4c12-8c68-e84be0bc90d8_photo_2024-06-05_16-18-09.jpg\", \"https://blossom-blob.b-cdn.net/cfcffdfa-4bc0-4c12-8c68-e84be0bc90d8_photo_2024-06-05_16-18-09.jpg\", \"https://blossom-blob.b-cdn.net/cfcffdfa-4bc0-4c12-8c68-e84be0bc90d8_photo_2024-06-05_16-18-09.jpg\"]",
-                    Brand = "Brand C",
+                    //Brand = "Brand C",
                     Price = 555.86m,
                     Discount = 27.01m,
                     IsNew = false,
@@ -847,7 +886,8 @@ namespace BlossomApi.Seeders
                     Article = "514044",
                     //OptionsSerialized = "[\"Option 1\", \"Option 2\"]",
                     DieNumbersSerialized = "[2, 1, 4, 3]",
-                    Description = "Description of Product 40"
+                    Description = "Description of Product 40",
+                    IsShown = true,
                 },
                 new Product
                 {
@@ -855,7 +895,7 @@ namespace BlossomApi.Seeders
                     Name = "Product 41",
                     NameEng = "Product 41 (English)",
                     ImagesSerialized = "[\"https://blossom-blob.b-cdn.net/cfcffdfa-4bc0-4c12-8c68-e84be0bc90d8_photo_2024-06-05_16-18-09.jpg\", \"https://blossom-blob.b-cdn.net/cfcffdfa-4bc0-4c12-8c68-e84be0bc90d8_photo_2024-06-05_16-18-09.jpg\"]",
-                    Brand = "Brand D",
+                    //Brand = "Brand D",
                     Price = 34.68m,
                     Discount = 13.92m,
                     IsNew = true,
@@ -868,7 +908,8 @@ namespace BlossomApi.Seeders
                     Article = "118583",
                     //OptionsSerialized = "[\"Option 1\"]",
                     DieNumbersSerialized = "[3, 2, 4, 1, 5]",
-                    Description = "Description of Product 41"
+                    Description = "Description of Product 41",
+                    IsShown = true,
                 },
                 new Product
                 {
@@ -876,7 +917,7 @@ namespace BlossomApi.Seeders
                     Name = "Product 42",
                     NameEng = "Product 42 (English)",
                     ImagesSerialized = "[\"https://blossom-blob.b-cdn.net/cfcffdfa-4bc0-4c12-8c68-e84be0bc90d8_photo_2024-06-05_16-18-09.jpg\"]",
-                    Brand = "Brand A",
+                    //Brand = "Brand A",
                     Price = 866.32m,
                     Discount = 17.83m,
                     IsNew = false,
@@ -889,7 +930,8 @@ namespace BlossomApi.Seeders
                     Article = "404571",
                     //OptionsSerialized = "[\"Option 1\", \"Option 2\"]",
                     DieNumbersSerialized = "[4]",
-                    Description = "Description of Product 42"
+                    Description = "Description of Product 42",
+                    IsShown = true,
                 },
                 new Product
                 {
@@ -897,7 +939,7 @@ namespace BlossomApi.Seeders
                     Name = "Product 43",
                     NameEng = "Product 43 (English)",
                     ImagesSerialized = "[\"https://blossom-blob.b-cdn.net/cfcffdfa-4bc0-4c12-8c68-e84be0bc90d8_photo_2024-06-05_16-18-09.jpg\"]",
-                    Brand = "Brand A",
+                    //Brand = "Brand A",
                     Price = 178.29m,
                     Discount = 39.57m,
                     IsNew = false,
@@ -910,7 +952,8 @@ namespace BlossomApi.Seeders
                     Article = "819214",
                     //OptionsSerialized = "[\"Option 1\", \"Option 2\", \"Option 3\"]",
                     DieNumbersSerialized = "[5]",
-                    Description = "Description of Product 43"
+                    Description = "Description of Product 43",
+                    IsShown = true,
                 },
                 new Product
                 {
@@ -918,7 +961,7 @@ namespace BlossomApi.Seeders
                     Name = "Product 44",
                     NameEng = "Product 44 (English)",
                     ImagesSerialized = "[\"https://blossom-blob.b-cdn.net/cfcffdfa-4bc0-4c12-8c68-e84be0bc90d8_photo_2024-06-05_16-18-09.jpg\", \"https://blossom-blob.b-cdn.net/cfcffdfa-4bc0-4c12-8c68-e84be0bc90d8_photo_2024-06-05_16-18-09.jpg\", \"https://blossom-blob.b-cdn.net/cfcffdfa-4bc0-4c12-8c68-e84be0bc90d8_photo_2024-06-05_16-18-09.jpg\", \"https://blossom-blob.b-cdn.net/cfcffdfa-4bc0-4c12-8c68-e84be0bc90d8_photo_2024-06-05_16-18-09.jpg\"]",
-                    Brand = "Brand D",
+                    //Brand = "Brand D",
                     Price = 351.38m,
                     Discount = 2.32m,
                     IsNew = true,
@@ -931,7 +974,8 @@ namespace BlossomApi.Seeders
                     Article = "307598",
                     //OptionsSerialized = "[\"Option 1\", \"Option 2\", \"Option 3\", \"Option 4\"]",
                     DieNumbersSerialized = "[4, 2, 1, 5]",
-                    Description = "Description of Product 44"
+                    Description = "Description of Product 44",
+                    IsShown = true,
                 },
                 new Product
                 {
@@ -939,7 +983,7 @@ namespace BlossomApi.Seeders
                     Name = "Product 45",
                     NameEng = "Product 45 (English)",
                     ImagesSerialized = "[\"https://blossom-blob.b-cdn.net/cfcffdfa-4bc0-4c12-8c68-e84be0bc90d8_photo_2024-06-05_16-18-09.jpg\", \"https://blossom-blob.b-cdn.net/cfcffdfa-4bc0-4c12-8c68-e84be0bc90d8_photo_2024-06-05_16-18-09.jpg\"]",
-                    Brand = "Brand A",
+                    //Brand = "Brand A",
                     Price = 940.84m,
                     Discount = 20.4m,
                     IsNew = false,
@@ -952,7 +996,8 @@ namespace BlossomApi.Seeders
                     Article = "424110",
                     //OptionsSerialized = "[\"Option 1\", \"Option 2\", \"Option 3\", \"Option 4\"]",
                     DieNumbersSerialized = "[2]",
-                    Description = "Description of Product 45"
+                    Description = "Description of Product 45",
+                    IsShown = true,
                 },
                 new Product
                 {
@@ -960,7 +1005,7 @@ namespace BlossomApi.Seeders
                     Name = "Product 46",
                     NameEng = "Product 46 (English)",
                     ImagesSerialized = "[\"https://blossom-blob.b-cdn.net/cfcffdfa-4bc0-4c12-8c68-e84be0bc90d8_photo_2024-06-05_16-18-09.jpg\", \"https://blossom-blob.b-cdn.net/cfcffdfa-4bc0-4c12-8c68-e84be0bc90d8_photo_2024-06-05_16-18-09.jpg\", \"https://blossom-blob.b-cdn.net/cfcffdfa-4bc0-4c12-8c68-e84be0bc90d8_photo_2024-06-05_16-18-09.jpg\"]",
-                    Brand = "Brand D",
+                    //Brand = "Brand D",
                     Price = 101.86m,
                     Discount = 22.71m,
                     IsNew = false,
@@ -973,7 +1018,8 @@ namespace BlossomApi.Seeders
                     Article = "946381",
                     //OptionsSerialized = "[\"Option 1\", \"Option 2\"]",
                     DieNumbersSerialized = "[3, 2, 1]",
-                    Description = "Description of Product 46"
+                    Description = "Description of Product 46",
+                    IsShown = true,
                 },
                 new Product
                 {
@@ -981,7 +1027,7 @@ namespace BlossomApi.Seeders
                     Name = "Product 47",
                     NameEng = "Product 47 (English)",
                     ImagesSerialized = "[\"https://blossom-blob.b-cdn.net/cfcffdfa-4bc0-4c12-8c68-e84be0bc90d8_photo_2024-06-05_16-18-09.jpg\", \"https://blossom-blob.b-cdn.net/cfcffdfa-4bc0-4c12-8c68-e84be0bc90d8_photo_2024-06-05_16-18-09.jpg\", \"https://blossom-blob.b-cdn.net/cfcffdfa-4bc0-4c12-8c68-e84be0bc90d8_photo_2024-06-05_16-18-09.jpg\", \"https://blossom-blob.b-cdn.net/cfcffdfa-4bc0-4c12-8c68-e84be0bc90d8_photo_2024-06-05_16-18-09.jpg\"]",
-                    Brand = "Brand A",
+                    //Brand = "Brand A",
                     Price = 829.67m,
                     Discount = 19.78m,
                     IsNew = false,
@@ -994,7 +1040,8 @@ namespace BlossomApi.Seeders
                     Article = "222762",
                     //OptionsSerialized = "[\"Option 1\", \"Option 2\"]",
                     DieNumbersSerialized = "[3, 1, 5]",
-                    Description = "Description of Product 47"
+                    Description = "Description of Product 47",
+                    IsShown = true,
                 },
                 new Product
                 {
@@ -1002,7 +1049,7 @@ namespace BlossomApi.Seeders
                     Name = "Product 48",
                     NameEng = "Product 48 (English)",
                     ImagesSerialized = "[\"https://blossom-blob.b-cdn.net/cfcffdfa-4bc0-4c12-8c68-e84be0bc90d8_photo_2024-06-05_16-18-09.jpg\", \"https://blossom-blob.b-cdn.net/cfcffdfa-4bc0-4c12-8c68-e84be0bc90d8_photo_2024-06-05_16-18-09.jpg\"]",
-                    Brand = "Brand D",
+                    //Brand = "Brand D",
                     Price = 982.78m,
                     Discount = 48.32m,
                     IsNew = true,
@@ -1015,7 +1062,8 @@ namespace BlossomApi.Seeders
                     Article = "494080",
                     //OptionsSerialized = "[\"Option 1\", \"Option 2\"]",
                     DieNumbersSerialized = "[5, 2, 4, 3, 1]",
-                    Description = "Description of Product 48"
+                    Description = "Description of Product 48",
+                    IsShown = true,
                 },
                 new Product
                 {
@@ -1023,7 +1071,7 @@ namespace BlossomApi.Seeders
                     Name = "Product 49",
                     NameEng = "Product 49 (English)",
                     ImagesSerialized = "[\"https://blossom-blob.b-cdn.net/cfcffdfa-4bc0-4c12-8c68-e84be0bc90d8_photo_2024-06-05_16-18-09.jpg\", \"https://blossom-blob.b-cdn.net/cfcffdfa-4bc0-4c12-8c68-e84be0bc90d8_photo_2024-06-05_16-18-09.jpg\"]",
-                    Brand = "Brand D",
+                    //Brand = "Brand D",
                     Price = 472.12m,
                     Discount = 10.74m,
                     IsNew = true,
@@ -1036,7 +1084,8 @@ namespace BlossomApi.Seeders
                     Article = "160395",
                     //OptionsSerialized = "[\"Option 1\"]",
                     DieNumbersSerialized = "[5]",
-                    Description = "Description of Product 49"
+                    Description = "Description of Product 49",
+                    IsShown = true,
                 },
                 new Product
                 {
@@ -1044,7 +1093,7 @@ namespace BlossomApi.Seeders
                     Name = "Product 50",
                     NameEng = "Product 50 (English)",
                     ImagesSerialized = "[\"https://blossom-blob.b-cdn.net/cfcffdfa-4bc0-4c12-8c68-e84be0bc90d8_photo_2024-06-05_16-18-09.jpg\", \"https://blossom-blob.b-cdn.net/cfcffdfa-4bc0-4c12-8c68-e84be0bc90d8_photo_2024-06-05_16-18-09.jpg\", \"https://blossom-blob.b-cdn.net/cfcffdfa-4bc0-4c12-8c68-e84be0bc90d8_photo_2024-06-05_16-18-09.jpg\"]",
-                    Brand = "Brand A",
+                    //Brand = "Brand A",
                     Price = 634.59m,
                     Discount = 6.17m,
                     IsNew = false,
@@ -1057,7 +1106,8 @@ namespace BlossomApi.Seeders
                     Article = "383267",
                     //OptionsSerialized = "[\"Option 1\", \"Option 2\", \"Option 3\"]",
                     DieNumbersSerialized = "[4, 2, 1, 3]",
-                    Description = "Description of Product 50"
+                    Description = "Description of Product 50",
+                    IsShown = true,
                 },
                 new Product
                 {
@@ -1065,7 +1115,7 @@ namespace BlossomApi.Seeders
                     Name = "Product 51",
                     NameEng = "Product 51 (English)",
                     ImagesSerialized = "[\"https://blossom-blob.b-cdn.net/cfcffdfa-4bc0-4c12-8c68-e84be0bc90d8_photo_2024-06-05_16-18-09.jpg\", \"https://blossom-blob.b-cdn.net/cfcffdfa-4bc0-4c12-8c68-e84be0bc90d8_photo_2024-06-05_16-18-09.jpg\", \"https://blossom-blob.b-cdn.net/cfcffdfa-4bc0-4c12-8c68-e84be0bc90d8_photo_2024-06-05_16-18-09.jpg\", \"https://blossom-blob.b-cdn.net/cfcffdfa-4bc0-4c12-8c68-e84be0bc90d8_photo_2024-06-05_16-18-09.jpg\"]",
-                    Brand = "Brand A",
+                    //Brand = "Brand A",
                     Price = 461.14m,
                     Discount = 10.7m,
                     IsNew = true,
@@ -1078,7 +1128,8 @@ namespace BlossomApi.Seeders
                     Article = "122744",
                     //OptionsSerialized = "[\"Option 1\"]",
                     DieNumbersSerialized = "[5]",
-                    Description = "Description of Product 51"
+                    Description = "Description of Product 51",
+                    IsShown = true,
                 },
                 new Product
                 {
@@ -1086,7 +1137,7 @@ namespace BlossomApi.Seeders
                     Name = "Product 52",
                     NameEng = "Product 52 (English)",
                     ImagesSerialized = "[\"https://blossom-blob.b-cdn.net/cfcffdfa-4bc0-4c12-8c68-e84be0bc90d8_photo_2024-06-05_16-18-09.jpg\"]",
-                    Brand = "Brand C",
+                    //Brand = "Brand C",
                     Price = 53.31m,
                     Discount = 5.74m,
                     IsNew = false,
@@ -1099,7 +1150,8 @@ namespace BlossomApi.Seeders
                     Article = "548992",
                     //OptionsSerialized = "[\"Option 1\"]",
                     DieNumbersSerialized = "[5]",
-                    Description = "Description of Product 52"
+                    Description = "Description of Product 52",
+                    IsShown = true,
                 },
                 new Product
                 {
@@ -1107,7 +1159,7 @@ namespace BlossomApi.Seeders
                     Name = "Product 53",
                     NameEng = "Product 53 (English)",
                     ImagesSerialized = "[\"https://blossom-blob.b-cdn.net/cfcffdfa-4bc0-4c12-8c68-e84be0bc90d8_photo_2024-06-05_16-18-09.jpg\", \"https://blossom-blob.b-cdn.net/cfcffdfa-4bc0-4c12-8c68-e84be0bc90d8_photo_2024-06-05_16-18-09.jpg\", \"https://blossom-blob.b-cdn.net/cfcffdfa-4bc0-4c12-8c68-e84be0bc90d8_photo_2024-06-05_16-18-09.jpg\", \"https://blossom-blob.b-cdn.net/cfcffdfa-4bc0-4c12-8c68-e84be0bc90d8_photo_2024-06-05_16-18-09.jpg\"]",
-                    Brand = "Brand A",
+                    //Brand = "Brand A",
                     Price = 679.29m,
                     Discount = 8.46m,
                     IsNew = false,
@@ -1120,7 +1172,8 @@ namespace BlossomApi.Seeders
                     Article = "321848",
                     //OptionsSerialized = "[\"Option 1\", \"Option 2\"]",
                     DieNumbersSerialized = "[3, 1, 5, 4]",
-                    Description = "Description of Product 53"
+                    Description = "Description of Product 53",
+                    IsShown = true,
                 },
                 new Product
                 {
@@ -1128,7 +1181,7 @@ namespace BlossomApi.Seeders
                     Name = "Product 54",
                     NameEng = "Product 54 (English)",
                     ImagesSerialized = "[\"https://blossom-blob.b-cdn.net/cfcffdfa-4bc0-4c12-8c68-e84be0bc90d8_photo_2024-06-05_16-18-09.jpg\", \"https://blossom-blob.b-cdn.net/cfcffdfa-4bc0-4c12-8c68-e84be0bc90d8_photo_2024-06-05_16-18-09.jpg\", \"https://blossom-blob.b-cdn.net/cfcffdfa-4bc0-4c12-8c68-e84be0bc90d8_photo_2024-06-05_16-18-09.jpg\", \"https://blossom-blob.b-cdn.net/cfcffdfa-4bc0-4c12-8c68-e84be0bc90d8_photo_2024-06-05_16-18-09.jpg\"]",
-                    Brand = "Brand D",
+                    //Brand = "Brand D",
                     Price = 292.99m,
                     Discount = 14.47m,
                     IsNew = false,
@@ -1141,7 +1194,8 @@ namespace BlossomApi.Seeders
                     Article = "498036",
                     //OptionsSerialized = "[\"Option 1\"]",
                     DieNumbersSerialized = "[2]",
-                    Description = "Description of Product 54"
+                    Description = "Description of Product 54",
+                    IsShown = true,
                 },
                 new Product
                 {
@@ -1149,7 +1203,7 @@ namespace BlossomApi.Seeders
                     Name = "Product 55",
                     NameEng = "Product 55 (English)",
                     ImagesSerialized = "[\"https://blossom-blob.b-cdn.net/cfcffdfa-4bc0-4c12-8c68-e84be0bc90d8_photo_2024-06-05_16-18-09.jpg\", \"https://blossom-blob.b-cdn.net/cfcffdfa-4bc0-4c12-8c68-e84be0bc90d8_photo_2024-06-05_16-18-09.jpg\", \"https://blossom-blob.b-cdn.net/cfcffdfa-4bc0-4c12-8c68-e84be0bc90d8_photo_2024-06-05_16-18-09.jpg\", \"https://blossom-blob.b-cdn.net/cfcffdfa-4bc0-4c12-8c68-e84be0bc90d8_photo_2024-06-05_16-18-09.jpg\"]",
-                    Brand = "Brand B",
+                    //Brand = "Brand B",
                     Price = 126.26m,
                     Discount = 21.48m,
                     IsNew = false,
@@ -1162,7 +1216,8 @@ namespace BlossomApi.Seeders
                     Article = "621163",
                     //OptionsSerialized = "[\"Option 1\", \"Option 2\", \"Option 3\"]",
                     DieNumbersSerialized = "[1, 2, 5, 4]",
-                    Description = "Description of Product 55"
+                    Description = "Description of Product 55",
+                    IsShown = true,
                 },
                 new Product
                 {
@@ -1170,7 +1225,7 @@ namespace BlossomApi.Seeders
                     Name = "Product 56",
                     NameEng = "Product 56 (English)",
                     ImagesSerialized = "[\"https://blossom-blob.b-cdn.net/cfcffdfa-4bc0-4c12-8c68-e84be0bc90d8_photo_2024-06-05_16-18-09.jpg\", \"https://blossom-blob.b-cdn.net/cfcffdfa-4bc0-4c12-8c68-e84be0bc90d8_photo_2024-06-05_16-18-09.jpg\", \"https://blossom-blob.b-cdn.net/cfcffdfa-4bc0-4c12-8c68-e84be0bc90d8_photo_2024-06-05_16-18-09.jpg\"]",
-                    Brand = "Brand B",
+                    //Brand = "Brand B",
                     Price = 410.65m,
                     Discount = 46.3m,
                     IsNew = true,
@@ -1183,7 +1238,8 @@ namespace BlossomApi.Seeders
                     Article = "926926",
                     //OptionsSerialized = "[\"Option 1\", \"Option 2\", \"Option 3\"]",
                     DieNumbersSerialized = "[2, 3, 1, 5]",
-                    Description = "Description of Product 56"
+                    Description = "Description of Product 56",
+                    IsShown = true,
                 },
                 new Product
                 {
@@ -1191,7 +1247,7 @@ namespace BlossomApi.Seeders
                     Name = "Product 57",
                     NameEng = "Product 57 (English)",
                     ImagesSerialized = "[\"https://blossom-blob.b-cdn.net/cfcffdfa-4bc0-4c12-8c68-e84be0bc90d8_photo_2024-06-05_16-18-09.jpg\", \"https://blossom-blob.b-cdn.net/cfcffdfa-4bc0-4c12-8c68-e84be0bc90d8_photo_2024-06-05_16-18-09.jpg\", \"https://blossom-blob.b-cdn.net/cfcffdfa-4bc0-4c12-8c68-e84be0bc90d8_photo_2024-06-05_16-18-09.jpg\"]",
-                    Brand = "Brand C",
+                    //Brand = "Brand C",
                     Price = 861.21m,
                     Discount = 18.27m,
                     IsNew = false,
@@ -1204,7 +1260,8 @@ namespace BlossomApi.Seeders
                     Article = "854651",
                     //OptionsSerialized = "[\"Option 1\", \"Option 2\"]",
                     DieNumbersSerialized = "[5]",
-                    Description = "Description of Product 57"
+                    Description = "Description of Product 57",
+                    IsShown = true,
                 },
                 new Product
                 {
@@ -1212,7 +1269,7 @@ namespace BlossomApi.Seeders
                     Name = "Product 58",
                     NameEng = "Product 58 (English)",
                     ImagesSerialized = "[\"https://blossom-blob.b-cdn.net/cfcffdfa-4bc0-4c12-8c68-e84be0bc90d8_photo_2024-06-05_16-18-09.jpg\", \"https://blossom-blob.b-cdn.net/cfcffdfa-4bc0-4c12-8c68-e84be0bc90d8_photo_2024-06-05_16-18-09.jpg\"]",
-                    Brand = "Brand B",
+                    //Brand = "Brand B",
                     Price = 442.11m,
                     Discount = 33.62m,
                     IsNew = false,
@@ -1225,7 +1282,8 @@ namespace BlossomApi.Seeders
                     Article = "591211",
                     //OptionsSerialized = "[\"Option 1\", \"Option 2\"]",
                     DieNumbersSerialized = "[1, 4, 3, 5]",
-                    Description = "Description of Product 58"
+                    Description = "Description of Product 58",
+                    IsShown = true,
                 },
                 new Product
                 {
@@ -1233,7 +1291,7 @@ namespace BlossomApi.Seeders
                     Name = "Product 59",
                     NameEng = "Product 59 (English)",
                     ImagesSerialized = "[\"https://blossom-blob.b-cdn.net/cfcffdfa-4bc0-4c12-8c68-e84be0bc90d8_photo_2024-06-05_16-18-09.jpg\", \"https://blossom-blob.b-cdn.net/cfcffdfa-4bc0-4c12-8c68-e84be0bc90d8_photo_2024-06-05_16-18-09.jpg\", \"https://blossom-blob.b-cdn.net/cfcffdfa-4bc0-4c12-8c68-e84be0bc90d8_photo_2024-06-05_16-18-09.jpg\", \"https://blossom-blob.b-cdn.net/cfcffdfa-4bc0-4c12-8c68-e84be0bc90d8_photo_2024-06-05_16-18-09.jpg\"]",
-                    Brand = "Brand A",
+                    //Brand = "Brand A",
                     Price = 730.12m,
                     Discount = 10.73m,
                     IsNew = false,
@@ -1246,7 +1304,8 @@ namespace BlossomApi.Seeders
                     Article = "331753",
                     //OptionsSerialized = "[\"Option 1\", \"Option 2\", \"Option 3\"]",
                     DieNumbersSerialized = "[4, 3, 1, 5]",
-                    Description = "Description of Product 59"
+                    Description = "Description of Product 59",
+                    IsShown = true,
                 },
                 new Product
                 {
@@ -1254,7 +1313,7 @@ namespace BlossomApi.Seeders
                     Name = "Product 60",
                     NameEng = "Product 60 (English)",
                     ImagesSerialized = "[\"https://blossom-blob.b-cdn.net/cfcffdfa-4bc0-4c12-8c68-e84be0bc90d8_photo_2024-06-05_16-18-09.jpg\"]",
-                    Brand = "Brand C",
+                    //Brand = "Brand C",
                     Price = 195.65m,
                     Discount = 26.08m,
                     IsNew = true,
@@ -1267,7 +1326,8 @@ namespace BlossomApi.Seeders
                     Article = "528647",
                     //OptionsSerialized = "[\"Option 1\", \"Option 2\"]",
                     DieNumbersSerialized = "[3, 5, 1, 2, 4]",
-                    Description = "Description of Product 60"
+                    Description = "Description of Product 60",
+                    IsShown = true,
                 },
                 new Product
                 {
@@ -1275,7 +1335,7 @@ namespace BlossomApi.Seeders
                     Name = "Product 61",
                     NameEng = "Product 61 (English)",
                     ImagesSerialized = "[\"https://blossom-blob.b-cdn.net/cfcffdfa-4bc0-4c12-8c68-e84be0bc90d8_photo_2024-06-05_16-18-09.jpg\"]",
-                    Brand = "Brand C",
+                    //Brand = "Brand C",
                     Price = 309.23m,
                     Discount = 44.34m,
                     IsNew = true,
@@ -1288,7 +1348,8 @@ namespace BlossomApi.Seeders
                     Article = "670450",
                     //OptionsSerialized = "[\"Option 1\", \"Option 2\", \"Option 3\"]",
                     DieNumbersSerialized = "[3, 2, 5, 4, 1]",
-                    Description = "Description of Product 61"
+                    Description = "Description of Product 61",
+                    IsShown = true,
                 },
                 new Product
                 {
@@ -1296,7 +1357,7 @@ namespace BlossomApi.Seeders
                     Name = "Product 62",
                     NameEng = "Product 62 (English)",
                     ImagesSerialized = "[\"https://blossom-blob.b-cdn.net/cfcffdfa-4bc0-4c12-8c68-e84be0bc90d8_photo_2024-06-05_16-18-09.jpg\", \"https://blossom-blob.b-cdn.net/cfcffdfa-4bc0-4c12-8c68-e84be0bc90d8_photo_2024-06-05_16-18-09.jpg\", \"https://blossom-blob.b-cdn.net/cfcffdfa-4bc0-4c12-8c68-e84be0bc90d8_photo_2024-06-05_16-18-09.jpg\", \"https://blossom-blob.b-cdn.net/cfcffdfa-4bc0-4c12-8c68-e84be0bc90d8_photo_2024-06-05_16-18-09.jpg\"]",
-                    Brand = "Brand D",
+                    //Brand = "Brand D",
                     Price = 407.73m,
                     Discount = 18.81m,
                     IsNew = true,
@@ -1309,7 +1370,8 @@ namespace BlossomApi.Seeders
                     Article = "773944",
                     //OptionsSerialized = "[\"Option 1\", \"Option 2\", \"Option 3\"]",
                     DieNumbersSerialized = "[3]",
-                    Description = "Description of Product 62"
+                    Description = "Description of Product 62",
+                    IsShown = true,
                 },
                 new Product
                 {
@@ -1317,7 +1379,7 @@ namespace BlossomApi.Seeders
                     Name = "Product 63",
                     NameEng = "Product 63 (English)",
                     ImagesSerialized = "[\"https://blossom-blob.b-cdn.net/cfcffdfa-4bc0-4c12-8c68-e84be0bc90d8_photo_2024-06-05_16-18-09.jpg\"]",
-                    Brand = "Brand C",
+                    //Brand = "Brand C",
                     Price = 390.4m,
                     Discount = 35.87m,
                     IsNew = true,
@@ -1330,7 +1392,8 @@ namespace BlossomApi.Seeders
                     Article = "408851",
                     //OptionsSerialized = "[\"Option 1\", \"Option 2\"]",
                     DieNumbersSerialized = "[2]",
-                    Description = "Description of Product 63"
+                    Description = "Description of Product 63",
+                    IsShown = true,
                 },
                 new Product
                 {
@@ -1338,7 +1401,7 @@ namespace BlossomApi.Seeders
                     Name = "Product 64",
                     NameEng = "Product 64 (English)",
                     ImagesSerialized = "[\"https://blossom-blob.b-cdn.net/cfcffdfa-4bc0-4c12-8c68-e84be0bc90d8_photo_2024-06-05_16-18-09.jpg\", \"https://blossom-blob.b-cdn.net/cfcffdfa-4bc0-4c12-8c68-e84be0bc90d8_photo_2024-06-05_16-18-09.jpg\", \"https://blossom-blob.b-cdn.net/cfcffdfa-4bc0-4c12-8c68-e84be0bc90d8_photo_2024-06-05_16-18-09.jpg\", \"https://blossom-blob.b-cdn.net/cfcffdfa-4bc0-4c12-8c68-e84be0bc90d8_photo_2024-06-05_16-18-09.jpg\"]",
-                    Brand = "Brand C",
+                    //Brand = "Brand C",
                     Price = 408.39m,
                     Discount = 19.28m,
                     IsNew = true,
@@ -1351,7 +1414,8 @@ namespace BlossomApi.Seeders
                     Article = "597041",
                     //OptionsSerialized = "[\"Option 1\", \"Option 2\"]",
                     DieNumbersSerialized = "[5]",
-                    Description = "Description of Product 64"
+                    Description = "Description of Product 64",
+                    IsShown = true,
                 },
                 new Product
                 {
@@ -1359,7 +1423,7 @@ namespace BlossomApi.Seeders
                     Name = "Product 65",
                     NameEng = "Product 65 (English)",
                     ImagesSerialized = "[\"https://blossom-blob.b-cdn.net/cfcffdfa-4bc0-4c12-8c68-e84be0bc90d8_photo_2024-06-05_16-18-09.jpg\", \"https://blossom-blob.b-cdn.net/cfcffdfa-4bc0-4c12-8c68-e84be0bc90d8_photo_2024-06-05_16-18-09.jpg\", \"https://blossom-blob.b-cdn.net/cfcffdfa-4bc0-4c12-8c68-e84be0bc90d8_photo_2024-06-05_16-18-09.jpg\"]",
-                    Brand = "Brand A",
+                    //Brand = "Brand A",
                     Price = 210.25m,
                     Discount = 29.42m,
                     IsNew = true,
@@ -1372,7 +1436,8 @@ namespace BlossomApi.Seeders
                     Article = "558160",
                     //OptionsSerialized = "[\"Option 1\"]",
                     DieNumbersSerialized = "[5, 2, 1, 4]",
-                    Description = "Description of Product 65"
+                    Description = "Description of Product 65",
+                    IsShown = true,
                 },
                 new Product
                 {
@@ -1380,7 +1445,7 @@ namespace BlossomApi.Seeders
                     Name = "Product 66",
                     NameEng = "Product 66 (English)",
                     ImagesSerialized = "[\"https://blossom-blob.b-cdn.net/cfcffdfa-4bc0-4c12-8c68-e84be0bc90d8_photo_2024-06-05_16-18-09.jpg\", \"https://blossom-blob.b-cdn.net/cfcffdfa-4bc0-4c12-8c68-e84be0bc90d8_photo_2024-06-05_16-18-09.jpg\", \"https://blossom-blob.b-cdn.net/cfcffdfa-4bc0-4c12-8c68-e84be0bc90d8_photo_2024-06-05_16-18-09.jpg\", \"https://blossom-blob.b-cdn.net/cfcffdfa-4bc0-4c12-8c68-e84be0bc90d8_photo_2024-06-05_16-18-09.jpg\"]",
-                    Brand = "Brand D",
+                    //Brand = "Brand D",
                     Price = 350.11m,
                     Discount = 46.12m,
                     IsNew = false,
@@ -1393,7 +1458,8 @@ namespace BlossomApi.Seeders
                     Article = "934610",
                     //OptionsSerialized = "[\"Option 1\", \"Option 2\"]",
                     DieNumbersSerialized = "[2, 3, 1, 5]",
-                    Description = "Description of Product 66"
+                    Description = "Description of Product 66",
+                    IsShown = true,
                 },
                 new Product
                 {
@@ -1401,7 +1467,7 @@ namespace BlossomApi.Seeders
                     Name = "Product 67",
                     NameEng = "Product 67 (English)",
                     ImagesSerialized = "[\"https://blossom-blob.b-cdn.net/cfcffdfa-4bc0-4c12-8c68-e84be0bc90d8_photo_2024-06-05_16-18-09.jpg\", \"https://blossom-blob.b-cdn.net/cfcffdfa-4bc0-4c12-8c68-e84be0bc90d8_photo_2024-06-05_16-18-09.jpg\", \"https://blossom-blob.b-cdn.net/cfcffdfa-4bc0-4c12-8c68-e84be0bc90d8_photo_2024-06-05_16-18-09.jpg\"]",
-                    Brand = "Brand D",
+                    //Brand = "Brand D",
                     Price = 667.91m,
                     Discount = 21.39m,
                     IsNew = true,
@@ -1414,7 +1480,8 @@ namespace BlossomApi.Seeders
                     Article = "261749",
                     //OptionsSerialized = "[\"Option 1\", \"Option 2\"]",
                     DieNumbersSerialized = "[1, 2, 3, 5, 4]",
-                    Description = "Description of Product 67"
+                    Description = "Description of Product 67",
+                    IsShown = true,
                 },
                 new Product
                 {
@@ -1422,7 +1489,7 @@ namespace BlossomApi.Seeders
                     Name = "Product 68",
                     NameEng = "Product 68 (English)",
                     ImagesSerialized = "[\"https://blossom-blob.b-cdn.net/cfcffdfa-4bc0-4c12-8c68-e84be0bc90d8_photo_2024-06-05_16-18-09.jpg\", \"https://blossom-blob.b-cdn.net/cfcffdfa-4bc0-4c12-8c68-e84be0bc90d8_photo_2024-06-05_16-18-09.jpg\", \"https://blossom-blob.b-cdn.net/cfcffdfa-4bc0-4c12-8c68-e84be0bc90d8_photo_2024-06-05_16-18-09.jpg\", \"https://blossom-blob.b-cdn.net/cfcffdfa-4bc0-4c12-8c68-e84be0bc90d8_photo_2024-06-05_16-18-09.jpg\"]",
-                    Brand = "Brand C",
+                    //Brand = "Brand C",
                     Price = 410.71m,
                     Discount = 26.15m,
                     IsNew = true,
@@ -1435,7 +1502,8 @@ namespace BlossomApi.Seeders
                     Article = "860017",
                     //OptionsSerialized = "[\"Option 1\"]",
                     DieNumbersSerialized = "[1, 4, 2]",
-                    Description = "Description of Product 68"
+                    Description = "Description of Product 68",
+                    IsShown = true,
                 },
                 new Product
                 {
@@ -1443,7 +1511,7 @@ namespace BlossomApi.Seeders
                     Name = "Product 69",
                     NameEng = "Product 69 (English)",
                     ImagesSerialized = "[\"https://blossom-blob.b-cdn.net/cfcffdfa-4bc0-4c12-8c68-e84be0bc90d8_photo_2024-06-05_16-18-09.jpg\", \"https://blossom-blob.b-cdn.net/cfcffdfa-4bc0-4c12-8c68-e84be0bc90d8_photo_2024-06-05_16-18-09.jpg\", \"https://blossom-blob.b-cdn.net/cfcffdfa-4bc0-4c12-8c68-e84be0bc90d8_photo_2024-06-05_16-18-09.jpg\", \"https://blossom-blob.b-cdn.net/cfcffdfa-4bc0-4c12-8c68-e84be0bc90d8_photo_2024-06-05_16-18-09.jpg\"]",
-                    Brand = "Brand A",
+                    //Brand = "Brand A",
                     Price = 983.14m,
                     Discount = 38.25m,
                     IsNew = false,
@@ -1456,7 +1524,8 @@ namespace BlossomApi.Seeders
                     Article = "154761",
                     //OptionsSerialized = "[\"Option 1\", \"Option 2\", \"Option 3\", \"Option 4\"]",
                     DieNumbersSerialized = "[1, 5]",
-                    Description = "Description of Product 69"
+                    Description = "Description of Product 69",
+                    IsShown = true,
                 },
                 new Product
                 {
@@ -1464,7 +1533,7 @@ namespace BlossomApi.Seeders
                     Name = "Product 70",
                     NameEng = "Product 70 (English)",
                     ImagesSerialized = "[\"https://blossom-blob.b-cdn.net/cfcffdfa-4bc0-4c12-8c68-e84be0bc90d8_photo_2024-06-05_16-18-09.jpg\", \"https://blossom-blob.b-cdn.net/cfcffdfa-4bc0-4c12-8c68-e84be0bc90d8_photo_2024-06-05_16-18-09.jpg\", \"https://blossom-blob.b-cdn.net/cfcffdfa-4bc0-4c12-8c68-e84be0bc90d8_photo_2024-06-05_16-18-09.jpg\", \"https://blossom-blob.b-cdn.net/cfcffdfa-4bc0-4c12-8c68-e84be0bc90d8_photo_2024-06-05_16-18-09.jpg\"]",
-                    Brand = "Brand A",
+                    //Brand = "Brand A",
                     Price = 730.78m,
                     Discount = 16.91m,
                     IsNew = true,
@@ -1477,7 +1546,8 @@ namespace BlossomApi.Seeders
                     Article = "576384",
                     //OptionsSerialized = "[\"Option 1\", \"Option 2\", \"Option 3\"]",
                     DieNumbersSerialized = "[3, 4, 2, 5]",
-                    Description = "Description of Product 70"
+                    Description = "Description of Product 70",
+                    IsShown = true,
                 },
                 new Product
                 {
@@ -1485,7 +1555,7 @@ namespace BlossomApi.Seeders
                     Name = "Product 71",
                     NameEng = "Product 71 (English)",
                     ImagesSerialized = "[\"https://blossom-blob.b-cdn.net/cfcffdfa-4bc0-4c12-8c68-e84be0bc90d8_photo_2024-06-05_16-18-09.jpg\", \"https://blossom-blob.b-cdn.net/cfcffdfa-4bc0-4c12-8c68-e84be0bc90d8_photo_2024-06-05_16-18-09.jpg\", \"https://blossom-blob.b-cdn.net/cfcffdfa-4bc0-4c12-8c68-e84be0bc90d8_photo_2024-06-05_16-18-09.jpg\"]",
-                    Brand = "Brand D",
+                    //Brand = "Brand D",
                     Price = 756.3m,
                     Discount = 2.15m,
                     IsNew = true,
@@ -1498,7 +1568,8 @@ namespace BlossomApi.Seeders
                     Article = "245654",
                     //OptionsSerialized = "[\"Option 1\", \"Option 2\", \"Option 3\"]",
                     DieNumbersSerialized = "[2, 1, 4, 3]",
-                    Description = "Description of Product 71"
+                    Description = "Description of Product 71",
+                    IsShown = true,
                 },
                 new Product
                 {
@@ -1506,7 +1577,7 @@ namespace BlossomApi.Seeders
                     Name = "Product 72",
                     NameEng = "Product 72 (English)",
                     ImagesSerialized = "[\"https://blossom-blob.b-cdn.net/cfcffdfa-4bc0-4c12-8c68-e84be0bc90d8_photo_2024-06-05_16-18-09.jpg\", \"https://blossom-blob.b-cdn.net/cfcffdfa-4bc0-4c12-8c68-e84be0bc90d8_photo_2024-06-05_16-18-09.jpg\"]",
-                    Brand = "Brand C",
+                    //Brand = "Brand C",
                     Price = 799.81m,
                     Discount = 42.9m,
                     IsNew = false,
@@ -1519,7 +1590,8 @@ namespace BlossomApi.Seeders
                     Article = "385356",
                     //OptionsSerialized = "[\"Option 1\"]",
                     DieNumbersSerialized = "[2, 5]",
-                    Description = "Description of Product 72"
+                    Description = "Description of Product 72",
+                    IsShown = true,
                 },
                 new Product
                 {
@@ -1527,7 +1599,7 @@ namespace BlossomApi.Seeders
                     Name = "Product 73",
                     NameEng = "Product 73 (English)",
                     ImagesSerialized = "[\"https://blossom-blob.b-cdn.net/cfcffdfa-4bc0-4c12-8c68-e84be0bc90d8_photo_2024-06-05_16-18-09.jpg\", \"https://blossom-blob.b-cdn.net/cfcffdfa-4bc0-4c12-8c68-e84be0bc90d8_photo_2024-06-05_16-18-09.jpg\", \"https://blossom-blob.b-cdn.net/cfcffdfa-4bc0-4c12-8c68-e84be0bc90d8_photo_2024-06-05_16-18-09.jpg\", \"https://blossom-blob.b-cdn.net/cfcffdfa-4bc0-4c12-8c68-e84be0bc90d8_photo_2024-06-05_16-18-09.jpg\"]",
-                    Brand = "Brand D",
+                    //Brand = "Brand D",
                     Price = 253.66m,
                     Discount = 2.8m,
                     IsNew = false,
@@ -1540,7 +1612,8 @@ namespace BlossomApi.Seeders
                     Article = "942998",
                     //OptionsSerialized = "[\"Option 1\", \"Option 2\", \"Option 3\", \"Option 4\"]",
                     DieNumbersSerialized = "[5, 3, 1]",
-                    Description = "Description of Product 73"
+                    Description = "Description of Product 73",
+                    IsShown = true,
                 },
                 new Product
                 {
@@ -1548,7 +1621,7 @@ namespace BlossomApi.Seeders
                     Name = "Product 74",
                     NameEng = "Product 74 (English)",
                     ImagesSerialized = "[\"https://blossom-blob.b-cdn.net/cfcffdfa-4bc0-4c12-8c68-e84be0bc90d8_photo_2024-06-05_16-18-09.jpg\"]",
-                    Brand = "Brand D",
+                    //Brand = "Brand D",
                     Price = 640.68m,
                     Discount = 24.86m,
                     IsNew = true,
@@ -1561,7 +1634,8 @@ namespace BlossomApi.Seeders
                     Article = "777773",
                     //OptionsSerialized = "[\"Option 1\", \"Option 2\"]",
                     DieNumbersSerialized = "[1, 2]",
-                    Description = "Description of Product 74"
+                    Description = "Description of Product 74",
+                    IsShown = true,
                 },
                 new Product
                 {
@@ -1569,7 +1643,7 @@ namespace BlossomApi.Seeders
                     Name = "Product 75",
                     NameEng = "Product 75 (English)",
                     ImagesSerialized = "[\"https://blossom-blob.b-cdn.net/cfcffdfa-4bc0-4c12-8c68-e84be0bc90d8_photo_2024-06-05_16-18-09.jpg\"]",
-                    Brand = "Brand B",
+                    //Brand = "Brand B",
                     Price = 207.34m,
                     Discount = 5.84m,
                     IsNew = false,
@@ -1582,7 +1656,8 @@ namespace BlossomApi.Seeders
                     Article = "949594",
                     //OptionsSerialized = "[\"Option 1\", \"Option 2\", \"Option 3\"]",
                     DieNumbersSerialized = "[1]",
-                    Description = "Description of Product 75"
+                    Description = "Description of Product 75",
+                    IsShown = true,
                 },
                 new Product
                 {
@@ -1590,7 +1665,7 @@ namespace BlossomApi.Seeders
                     Name = "Product 76",
                     NameEng = "Product 76 (English)",
                     ImagesSerialized = "[\"https://blossom-blob.b-cdn.net/cfcffdfa-4bc0-4c12-8c68-e84be0bc90d8_photo_2024-06-05_16-18-09.jpg\", \"https://blossom-blob.b-cdn.net/cfcffdfa-4bc0-4c12-8c68-e84be0bc90d8_photo_2024-06-05_16-18-09.jpg\", \"https://blossom-blob.b-cdn.net/cfcffdfa-4bc0-4c12-8c68-e84be0bc90d8_photo_2024-06-05_16-18-09.jpg\", \"https://blossom-blob.b-cdn.net/cfcffdfa-4bc0-4c12-8c68-e84be0bc90d8_photo_2024-06-05_16-18-09.jpg\"]",
-                    Brand = "Brand B",
+                    //Brand = "Brand B",
                     Price = 714.05m,
                     Discount = 48.41m,
                     IsNew = false,
@@ -1603,7 +1678,8 @@ namespace BlossomApi.Seeders
                     Article = "131617",
                     //OptionsSerialized = "[\"Option 1\", \"Option 2\", \"Option 3\", \"Option 4\"]",
                     DieNumbersSerialized = "[4, 5, 3]",
-                    Description = "Description of Product 76"
+                    Description = "Description of Product 76",
+                    IsShown = true,
                 },
                 new Product
                 {
@@ -1611,7 +1687,7 @@ namespace BlossomApi.Seeders
                     Name = "Product 77",
                     NameEng = "Product 77 (English)",
                     ImagesSerialized = "[\"https://blossom-blob.b-cdn.net/cfcffdfa-4bc0-4c12-8c68-e84be0bc90d8_photo_2024-06-05_16-18-09.jpg\", \"https://blossom-blob.b-cdn.net/cfcffdfa-4bc0-4c12-8c68-e84be0bc90d8_photo_2024-06-05_16-18-09.jpg\"]",
-                    Brand = "Brand B",
+                    //Brand = "Brand B",
                     Price = 41.01m,
                     Discount = 28.94m,
                     IsNew = false,
@@ -1624,7 +1700,8 @@ namespace BlossomApi.Seeders
                     Article = "317727",
                     //OptionsSerialized = "[\"Option 1\", \"Option 2\", \"Option 3\", \"Option 4\"]",
                     DieNumbersSerialized = "[4, 2, 1, 5, 3]",
-                    Description = "Description of Product 77"
+                    Description = "Description of Product 77",
+                    IsShown = true,
                 },
                 new Product
                 {
@@ -1632,7 +1709,7 @@ namespace BlossomApi.Seeders
                     Name = "Product 78",
                     NameEng = "Product 78 (English)",
                     ImagesSerialized = "[\"https://blossom-blob.b-cdn.net/cfcffdfa-4bc0-4c12-8c68-e84be0bc90d8_photo_2024-06-05_16-18-09.jpg\", \"https://blossom-blob.b-cdn.net/cfcffdfa-4bc0-4c12-8c68-e84be0bc90d8_photo_2024-06-05_16-18-09.jpg\", \"https://blossom-blob.b-cdn.net/cfcffdfa-4bc0-4c12-8c68-e84be0bc90d8_photo_2024-06-05_16-18-09.jpg\"]",
-                    Brand = "Brand B",
+                    //Brand = "Brand B",
                     Price = 706.44m,
                     Discount = 9.47m,
                     IsNew = false,
@@ -1645,7 +1722,8 @@ namespace BlossomApi.Seeders
                     Article = "794717",
                     //OptionsSerialized = "[\"Option 1\", \"Option 2\", \"Option 3\", \"Option 4\"]",
                     DieNumbersSerialized = "[5, 3, 1]",
-                    Description = "Description of Product 78"
+                    Description = "Description of Product 78",
+                    IsShown = true,
                 },
                 new Product
                 {
@@ -1653,7 +1731,7 @@ namespace BlossomApi.Seeders
                     Name = "Product 79",
                     NameEng = "Product 79 (English)",
                     ImagesSerialized = "[\"https://blossom-blob.b-cdn.net/cfcffdfa-4bc0-4c12-8c68-e84be0bc90d8_photo_2024-06-05_16-18-09.jpg\"]",
-                    Brand = "Brand D",
+                    //Brand = "Brand D",
                     Price = 82.91m,
                     Discount = 25.76m,
                     IsNew = true,
@@ -1666,7 +1744,8 @@ namespace BlossomApi.Seeders
                     Article = "611046",
                     //OptionsSerialized = "[\"Option 1\"]",
                     DieNumbersSerialized = "[1]",
-                    Description = "Description of Product 79"
+                    Description = "Description of Product 79",
+                    IsShown = true,
                 },
                 new Product
                 {
@@ -1674,7 +1753,7 @@ namespace BlossomApi.Seeders
                     Name = "Product 80",
                     NameEng = "Product 80 (English)",
                     ImagesSerialized = "[\"https://blossom-blob.b-cdn.net/cfcffdfa-4bc0-4c12-8c68-e84be0bc90d8_photo_2024-06-05_16-18-09.jpg\", \"https://blossom-blob.b-cdn.net/cfcffdfa-4bc0-4c12-8c68-e84be0bc90d8_photo_2024-06-05_16-18-09.jpg\", \"https://blossom-blob.b-cdn.net/cfcffdfa-4bc0-4c12-8c68-e84be0bc90d8_photo_2024-06-05_16-18-09.jpg\", \"https://blossom-blob.b-cdn.net/cfcffdfa-4bc0-4c12-8c68-e84be0bc90d8_photo_2024-06-05_16-18-09.jpg\"]",
-                    Brand = "Brand A",
+                    //Brand = "Brand A",
                     Price = 390.28m,
                     Discount = 31.92m,
                     IsNew = false,
@@ -1687,7 +1766,8 @@ namespace BlossomApi.Seeders
                     Article = "871766",
                     //OptionsSerialized = "[\"Option 1\", \"Option 2\"]",
                     DieNumbersSerialized = "[3, 5]",
-                    Description = "Description of Product 80"
+                    Description = "Description of Product 80",
+                    IsShown = true,
                 },
                 new Product
                 {
@@ -1695,7 +1775,7 @@ namespace BlossomApi.Seeders
                     Name = "Product 81",
                     NameEng = "Product 81 (English)",
                     ImagesSerialized = "[\"https://blossom-blob.b-cdn.net/cfcffdfa-4bc0-4c12-8c68-e84be0bc90d8_photo_2024-06-05_16-18-09.jpg\", \"https://blossom-blob.b-cdn.net/cfcffdfa-4bc0-4c12-8c68-e84be0bc90d8_photo_2024-06-05_16-18-09.jpg\"]",
-                    Brand = "Brand A",
+                    //Brand = "Brand A",
                     Price = 25.39m,
                     Discount = 41.74m,
                     IsNew = true,
@@ -1716,7 +1796,7 @@ namespace BlossomApi.Seeders
                     Name = "Product 82",
                     NameEng = "Product 82 (English)",
                     ImagesSerialized = "[\"https://blossom-blob.b-cdn.net/cfcffdfa-4bc0-4c12-8c68-e84be0bc90d8_photo_2024-06-05_16-18-09.jpg\", \"https://blossom-blob.b-cdn.net/cfcffdfa-4bc0-4c12-8c68-e84be0bc90d8_photo_2024-06-05_16-18-09.jpg\"]",
-                    Brand = "Brand B",
+                    //Brand = "Brand B",
                     Price = 810.78m,
                     Discount = 22.97m,
                     IsNew = true,
@@ -1737,7 +1817,7 @@ namespace BlossomApi.Seeders
                     Name = "Product 83",
                     NameEng = "Product 83 (English)",
                     ImagesSerialized = "[\"https://blossom-blob.b-cdn.net/cfcffdfa-4bc0-4c12-8c68-e84be0bc90d8_photo_2024-06-05_16-18-09.jpg\", \"https://blossom-blob.b-cdn.net/cfcffdfa-4bc0-4c12-8c68-e84be0bc90d8_photo_2024-06-05_16-18-09.jpg\"]",
-                    Brand = "Brand C",
+                    //Brand = "Brand C",
                     Price = 581.44m,
                     Discount = 44.58m,
                     IsNew = true,
@@ -1758,7 +1838,7 @@ namespace BlossomApi.Seeders
                     Name = "Product 84",
                     NameEng = "Product 84 (English)",
                     ImagesSerialized = "[\"https://blossom-blob.b-cdn.net/cfcffdfa-4bc0-4c12-8c68-e84be0bc90d8_photo_2024-06-05_16-18-09.jpg\", \"https://blossom-blob.b-cdn.net/cfcffdfa-4bc0-4c12-8c68-e84be0bc90d8_photo_2024-06-05_16-18-09.jpg\", \"https://blossom-blob.b-cdn.net/cfcffdfa-4bc0-4c12-8c68-e84be0bc90d8_photo_2024-06-05_16-18-09.jpg\", \"https://blossom-blob.b-cdn.net/cfcffdfa-4bc0-4c12-8c68-e84be0bc90d8_photo_2024-06-05_16-18-09.jpg\"]",
-                    Brand = "Brand D",
+                    //Brand = "Brand D",
                     Price = 787.38m,
                     Discount = 2.47m,
                     IsNew = false,
@@ -1779,7 +1859,7 @@ namespace BlossomApi.Seeders
                     Name = "Product 85",
                     NameEng = "Product 85 (English)",
                     ImagesSerialized = "[\"https://blossom-blob.b-cdn.net/cfcffdfa-4bc0-4c12-8c68-e84be0bc90d8_photo_2024-06-05_16-18-09.jpg\", \"https://blossom-blob.b-cdn.net/cfcffdfa-4bc0-4c12-8c68-e84be0bc90d8_photo_2024-06-05_16-18-09.jpg\"]",
-                    Brand = "Brand C",
+                    //Brand = "Brand C",
                     Price = 679.69m,
                     Discount = 23.36m,
                     IsNew = true,
@@ -1800,7 +1880,7 @@ namespace BlossomApi.Seeders
                     Name = "Product 86",
                     NameEng = "Product 86 (English)",
                     ImagesSerialized = "[\"https://blossom-blob.b-cdn.net/cfcffdfa-4bc0-4c12-8c68-e84be0bc90d8_photo_2024-06-05_16-18-09.jpg\", \"https://blossom-blob.b-cdn.net/cfcffdfa-4bc0-4c12-8c68-e84be0bc90d8_photo_2024-06-05_16-18-09.jpg\"]",
-                    Brand = "Brand B",
+                    //Brand = "Brand B",
                     Price = 691.17m,
                     Discount = 11.41m,
                     IsNew = true,
@@ -1821,7 +1901,7 @@ namespace BlossomApi.Seeders
                     Name = "Product 87",
                     NameEng = "Product 87 (English)",
                     ImagesSerialized = "[\"https://blossom-blob.b-cdn.net/cfcffdfa-4bc0-4c12-8c68-e84be0bc90d8_photo_2024-06-05_16-18-09.jpg\", \"https://blossom-blob.b-cdn.net/cfcffdfa-4bc0-4c12-8c68-e84be0bc90d8_photo_2024-06-05_16-18-09.jpg\", \"https://blossom-blob.b-cdn.net/cfcffdfa-4bc0-4c12-8c68-e84be0bc90d8_photo_2024-06-05_16-18-09.jpg\"]",
-                    Brand = "Brand C",
+                    //Brand = "Brand C",
                     Price = 728.91m,
                     Discount = 14.05m,
                     IsNew = false,
@@ -1842,7 +1922,7 @@ namespace BlossomApi.Seeders
                     Name = "Product 88",
                     NameEng = "Product 88 (English)",
                     ImagesSerialized = "[\"https://blossom-blob.b-cdn.net/cfcffdfa-4bc0-4c12-8c68-e84be0bc90d8_photo_2024-06-05_16-18-09.jpg\"]",
-                    Brand = "Brand D",
+                    //Brand = "Brand D",
                     Price = 979.76m,
                     Discount = 24.65m,
                     IsNew = true,
@@ -1863,7 +1943,7 @@ namespace BlossomApi.Seeders
                     Name = "Product 89",
                     NameEng = "Product 89 (English)",
                     ImagesSerialized = "[\"https://blossom-blob.b-cdn.net/cfcffdfa-4bc0-4c12-8c68-e84be0bc90d8_photo_2024-06-05_16-18-09.jpg\"]",
-                    Brand = "Brand A",
+                    //Brand = "Brand A",
                     Price = 638.32m,
                     Discount = 24.08m,
                     IsNew = false,
@@ -1884,7 +1964,7 @@ namespace BlossomApi.Seeders
                     Name = "Product 90",
                     NameEng = "Product 90 (English)",
                     ImagesSerialized = "[\"https://blossom-blob.b-cdn.net/cfcffdfa-4bc0-4c12-8c68-e84be0bc90d8_photo_2024-06-05_16-18-09.jpg\", \"https://blossom-blob.b-cdn.net/cfcffdfa-4bc0-4c12-8c68-e84be0bc90d8_photo_2024-06-05_16-18-09.jpg\"]",
-                    Brand = "Brand C",
+                    //Brand = "Brand C",
                     Price = 191.48m,
                     Discount = 27.22m,
                     IsNew = false,
@@ -1905,7 +1985,7 @@ namespace BlossomApi.Seeders
                     Name = "Product 91",
                     NameEng = "Product 91 (English)",
                     ImagesSerialized = "[\"https://blossom-blob.b-cdn.net/cfcffdfa-4bc0-4c12-8c68-e84be0bc90d8_photo_2024-06-05_16-18-09.jpg\", \"https://blossom-blob.b-cdn.net/cfcffdfa-4bc0-4c12-8c68-e84be0bc90d8_photo_2024-06-05_16-18-09.jpg\", \"https://blossom-blob.b-cdn.net/cfcffdfa-4bc0-4c12-8c68-e84be0bc90d8_photo_2024-06-05_16-18-09.jpg\", \"https://blossom-blob.b-cdn.net/cfcffdfa-4bc0-4c12-8c68-e84be0bc90d8_photo_2024-06-05_16-18-09.jpg\"]",
-                    Brand = "Brand D",
+                    //Brand = "Brand D",
                     Price = 573.27m,
                     Discount = 45.74m,
                     IsNew = true,
@@ -1926,7 +2006,7 @@ namespace BlossomApi.Seeders
                     Name = "Product 92",
                     NameEng = "Product 92 (English)",
                     ImagesSerialized = "[\"https://blossom-blob.b-cdn.net/cfcffdfa-4bc0-4c12-8c68-e84be0bc90d8_photo_2024-06-05_16-18-09.jpg\", \"https://blossom-blob.b-cdn.net/cfcffdfa-4bc0-4c12-8c68-e84be0bc90d8_photo_2024-06-05_16-18-09.jpg\", \"https://blossom-blob.b-cdn.net/cfcffdfa-4bc0-4c12-8c68-e84be0bc90d8_photo_2024-06-05_16-18-09.jpg\"]",
-                    Brand = "Brand A",
+                    //Brand = "Brand A",
                     Price = 819.51m,
                     Discount = 27.72m,
                     IsNew = true,
@@ -1947,7 +2027,7 @@ namespace BlossomApi.Seeders
                     Name = "Product 93",
                     NameEng = "Product 93 (English)",
                     ImagesSerialized = "[\"https://blossom-blob.b-cdn.net/cfcffdfa-4bc0-4c12-8c68-e84be0bc90d8_photo_2024-06-05_16-18-09.jpg\"]",
-                    Brand = "Brand A",
+                    //Brand = "Brand A",
                     Price = 119.07m,
                     Discount = 28.79m,
                     IsNew = false,
@@ -1968,7 +2048,7 @@ namespace BlossomApi.Seeders
                     Name = "Product 94",
                     NameEng = "Product 94 (English)",
                     ImagesSerialized = "[\"https://blossom-blob.b-cdn.net/cfcffdfa-4bc0-4c12-8c68-e84be0bc90d8_photo_2024-06-05_16-18-09.jpg\", \"https://blossom-blob.b-cdn.net/cfcffdfa-4bc0-4c12-8c68-e84be0bc90d8_photo_2024-06-05_16-18-09.jpg\"]",
-                    Brand = "Brand D",
+                    //Brand = "Brand D",
                     Price = 114.42m,
                     Discount = 46.28m,
                     IsNew = false,
@@ -1989,7 +2069,7 @@ namespace BlossomApi.Seeders
                     Name = "Product 95",
                     NameEng = "Product 95 (English)",
                     ImagesSerialized = "[\"https://blossom-blob.b-cdn.net/cfcffdfa-4bc0-4c12-8c68-e84be0bc90d8_photo_2024-06-05_16-18-09.jpg\"]",
-                    Brand = "Brand C",
+                    //Brand = "Brand C",
                     Price = 251.51m,
                     Discount = 21.09m,
                     IsNew = true,
@@ -2010,7 +2090,7 @@ namespace BlossomApi.Seeders
                     Name = "Product 96",
                     NameEng = "Product 96 (English)",
                     ImagesSerialized = "[\"https://blossom-blob.b-cdn.net/cfcffdfa-4bc0-4c12-8c68-e84be0bc90d8_photo_2024-06-05_16-18-09.jpg\", \"https://blossom-blob.b-cdn.net/cfcffdfa-4bc0-4c12-8c68-e84be0bc90d8_photo_2024-06-05_16-18-09.jpg\"]",
-                    Brand = "Brand D",
+                    //Brand = "Brand D",
                     Price = 803.65m,
                     Discount = 39.39m,
                     IsNew = true,
@@ -2031,7 +2111,7 @@ namespace BlossomApi.Seeders
                     Name = "Product 97",
                     NameEng = "Product 97 (English)",
                     ImagesSerialized = "[\"https://blossom-blob.b-cdn.net/cfcffdfa-4bc0-4c12-8c68-e84be0bc90d8_photo_2024-06-05_16-18-09.jpg\", \"https://blossom-blob.b-cdn.net/cfcffdfa-4bc0-4c12-8c68-e84be0bc90d8_photo_2024-06-05_16-18-09.jpg\"]",
-                    Brand = "Brand D",
+                    //Brand = "Brand D",
                     Price = 584.73m,
                     Discount = 32.7m,
                     IsNew = true,
@@ -2052,7 +2132,7 @@ namespace BlossomApi.Seeders
                     Name = "Product 98",
                     NameEng = "Product 98 (English)",
                     ImagesSerialized = "[\"https://blossom-blob.b-cdn.net/cfcffdfa-4bc0-4c12-8c68-e84be0bc90d8_photo_2024-06-05_16-18-09.jpg\"]",
-                    Brand = "Brand C",
+                    //Brand = "Brand C",
                     Price = 155.94m,
                     Discount = 32.78m,
                     IsNew = false,
@@ -2073,7 +2153,7 @@ namespace BlossomApi.Seeders
                     Name = "Product 99",
                     NameEng = "Product 99 (English)",
                     ImagesSerialized = "[\"https://blossom-blob.b-cdn.net/cfcffdfa-4bc0-4c12-8c68-e84be0bc90d8_photo_2024-06-05_16-18-09.jpg\", \"https://blossom-blob.b-cdn.net/cfcffdfa-4bc0-4c12-8c68-e84be0bc90d8_photo_2024-06-05_16-18-09.jpg\", \"https://blossom-blob.b-cdn.net/cfcffdfa-4bc0-4c12-8c68-e84be0bc90d8_photo_2024-06-05_16-18-09.jpg\"]",
-                    Brand = "Brand C",
+                    //Brand = "Brand C",
                     Price = 462.09m,
                     Discount = 40.75m,
                     IsNew = false,
@@ -2094,7 +2174,7 @@ namespace BlossomApi.Seeders
                     Name = "Product 100",
                     NameEng = "Product 100 (English)",
                     ImagesSerialized = "[\"https://blossom-blob.b-cdn.net/cfcffdfa-4bc0-4c12-8c68-e84be0bc90d8_photo_2024-06-05_16-18-09.jpg\", \"https://blossom-blob.b-cdn.net/cfcffdfa-4bc0-4c12-8c68-e84be0bc90d8_photo_2024-06-05_16-18-09.jpg\", \"https://blossom-blob.b-cdn.net/cfcffdfa-4bc0-4c12-8c68-e84be0bc90d8_photo_2024-06-05_16-18-09.jpg\"]",
-                    Brand = "Brand C",
+                    //Brand = "Brand C",
                     Price = 709.02m,
                     Discount = 8.63m,
                     IsNew = true,

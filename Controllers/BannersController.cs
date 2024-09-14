@@ -164,7 +164,7 @@ namespace BlossomApi.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateBanner(int id, [FromForm] BannerUpdateDto bannerUpdateDto)
         {
-            var banner = await _context.Banners.FindAsync(id);
+            var banner = await _context.Banners.Include(b => b.Products).FirstOrDefaultAsync(b => b.BannerId == id);
             if (banner == null)
             {
                 return NotFound();

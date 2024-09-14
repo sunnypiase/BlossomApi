@@ -1,3 +1,4 @@
+using BlossomApi.Dtos.Brends;
 using BlossomApi.Dtos.Characteristic;
 
 namespace BlossomApi.Dtos
@@ -9,7 +10,7 @@ namespace BlossomApi.Dtos
         public string NameEng { get; set; }
         public int Amount { get; set; }
         public List<string> Images { get; set; }
-        public string Brand { get; set; }
+        public BrandResponseDto Brand { get; set; }
         public decimal Price { get; set; }
         public decimal Discount { get; set; }
         public bool IsNew { get; set; }

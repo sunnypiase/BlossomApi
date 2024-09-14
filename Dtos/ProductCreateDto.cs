@@ -10,14 +10,12 @@ namespace BlossomApi.Dtos
         [Required(ErrorMessage = "NameEng is required.")]
         public string NameEng { get; set; }
 
-        [Required(ErrorMessage = "Brand is required.")]
-        public string Brand { get; set; }
+        [Required(ErrorMessage = "BrandId is required.")]
+        public int BrandId { get; set; }
 
         [Required(ErrorMessage = "Price is required.")]
         [Range(0.01, double.MaxValue, ErrorMessage = "Price must be greater than 0.")]
         public decimal Price { get; set; }
-
-        [Range(0.01, double.MaxValue, ErrorMessage = "PurchasePrice must be greater than 0.")]
         public decimal PurchasePrice { get; set; }
 
         [Required(ErrorMessage = "AvailableAmount is required.")]

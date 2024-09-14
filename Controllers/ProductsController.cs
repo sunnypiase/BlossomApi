@@ -236,7 +236,7 @@ namespace BlossomApi.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateProduct(int id, [FromBody] ProductUpdateDto productUpdateDto)
+        public async Task<IActionResult> UpdateProduct(int id, [FromForm] ProductUpdateDto productUpdateDto)
         {
             var success = await _productUpdateService.UpdateProductAsync(id, productUpdateDto);
             if (!success)

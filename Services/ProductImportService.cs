@@ -31,7 +31,6 @@ namespace BlossomApi.Services
                         Article = GetValueOrNull(worksheet.Cells[row, 1]),
                         Name = GetValueOrNull(worksheet.Cells[row, 2]),
                         NameEng = GetValueOrNull(worksheet.Cells[row, 3]),
-                        Brand = GetValueOrNull(worksheet.Cells[row, 4]),
                         Price = ParseDecimal(worksheet.Cells[row, 5], row, "Price", rowErrors),
                         Discount = ParseDecimal(worksheet.Cells[row, 6], row, "Discount", rowErrors),
                         IsNew = ParseBool(worksheet.Cells[row, 7], row, "IsNew", rowErrors),

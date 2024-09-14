@@ -43,6 +43,7 @@ namespace BlossomApi.DB
         public DbSet<Promocode> Promocodes { get; set; }
         public DbSet<Banner> Banners { get; set; }
         public DbSet<Blog> Blogs { get; set; }
+        public DbSet<Brand> Brands { get; set; } // New DbSet for the Brand model
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -54,14 +55,19 @@ namespace BlossomApi.DB
                 .WithOne()
                 .HasForeignKey<SiteUser>(u => u.IdentityUserId);
 
-
-
             // Many-to-one relationship between ShoppingCart and User
             modelBuilder.Entity<ShoppingCart>()
                 .HasOne(sc => sc.SiteUser)
                 .WithMany(u => u.ShoppingCarts)
                 .HasForeignKey(sc => sc.SiteUserId)
                 .OnDelete(DeleteBehavior.Restrict); // Avoid cascade delete
+
+            // One-to-many relationship between Brand and Product
+            modelBuilder.Entity<Brand>()
+                .HasMany(b => b.Products)
+                .WithOne(p => p.Brand)
+                .HasForeignKey(p => p.BrandId)
+                .OnDelete(DeleteBehavior.NoAction); // Default behavior
 
             // Many-to-many relationship between Product and Category using a join table
             modelBuilder.Entity<Product>()

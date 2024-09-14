@@ -6,6 +6,7 @@ namespace BlossomApi.Dtos.FilterPanel
     {
         public CategoryNode Categories { get; set; }
         public List<FilterPanelCharacteristicDto> Characteristics { get; set; }
+        public List<FilterPanelOptionDto> Brands { get; set; }
         public decimal MinPrice { get; set; }
         public decimal MaxPrice { get; set; }
     }

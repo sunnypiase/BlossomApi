@@ -61,7 +61,6 @@ namespace BlossomApi.Models
         public string Name { get; set; } //+
         public string NameEng { get; set; }// +
         public string ImagesSerialized { get; set; } = "[]"; // Default to an empty JSON array +
-        public string Brand { get; set; }// +
         public decimal Price { get; set; } //+
         public decimal Discount { get; set; } // Percentage of discount +
         public double Rating { get; set; }//-
@@ -117,7 +116,11 @@ namespace BlossomApi.Models
         public ICollection<SiteUser> UsersWhoFavorited { get; set; } = new List<SiteUser>(); // Many-to-many with SiteUser
         public ICollection<Banner> Banners { get; set; } = new List<Banner>();
         public ICollection<Blog> Blogs { get; set; } = new List<Blog>();
+        // Foreign key for Brand
+        public int? BrandId { get; set; }
 
+        // Navigation property for Brand
+        public Brand? Brand { get; set; }
         // Not mapped properties for lists
         [NotMapped]
         public List<string> Images
@@ -179,6 +182,30 @@ namespace BlossomApi.Models
                 Categories = [MainCategory, .. value];
             }
         }
+    }
+
+    public class Brand
+    {
+        [Key]
+        public int BrandId { get; set; }
+
+        [Required]
+        public string ImageUrl { get; set; }
+
+        [Required]
+        public string LogoImageUrl { get; set; }
+
+        [Required]
+        public string Title { get; set; }
+
+        public string Description { get; set; }
+
+        public string? MetaKeywords { get; set; }
+
+        public string? MetaDescription { get; set; }
+
+        // Navigation properties
+        public ICollection<Product> Products { get; set; } = new List<Product>();
     }
 
     public class Review

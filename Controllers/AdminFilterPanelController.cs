@@ -59,7 +59,16 @@ namespace BlossomApi.Controllers
                         .ToList()
                 })
                 .ToList();
-
+            var brends = products
+                .Select(p => p.Brand)
+                .DistinctBy(b => b.BrandId)
+                .Select(g => new FilterPanelOptionDto
+                {
+                    Id = g.BrandId,
+                    Option = g.Title,
+                    ProductsAmount = products.Count(p => p.Brand.Title == g.Title)
+                })
+                .ToList();
             // Determine the minimum and maximum price across all products
             var minPrice = products.Min(p => p.Price);
             var maxPrice = products.Max(p => p.Price);
@@ -104,6 +113,7 @@ namespace BlossomApi.Controllers
     public class AdminFilterPanelResponseDto
     {
         public List<CategoryNode> Categories { get; set; } // List of root-level categories
+        public List<FilterPanelOptionDto> Brands { get; set; } // List of root-level categories
         public List<FilterPanelCharacteristicDto> Characteristics { get; set; }
         public decimal MinPrice { get; set; }
         public decimal MaxPrice { get; set; }

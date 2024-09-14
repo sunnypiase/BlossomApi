@@ -6,8 +6,9 @@ namespace BlossomApi.Dtos
     {
         public string? Name { get; set; }
         public string? NameEng { get; set; }
-        public List<string>? Images { get; set; }
-        public string? Brand { get; set; }
+        public List<string>? ImagesToDelete { get; set; }
+        public IFormFileCollection? ImagesToAdd { get; set; }
+        public int? BrandId { get; set; }
         public decimal? Price { get; set; }
         public decimal? Discount { get; set; }
         public int? AvailableAmount { get; set; }

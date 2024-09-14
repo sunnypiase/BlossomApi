@@ -26,6 +26,13 @@ namespace BlossomApi.Services
                 return (false, "Main category not found.", null);
             }
 
+            // Validate the brand exists
+            var brand = await _context.Brands.FindAsync(productCreateDto.BrandId);
+            if (brand is null)
+            {
+                return (false, "Brand not found.", null);
+            }
+
             // Validate additional categories exist if provided
             List<Category> additionalCategories = new();
             if (productCreateDto.AdditionalCategoryIds.Any())
@@ -61,6 +68,7 @@ namespace BlossomApi.Services
             product.MainCategory = mainCategory;
             product.AdditionalCategories = additionalCategories;
             product.Characteristics = characteristics;
+            product.Brand = brand;
 
             // Add and save the new product
             await _context.Products.AddAsync(product);
@@ -71,6 +79,7 @@ namespace BlossomApi.Services
 
             return (true, string.Empty, productResponse);
         }
+
         public async Task<(bool IsSuccess, List<ProductResponseDto> Products, string ErrorMessage)> CreateProductBatchAsync(List<ProductCreateDto> productCreateDtos)
         {
             var validationErrors = new List<string>();
@@ -83,6 +92,14 @@ namespace BlossomApi.Services
                 if (mainCategory is null)
                 {
                     validationErrors.Add($"Main category not found for product '{productCreateDto.Name}'.");
+                    continue;
+                }
+
+                // Validate the brand exists
+                var brand = await _context.Brands.FindAsync(productCreateDto.BrandId);
+                if (brand is null)
+                {
+                    validationErrors.Add($"Brand not found for product '{productCreateDto.Name}'.");
                     continue;
                 }
 
@@ -123,6 +140,7 @@ namespace BlossomApi.Services
                 product.MainCategory = mainCategory;
                 product.AdditionalCategories = additionalCategories;
                 product.Characteristics = characteristics;
+                product.Brand = brand;
 
                 // Add and save the new product
                 await _context.Products.AddAsync(product);
