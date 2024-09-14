@@ -68,12 +68,12 @@ namespace BlossomApi.Controllers
                 {
                     Id = g.BrandId,
                     Option = g.Title,
-                    ProductsAmount = products.Count(p => p.Brand.Title == g.Title)
+                    ProductsAmount = products?.Count(p => p.Brand.Title == g.Title) ?? 0
                 })
                 .ToList();
             // Determine the minimum and maximum price across all products
-            var minPrice = products.Min(p => p.Price);
-            var maxPrice = products.Max(p => p.Price);
+            var minPrice = products?.Min(p => p.Price) ?? 0;
+            var maxPrice = products?.Max(p => p.Price) ?? 0;
 
             // Return the filter panel response
             return new AdminFilterPanelResponseDto
