@@ -60,8 +60,9 @@ namespace BlossomApi.Controllers
                 })
                 .ToList();
             var brends = products
+                .Where(p => p.Brand != null)
                 .Select(p => p.Brand)
-                .DistinctBy(b => b.BrandId)
+                .DistinctBy(b => b?.BrandId)
                 .Select(g => new FilterPanelOptionDto
                 {
                     Id = g.BrandId,
