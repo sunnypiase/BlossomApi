@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using BlossomApi.DB;
+using BlossomApi.Dtos;
 using BlossomApi.Dtos.Brends;
 using BlossomApi.Models;
 using BlossomApi.Services;
@@ -50,6 +51,23 @@ namespace BlossomApi.Controllers
             var brandResponse = _mapper.Map<BrandResponseDto>(brand);
 
             return CreatedAtAction(nameof(GetBrand), new { id = brand.BrandId }, brandResponse);
+        }
+
+        // GET: api/Category/Search
+        [HttpGet("Search")]
+        public async Task<ActionResult<IEnumerable<BrandResponseDto>>> SearchBrands([FromQuery] string? searchTerm)
+        {
+            var brandsQuery = _context.Brands.AsQueryable();
+
+            if (!string.IsNullOrEmpty(searchTerm))
+            {
+                var lowerSearchTerm = searchTerm.ToLower();
+                brandsQuery = brandsQuery.Where(c => c.Title.ToLower().Contains(lowerSearchTerm));
+            }
+
+            var brandDtos = _mapper.Map<List<BrandResponseDto>>(await brandsQuery.ToListAsync());
+
+            return Ok(brandDtos);
         }
 
         // GET: api/Brands
