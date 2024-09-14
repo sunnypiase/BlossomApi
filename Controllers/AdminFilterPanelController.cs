@@ -40,6 +40,7 @@ namespace BlossomApi.Controllers
             var products = await _context.Products
                 .Include(p => p.Characteristics)
                 .Include(p => p.Categories)
+                .Include(p => p.Brand)
                 .ToListAsync();
 
             // Group characteristics by title and create options
