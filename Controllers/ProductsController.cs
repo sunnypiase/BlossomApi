@@ -60,6 +60,7 @@ namespace BlossomApi.Controllers
                 .Include(x => x.Categories)
                 .Include(x => x.Reviews)
                 .Include(x => x.Characteristics)
+                .Include(x => x.Brand)
                 .FirstOrDefaultAsync(p => p.ProductId == id);
 
             if (product == null)
