@@ -119,10 +119,26 @@ namespace BlossomApi.Controllers
                 return NotFound();
             }
 
-            promocode.Code = updateDto.Code;
-            promocode.Discount = updateDto.Discount;
-            promocode.UsageLeft = updateDto.UsageLeft;
-            promocode.ExpirationDate = updateDto.ExpirationDate;
+            // Update only the fields that are provided (not null)
+            if (updateDto.Code != null)
+            {
+                promocode.Code = updateDto.Code;
+            }
+
+            if (updateDto.Discount.HasValue)
+            {
+                promocode.Discount = updateDto.Discount.Value;
+            }
+
+            if (updateDto.UsageLeft.HasValue)
+            {
+                promocode.UsageLeft = updateDto.UsageLeft.Value;
+            }
+
+            if (updateDto.ExpirationDate.HasValue)
+            {
+                promocode.ExpirationDate = updateDto.ExpirationDate.Value;
+            }
 
             _context.Promocodes.Update(promocode);
             await _context.SaveChangesAsync();
@@ -138,6 +154,7 @@ namespace BlossomApi.Controllers
 
             return Ok(promocodeDto);
         }
+
 
         // DELETE: api/promocodes/{id}
         [Authorize(Roles = "Admin")]
@@ -181,15 +198,12 @@ namespace BlossomApi.Controllers
 
     public class UpdatePromocodeDto
     {
-        [Required]
-        public string Code { get; set; }
-        [Required]
+        public string? Code { get; set; }
         [Range(0, 100)]
-        public decimal Discount { get; set; }
-        [Required]
+        public decimal? Discount { get; set; }
         [Range(0, int.MaxValue)]
-        public int UsageLeft { get; set; }
-        [Required]
-        public DateTime ExpirationDate { get; set; }
+        public int? UsageLeft { get; set; }
+        public DateTime? ExpirationDate { get; set; }
     }
+
 }
