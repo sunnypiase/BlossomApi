@@ -60,6 +60,8 @@ namespace BlossomApi.Controllers
                 .ThenInclude(p => p.Characteristics)
                 .Include(b => b.Products)
                 .ThenInclude(p => p.Categories)
+                .Include(b => b.Products)
+                .ThenInclude(p => p.Brand)
                 .FirstOrDefaultAsync(b => b.BannerId == bannerId);
 
             if (banner == null || !banner.Products.Any())
@@ -107,6 +109,7 @@ namespace BlossomApi.Controllers
             var products = await _shownProductRepository.GetProducts()
                 .Include(p => p.Characteristics)
                 .Include(p => p.Categories)
+                .Include(p => p.Brand)
                 .Where(p => p.Categories.Any(c => categoryIds.Contains(c.CategoryId)))
                 .ToListAsync();
 

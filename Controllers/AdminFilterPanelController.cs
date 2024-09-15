@@ -79,6 +79,7 @@ namespace BlossomApi.Controllers
             // Return the filter panel response
             return new AdminFilterPanelResponseDto
             {
+                Brands = brends,
                 Categories = categoryTree,
                 Characteristics = characteristics,
                 MinPrice = minPrice,
