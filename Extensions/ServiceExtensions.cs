@@ -28,7 +28,7 @@ namespace BlossomApi.Extensions
 
             // Add DbContext
             var connectionString = environment.IsDevelopment()
-                ? "Host=localhost;Username=postgres;Password=root;Database=postgres;Port=5432;Pooling=true;"
+                ? "Host=localhost;Username=postgres;Password=postgres;Database=postgres;Port=5433;Pooling=true;"
                 : ConnectionHelper.GetConnectionString(configuration);
 
             services.AddDbContext<BlossomContext>(opt => opt.UseNpgsql(connectionString));

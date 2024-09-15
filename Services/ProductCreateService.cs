@@ -70,6 +70,11 @@ namespace BlossomApi.Services
             product.Characteristics = characteristics;
             product.Brand = brand;
 
+            if (productCreateDto.ImageUrls != null && productCreateDto.ImageUrls.Any())
+            {
+                product.Images = productCreateDto.ImageUrls; // Assuming ImagesSerialized handles this
+            }
+
             // Add and save the new product
             await _context.Products.AddAsync(product);
             await _context.SaveChangesAsync();
@@ -97,11 +102,6 @@ namespace BlossomApi.Services
 
                 // Validate the brand exists
                 var brand = await _context.Brands.FindAsync(productCreateDto.BrandId);
-                if (brand is null)
-                {
-                    validationErrors.Add($"Brand not found for product '{productCreateDto.Name}'.");
-                    continue;
-                }
 
                 // Validate additional categories exist if provided
                 List<Category> additionalCategories = new();
@@ -140,7 +140,12 @@ namespace BlossomApi.Services
                 product.MainCategory = mainCategory;
                 product.AdditionalCategories = additionalCategories;
                 product.Characteristics = characteristics;
-                product.Brand = brand;
+                if (brand != null) product.Brand = brand;
+
+                if (productCreateDto.ImageUrls != null && productCreateDto.ImageUrls.Any())
+                {
+                    product.Images = productCreateDto.ImageUrls; // Assuming ImagesSerialized handles this
+                }
 
                 // Add and save the new product
                 await _context.Products.AddAsync(product);

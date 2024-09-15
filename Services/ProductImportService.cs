@@ -22,50 +22,46 @@ namespace BlossomApi.Services
             using var package = new ExcelPackage(excelStream);
             var worksheet = package.Workbook.Worksheets[0];
 
+            // Map column headers to their positions
+            var columnMapping = MapColumns(worksheet);
+
             for (int row = 2; row <= worksheet.Dimension.Rows; row++) // Assuming first row is header
             {
+                // Check if the row is empty by verifying the required fields
+                if (IsRowEmpty(worksheet, row, columnMapping))
+                {
+                    continue; // Skip empty row
+                }
+
                 try
                 {
                     var productCreateDto = new ProductCreateDto
                     {
-                        Article = GetValueOrNull(worksheet.Cells[row, 1]),
-                        Name = GetValueOrNull(worksheet.Cells[row, 2]),
-                        NameEng = GetValueOrNull(worksheet.Cells[row, 3]),
-                        Price = ParseDecimal(worksheet.Cells[row, 5], row, "Price", rowErrors),
-                        Discount = ParseDecimal(worksheet.Cells[row, 6], row, "Discount", rowErrors),
-                        IsNew = ParseBool(worksheet.Cells[row, 7], row, "IsNew", rowErrors),
-                        AvailableAmount = ParseInt(worksheet.Cells[row, 8], row, "AvailableAmount", rowErrors),
-                        IsHit = ParseBool(worksheet.Cells[row, 9], row, "IsHit", rowErrors),
-                        IsShown = ParseBool(worksheet.Cells[row, 10], row, "IsShown", rowErrors),
-                        Description = GetValueOrNull(worksheet.Cells[row, 11]),
-                        Ingridients = GetValueOrNull(worksheet.Cells[row, 12]),
-                        MainCategoryId = ParseInt(worksheet.Cells[row, 13], row, "MainCategoryId", rowErrors),
-                        PurchasePrice = ParseDecimal(worksheet.Cells[row, 14], row, "PurchasePrice", rowErrors),
-                        UnitOfMeasurement = GetValueOrNull(worksheet.Cells[row, 15]),
-                        ManufacturerBarcode = GetValueOrNull(worksheet.Cells[row, 16]),
-                        ActualQuantity = ParseDecimal(worksheet.Cells[row, 17], row, "ActualQuantity", rowErrors),
-                        DocumentQuantity = ParseDecimal(worksheet.Cells[row, 18], row, "DocumentQuantity", rowErrors),
-                        Group = GetValueOrNull(worksheet.Cells[row, 19]),
-                        Type = GetValueOrNull(worksheet.Cells[row, 20]),
-                        UKTZED = GetValueOrNull(worksheet.Cells[row, 21]),
-                        Markup = ParseDecimal(worksheet.Cells[row, 22], row, "Markup", rowErrors),
-                        VATRate = ParseDecimal(worksheet.Cells[row, 23], row, "VATRate", rowErrors),
-                        ExciseTaxRate = ParseDecimal(worksheet.Cells[row, 24], row, "ExciseTaxRate", rowErrors),
-                        PensionFundRate = ParseDecimal(worksheet.Cells[row, 25], row, "PensionFundRate", rowErrors),
-                        VATLetter = GetValueOrNull(worksheet.Cells[row, 26]),
-                        ExciseTaxLetter = GetValueOrNull(worksheet.Cells[row, 27]),
-                        PensionFundLetter = GetValueOrNull(worksheet.Cells[row, 28])
+                        Name = GetRequiredValue(worksheet.Cells[row, columnMapping["Назва товару"]], row, "Назва товару", rowErrors),
+                        NameEng = GetRequiredValue(worksheet.Cells[row, columnMapping["Назва товару eng"]], row, "Назва товару eng", rowErrors),
+                        MainCategoryId = ParseRequiredInt(worksheet.Cells[row, columnMapping["Основна категорія (ід)"]], row, "Основна категорія", rowErrors),
+                        Article = GetRequiredValue(worksheet.Cells[row, columnMapping["Артикул (Штрихкод)"]], row, "Артикул (Штрихкод)", rowErrors),
+                        Price = ParseRequiredDecimal(worksheet.Cells[row, columnMapping["Ціна"]], row, "Ціна", rowErrors),
+                        Discount = ParseDecimal(worksheet.Cells[row, columnMapping.GetValueOrDefault("Відсоток акції")], row, "Відсоток акції", rowErrors),
+                        AvailableAmount = ParseRequiredInt(worksheet.Cells[row, columnMapping["Залишок"]], row, "Залишок", rowErrors),
+                        Description = GetRequiredValue(worksheet.Cells[row, columnMapping["Опис товару"]], row, "Опис товару", rowErrors),
+                        Ingridients = GetValueOrNull(worksheet.Cells[row, columnMapping.GetValueOrDefault("Склад")]),
+                        CharacteristicIds = ParseIntList(worksheet.Cells[row, columnMapping.GetValueOrDefault("Характеристики (список ід)")], row, "Характеристики (список ід)", rowErrors),
+                        AdditionalCategoryIds = ParseIntList(worksheet.Cells[row, columnMapping.GetValueOrDefault("Додаткові категорії (список ід)")], row, "Додаткові категорії (список ід)", rowErrors),
+                        ImageUrls = ParseImageLinks(worksheet.Cells[row, columnMapping.GetValueOrDefault("Зображення (посилання)")], row, "Зображення", rowErrors),
+                        MetaKeys = GetValueOrNull(worksheet.Cells[row, columnMapping.GetValueOrDefault("SEOKeywords")]),
+                        MetaDescription = GetValueOrNull(worksheet.Cells[row, columnMapping.GetValueOrDefault("SEODescription")])
                     };
 
                     // Only add the product if there were no parsing errors for this row
-                    if (!rowErrors.Any(e => e.Contains($"Row {row}")))
+                    if (!rowErrors.Any(e => e.Contains($"Рядок {row}")))
                     {
                         productsToCreate.Add(productCreateDto);
                     }
                 }
                 catch (Exception ex)
                 {
-                    rowErrors.Add($"Error parsing row {row}: {ex.Message}");
+                    rowErrors.Add($"Помилка під час обробки рядка {row}: {ex.Message}");
                 }
             }
 
@@ -86,12 +82,49 @@ namespace BlossomApi.Services
             return (true, string.Empty, createdProducts.Select(x => x.Id).ToList());
         }
 
+        // Helper methods
+
+        private Dictionary<string, int> MapColumns(ExcelWorksheet worksheet)
+        {
+            var columnMapping = new Dictionary<string, int>();
+
+            for (int col = 1; col <= worksheet.Dimension.Columns; col++)
+            {
+                var columnHeader = worksheet.Cells[1, col].Text.Trim();
+                if (!string.IsNullOrEmpty(columnHeader) && !columnMapping.ContainsKey(columnHeader))
+                {
+                    columnMapping.Add(columnHeader, col);
+                }
+            }
+
+            return columnMapping;
+        }
+
+        private bool IsRowEmpty(ExcelWorksheet worksheet, int row, Dictionary<string, int> columnMapping)
+        {
+            return string.IsNullOrWhiteSpace(worksheet.Cells[row, columnMapping["Назва товару"]].Text) &&
+                   string.IsNullOrWhiteSpace(worksheet.Cells[row, columnMapping["Назва товару eng"]].Text) &&
+                   string.IsNullOrWhiteSpace(worksheet.Cells[row, columnMapping["Артикул (Штрихкод)"]].Text);
+        }
+
         private string? GetValueOrNull(ExcelRange cell)
         {
             return string.IsNullOrEmpty(cell.Text) ? null : cell.Text;
         }
 
-        private decimal ParseDecimal(ExcelRange cell, int row, string columnName, List<string> rowErrors)
+        private string GetRequiredValue(ExcelRange cell, int row, string columnName, List<string> rowErrors)
+        {
+            var value = cell.Text?.Trim();
+            if (string.IsNullOrEmpty(value))
+            {
+                rowErrors.Add($"Рядок {row}: поле '{columnName}' обов'язкове.");
+                return string.Empty;
+            }
+
+            return value;
+        }
+
+        private decimal ParseRequiredDecimal(ExcelRange cell, int row, string columnName, List<string> rowErrors)
         {
             if (decimal.TryParse(cell.Text, NumberStyles.Any, CultureInfo.InvariantCulture, out var value))
             {
@@ -99,12 +132,27 @@ namespace BlossomApi.Services
             }
             else
             {
-                rowErrors.Add($"Row {row}: Invalid decimal value in column '{columnName}'.");
+                rowErrors.Add($"Рядок {row}: Невірне числове значення в колонці '{columnName}'.");
                 return 0;
             }
         }
 
-        private int ParseInt(ExcelRange cell, int row, string columnName, List<string> rowErrors)
+        private decimal ParseDecimal(ExcelRange cell, int row, string columnName, List<string> rowErrors)
+        {
+            if (string.IsNullOrWhiteSpace(cell.Text)) return 0;
+
+            if (decimal.TryParse(cell.Text, NumberStyles.Any, CultureInfo.InvariantCulture, out var value))
+            {
+                return value;
+            }
+            else
+            {
+                rowErrors.Add($"Рядок {row}: Невірне числове значення в колонці '{columnName}'.");
+                return 0;
+            }
+        }
+
+        private int ParseRequiredInt(ExcelRange cell, int row, string columnName, List<string> rowErrors)
         {
             if (int.TryParse(cell.Text, out var value))
             {
@@ -112,22 +160,42 @@ namespace BlossomApi.Services
             }
             else
             {
-                rowErrors.Add($"Row {row}: Invalid integer value in column '{columnName}'.");
+                rowErrors.Add($"Рядок {row}: Невірне числове значення в колонці '{columnName}'.");
                 return 0;
             }
         }
 
-        private bool ParseBool(ExcelRange cell, int row, string columnName, List<string> rowErrors)
+        private List<int> ParseIntList(ExcelRange cell, int row, string columnName, List<string> rowErrors)
         {
-            if (bool.TryParse(cell.Text, out var value))
+            var text = cell.Text?.Trim();
+            if (string.IsNullOrEmpty(text)) return new List<int>();
+
+            var ids = text.Split(',').Select(idText =>
             {
-                return value;
-            }
-            else
+                if (int.TryParse(idText.Trim(), out var id))
+                {
+                    return id;
+                }
+                else
+                {
+                    rowErrors.Add($"Рядок {row}: Невірне значення ідентифікатора у колонці '{columnName}'.");
+                    return -1;
+                }
+            }).Where(id => id != -1).ToList();
+
+            return ids;
+        }
+
+        private List<string> ParseImageLinks(ExcelRange cell, int row, string columnName, List<string> rowErrors)
+        {
+            var links = cell.Text?.Trim().Split(',').Select(link => link.Trim()).ToList() ?? new List<string>();
+
+            if (links.Count == 0)
             {
-                rowErrors.Add($"Row {row}: Invalid boolean value in column '{columnName}'.");
-                return false;
+                rowErrors.Add($"Рядок {row}: Невірні посилання у колонці '{columnName}'.");
             }
+
+            return links;
         }
     }
 }

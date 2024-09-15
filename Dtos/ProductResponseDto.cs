@@ -1,5 +1,6 @@
 using BlossomApi.Dtos.Brends;
 using BlossomApi.Dtos.Characteristic;
+using BlossomApi.Dtos.Reviews;
 
 namespace BlossomApi.Dtos
 {

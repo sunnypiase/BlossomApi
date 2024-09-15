@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using BlossomApi.Dtos;
 using BlossomApi.Dtos.Characteristic;
+using BlossomApi.Dtos.Reviews;
 using BlossomApi.Models;
 using System.Reflection.PortableExecutable;
 
@@ -31,10 +32,14 @@ namespace BlossomApi.Mappers
                 }).ToList()))
                 .ForMember(dest => dest.Reviews, opt => opt.MapFrom(src => src.Reviews.Select(r => new ReviewDto
                 {
-                    Name = r.Name,
-                    Review = r.ReviewText,
+                    Username = r.SiteUser.Username,
+                    ProductName = r.Product.Name,
+                    ReviewId = r.ReviewId,
+                    ReviewText = r.ReviewText,
+                    ProductId = r.ProductId,
                     Rating = r.Rating,
-                    Date = r.Date.ToString("dd.MM.yyyy")
+                    Date = r.Date,
+                    SiteUserId = r.SiteUserId,
                 }).ToList()))
                 .ForMember(dest => dest.Characteristics, opt => opt.MapFrom(src => src.Characteristics.Select(c => new CharacteristicDto
                 {
@@ -80,6 +85,8 @@ namespace BlossomApi.Mappers
             CreateMap<ProductCreateDto, Product>()
                 .ForMember(dest => dest.Categories, opt => opt.Ignore()) // Handled separately
                 .ForMember(dest => dest.Characteristics, opt => opt.Ignore()) // Handled separately
+                .ForMember(dest => dest.Brand, opt => opt.Ignore()) // Handled separately
+                .ForMember(dest => dest.BrandId, opt => opt.Ignore()) // Handled separately
                 .ForMember(dest => dest.Images, opt => opt.Ignore()); // Handled separately
 
 

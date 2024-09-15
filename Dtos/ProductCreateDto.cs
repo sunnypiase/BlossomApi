@@ -10,7 +10,6 @@ namespace BlossomApi.Dtos
         [Required(ErrorMessage = "NameEng is required.")]
         public string NameEng { get; set; }
 
-        [Required(ErrorMessage = "BrandId is required.")]
         public int BrandId { get; set; }
 
         [Required(ErrorMessage = "Price is required.")]
@@ -44,6 +43,7 @@ namespace BlossomApi.Dtos
         public List<int> AdditionalCategoryIds { get; set; } = new();
         public List<int> CharacteristicIds { get; set; } = new();
         public IFormFileCollection Images { get; set; } = new FormFileCollection();
+        public List<string> ImageUrls { get; set; } = new();
 
         public string? Ingridients { get; set; }
         public string? UnitOfMeasurement { get; set; }

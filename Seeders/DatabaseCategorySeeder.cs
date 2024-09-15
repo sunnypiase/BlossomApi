@@ -190,7 +190,7 @@ namespace BlossomApi.Seeders
                 new Category { CategoryId = 154, ParentCategoryId = 152, Name = "Вії" },
                 new Category { CategoryId = 155, ParentCategoryId = 152, Name = "Брови" },
                 new Category { CategoryId = 156, ParentCategoryId = 152, Name = "Масаж" },
-                new Category { CategoryId = 157, ParentCategoryId = 152, Name = "Жепіляція" }
+                new Category { CategoryId = 157, ParentCategoryId = 152, Name = "Депіляція" }
             };
         }
     }

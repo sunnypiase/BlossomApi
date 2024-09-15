@@ -1,4 +1,4 @@
-using BlossomApi.Models;
+﻿using BlossomApi.Models;
 using BlossomApi.Seeders;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
@@ -85,11 +85,11 @@ namespace BlossomApi.DB
                 .OnDelete(DeleteBehavior.Restrict);
 
             // One-to-many relationship between Brand and Product
-            modelBuilder.Entity<Brand>()
-                .HasMany(b => b.Products)
-                .WithOne(p => p.Brand)
+            modelBuilder.Entity<Product>()
+                .HasOne(p => p.Brand)
+                .WithMany(b => b.Products)
                 .HasForeignKey(p => p.BrandId)
-                .OnDelete(DeleteBehavior.NoAction);
+                .OnDelete(DeleteBehavior.SetNull);  // Allow products without a brand
 
             // Many-to-many relationship between Product and Category
             modelBuilder.Entity<Product>()
@@ -118,6 +118,19 @@ namespace BlossomApi.DB
             modelBuilder.Entity<Product>()
                 .Property(p => p.Discount)
                 .HasColumnType("decimal(18,2)");
+
+            modelBuilder.Entity<Review>()
+                .HasOne(r => r.Product)
+                .WithMany(p => p.Reviews)
+                .HasForeignKey(r => r.ProductId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            // Налаштування зв'язку між Review та SiteUser
+            modelBuilder.Entity<Review>()
+                .HasOne(r => r.SiteUser)
+                .WithMany(u => u.Reviews)
+                .HasForeignKey(r => r.SiteUserId)
+                .OnDelete(DeleteBehavior.Cascade);
 
             // Configure decimal properties in Order
             modelBuilder.Entity<Order>()
@@ -216,7 +229,7 @@ namespace BlossomApi.DB
             modelBuilder.Entity<Category>().HasData(DatabaseCategorySeeder.GetCategories());
             modelBuilder.Entity<Product>().HasData(DatabaseProductSeeder.GetProducts());
             modelBuilder.Entity<Characteristic>().HasData(DatabaseCharacteristicSeeder.GetCharacteristics());
-            modelBuilder.Entity<Review>().HasData(DatabaseReviewSeeder.GetReviews());
+            //modelBuilder.Entity<Review>().HasData(DatabaseReviewSeeder.GetReviews());
 
             // Many-to-one relationship between Order and Promocode
             modelBuilder.Entity<Order>()

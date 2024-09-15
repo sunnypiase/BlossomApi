@@ -9,25 +9,30 @@ namespace BlossomApi.Models
 {
     public class SiteUser
     {
-        [Key] public int UserId { get; set; }
+        [Key]
+        public int UserId { get; set; }
         public string Username { get; set; }
         public string Surname { get; set; }
         public string Email { get; set; }
 
-        [PhoneNumber(ErrorMessage = "Invalid phone number format.")]
+        [Phone(ErrorMessage = "Invalid phone number format.")]
         public string PhoneNumber { get; set; }
         public string? City { get; set; }
         public string? DepartmentNumber { get; set; }
 
         // Navigation properties
         public string IdentityUserId { get; set; }
-        [ForeignKey("IdentityUserId")] public IdentityUser IdentityUser { get; set; }
+        [ForeignKey("IdentityUserId")]
+        public IdentityUser IdentityUser { get; set; }
 
         public ICollection<ShoppingCart> ShoppingCarts { get; set; } = new List<ShoppingCart>();
         public ICollection<Product> FavoriteProducts { get; set; } = new List<Product>();
 
         // One-to-one relationship with Cashback
         public Cashback Cashback { get; set; }
+
+        // Додаємо колекцію відгуків
+        public ICollection<Review> Reviews { get; set; } = new List<Review>();
     }
 
     public class Cashback
@@ -82,7 +87,7 @@ namespace BlossomApi.Models
         public string ImagesSerialized { get; set; } = "[]"; // Default to an empty JSON array +
         public decimal Price { get; set; } //+
         public decimal Discount { get; set; } // Percentage of discount +
-        public double Rating { get; set; }//-
+        public double Rating { get; set; } = 0.0;
         private int _availableAmount;
         public int AvailableAmount
         {
@@ -93,7 +98,7 @@ namespace BlossomApi.Models
                 InStock = _availableAmount > 0;
             }
         }
-        public int NumberOfReviews { get; set; }//-
+        public int NumberOfReviews { get; set; } = 0;
         public int NumberOfPurchases { get; set; }//-
         public int NumberOfViews { get; set; }//-
         public string Article { get; set; } //+
@@ -229,14 +234,28 @@ namespace BlossomApi.Models
 
     public class Review
     {
-        [Key] public int ReviewId { get; set; }
-        public string Name { get; set; }
+        [Key]
+        public int ReviewId { get; set; }
+
+        [Required]
+        [MaxLength(500, ErrorMessage = "Максимальна довжина тексту відгуку — 500 символів.")]
         public string ReviewText { get; set; }
+
+        [Required]
+        [Range(1, 5, ErrorMessage = "Рейтинг повинен бути між 1 та 5.")]
         public int Rating { get; set; }
+
         public DateTime Date { get; set; } = DateTime.UtcNow;
 
+        // Зв'язок з продуктом
+        [Required]
         public int ProductId { get; set; }
         public Product Product { get; set; }
+
+        // Зв'язок з користувачем
+        [Required]
+        public int SiteUserId { get; set; }
+        public SiteUser SiteUser { get; set; }
     }
 
     public class Characteristic : IHasProducts
