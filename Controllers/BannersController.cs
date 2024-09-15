@@ -110,6 +110,7 @@ namespace BlossomApi.Controllers
             {
                 CategoryIds = request.CategoryIds,
                 SelectedCharacteristics = request.SelectedCharacteristics,
+                BrandIds = request.BrandIds,
                 MinPrice = request.MinPrice,
                 MaxPrice = request.MaxPrice,
                 Start = request.Start,

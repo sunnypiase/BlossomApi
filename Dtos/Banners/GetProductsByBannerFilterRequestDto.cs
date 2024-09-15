@@ -9,6 +9,7 @@ namespace BlossomApi.Dtos.Banners
         public int BannerId { get; set; }
         public List<int>? CategoryIds { get; set; }
         public List<int>? SelectedCharacteristics { get; set; }
+        public List<int>? BrandIds { get; set; }
         public decimal? MinPrice { get; set; }
         public decimal? MaxPrice { get; set; }
         public string? SortBy { get; set; }
