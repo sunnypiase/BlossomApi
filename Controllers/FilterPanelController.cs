@@ -154,14 +154,14 @@ namespace BlossomApi.Controllers
                 })
                 .ToList();
             var brends = products
-                .Where(p => p.Brand != null)
+                .Where(p => p.Brand != null && p.Brand.Title != null) // Ensure that Brand and Title are not null
                 .Select(p => p.Brand)
-                .DistinctBy(b => b.BrandId)
+                .DistinctBy(b => b?.BrandId)
                 .Select(g => new FilterPanelOptionDto
                 {
                     Id = g.BrandId,
-                    Option = g.Title,
-                    ProductsAmount = products.Count(p => p.Brand.Title == g.Title)
+                    Option = g.Title ?? "Unknown", // Default title if null
+                    ProductsAmount = products?.Count(p => p.Brand != null && p.Brand.Title == g.Title) ?? 0 // Guard against nulls
                 })
                 .ToList();
             var minPrice = products.Min(p => p.Price);
