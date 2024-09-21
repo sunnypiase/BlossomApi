@@ -27,7 +27,7 @@ namespace BlossomApi.Controllers
 
         // GET: api/Reviews/Product/{productId}
         [HttpGet("Product/{productId}")]
-        public async Task<IActionResult> GetReviewsByProduct(int productId, int page = 1, int pageSize = 10)
+        public async Task<IActionResult> GetReviewsByProduct(int productId, int page = 0, int pageSize = 10)
         {
             var query = _context.Reviews
                 .Include(r => r.SiteUser)
@@ -38,7 +38,7 @@ namespace BlossomApi.Controllers
             var totalPages = (int)System.Math.Ceiling(totalReviews / (double)pageSize);
 
             var reviews = await query
-                .Skip((page - 1) * pageSize)
+                .Skip(page * pageSize)
                 .Take(pageSize)
                 .ToListAsync();
 
@@ -148,57 +148,63 @@ namespace BlossomApi.Controllers
         }
 
         // Адміністративні методи
-
-        // GET: api/Reviews/Admin/Search
-        [Authorize(Roles = "Admin")]
-        [HttpGet("Admin/Search")]
-        public async Task<IActionResult> SearchReviews(
-            [FromQuery] string productName,
-            [FromQuery] string username,
-            [FromQuery] string sortBy = "date_desc",
-            int page = 1,
-            int pageSize = 10)
+        public class SearchReviewsQueryDto
         {
-            var query = _context.Reviews
+            public string? ProductName { get; set; }
+            public string? Username { get; set; }
+            public string? SortBy { get; set; }  // Nullable now
+            public int Page { get; set; } = 0;
+            public int PageSize { get; set; } = 10;
+        }
+
+        [Authorize(Roles = "Admin")]
+        [HttpPost("Admin/Search")]
+        public async Task<IActionResult> SearchReviews([FromBody] SearchReviewsQueryDto query)
+        {
+            var reviewsQuery = _context.Reviews
                 .Include(r => r.SiteUser)
                 .Include(r => r.Product)
                 .AsQueryable();
 
-            // Case-insensitive search
-            if (!string.IsNullOrEmpty(productName))
+            // Case-insensitive search for product name
+            if (!string.IsNullOrEmpty(query.ProductName))
             {
-                var lowerProductName = productName.ToLower();
-                query = query.Where(r => r.Product.Name.ToLower().Contains(lowerProductName));
+                var lowerProductName = query.ProductName.ToLower();
+                reviewsQuery = reviewsQuery.Where(r => r.Product.Name.ToLower().Contains(lowerProductName));
             }
 
-            if (!string.IsNullOrEmpty(username))
+            // Case-insensitive search for username
+            if (!string.IsNullOrEmpty(query.Username))
             {
-                var lowerUsername = username.ToLower();
-                query = query.Where(r => r.SiteUser.Username.ToLower().Contains(lowerUsername));
+                var lowerUsername = query.Username.ToLower();
+                reviewsQuery = reviewsQuery.Where(r => r.SiteUser.Username.ToLower().Contains(lowerUsername));
             }
 
-            // Sorting
-            query = sortBy.ToLower() switch
+            // Handle nullable SortBy with default value
+            var sortBy = query.SortBy?.ToLower() ?? "date_desc";
+
+            // Sorting logic
+            reviewsQuery = sortBy switch
             {
-                "commenttext_asc" => query.OrderBy(r => r.ReviewText),
-                "commenttext_desc" => query.OrderByDescending(r => r.ReviewText),
-                "date_asc" => query.OrderBy(r => r.Date),
-                "date_desc" => query.OrderByDescending(r => r.Date),
-                "username_asc" => query.OrderBy(r => r.SiteUser.Username),
-                "username_desc" => query.OrderByDescending(r => r.SiteUser.Username),
-                "rating_asc" => query.OrderBy(r => r.Rating),
-                "rating_desc" => query.OrderByDescending(r => r.Rating),
-                "productname_asc" => query.OrderBy(r => r.Product.Name),
-                "productname_desc" => query.OrderByDescending(r => r.Product.Name),
-                _ => query.OrderByDescending(r => r.Date), // Default sorting
+                "commenttext_asc" => reviewsQuery.OrderBy(r => r.ReviewText),
+                "commenttext_desc" => reviewsQuery.OrderByDescending(r => r.ReviewText),
+                "date_asc" => reviewsQuery.OrderBy(r => r.Date),
+                "date_desc" => reviewsQuery.OrderByDescending(r => r.Date),
+                "username_asc" => reviewsQuery.OrderBy(r => r.SiteUser.Username),
+                "username_desc" => reviewsQuery.OrderByDescending(r => r.SiteUser.Username),
+                "rating_asc" => reviewsQuery.OrderBy(r => r.Rating),
+                "rating_desc" => reviewsQuery.OrderByDescending(r => r.Rating),
+                "productname_asc" => reviewsQuery.OrderBy(r => r.Product.Name),
+                "productname_desc" => reviewsQuery.OrderByDescending(r => r.Product.Name),
+                _ => reviewsQuery.OrderByDescending(r => r.Date), // Default sorting
             };
 
-            var totalReviews = await query.CountAsync();
-            var totalPages = (int)System.Math.Ceiling(totalReviews / (double)pageSize);
+            var totalReviews = await reviewsQuery.CountAsync();
+            var totalPages = (int)System.Math.Ceiling(totalReviews / (double)query.PageSize);
 
-            var reviews = await query
-                .Skip((page - 1) * pageSize)
-                .Take(pageSize)
+            var reviews = await reviewsQuery
+                .Skip(query.Page * query.PageSize)
+                .Take(query.PageSize)
                 .ToListAsync();
 
             var reviewDtos = reviews.Select(r => new ReviewDto
@@ -218,13 +224,14 @@ namespace BlossomApi.Controllers
                 Reviews = reviewDtos,
                 Pagination = new
                 {
-                    CurrentPage = page,
+                    CurrentPage = query.Page,
                     TotalPages = totalPages,
-                    PageSize = pageSize,
+                    PageSize = query.PageSize,
                     TotalReviews = totalReviews
                 }
             });
         }
+
 
         // DELETE: api/Reviews/Admin/{id}
         [Authorize(Roles = "Admin")]
