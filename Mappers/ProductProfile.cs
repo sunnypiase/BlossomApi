@@ -29,18 +29,7 @@ namespace BlossomApi.Mappers
                     CategoryId = c.CategoryId,
                     Name = c.Name,
                     ParentCategoryId = c.ParentCategoryId
-                }).ToList()))
-                .ForMember(dest => dest.Reviews, opt => opt.MapFrom(src => src.Reviews.Select(r => new ReviewDto
-                {
-                    Username = r.SiteUser.Username,
-                    ProductName = r.Product.Name,
-                    ReviewId = r.ReviewId,
-                    ReviewText = r.ReviewText,
-                    ProductId = r.ProductId,
-                    Rating = r.Rating,
-                    Date = r.Date,
-                    SiteUserId = r.SiteUserId,
-                }).ToList()))
+                }).ToList()))             
                 .ForMember(dest => dest.Characteristics, opt => opt.MapFrom(src => src.Characteristics.Select(c => new CharacteristicDto
                 {
                     Title = c.Title,

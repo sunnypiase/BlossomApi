@@ -26,7 +26,6 @@ namespace BlossomApi.Dtos
         public CategoryResponseDto MainCategory { get; set; }
         public List<CategoryResponseDto> AdditionalCategories { get; set; }
         public List<int> DieNumbers { get; set; }
-        public List<ReviewDto> Reviews { get; set; }
         public List<CharacteristicDto> Characteristics { get; set; }
         public string Description { get; set; }
         public bool InStock { get; set; }
