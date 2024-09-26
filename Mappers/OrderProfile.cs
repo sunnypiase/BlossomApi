@@ -50,7 +50,7 @@ namespace BlossomApi.Mappers
                 .ForMember(dest => dest.Status, opt => opt.MapFrom(src => (int)src))
                 .ForMember(dest => dest.StatusName, opt => opt.MapFrom(src => src.ToUkrainianName()));
 
-            CreateMap<Category, CategoryResponseDto>();
+            CreateMap<Order, UserOrderSummaryDto>();
 
             // Mapping from ShoppingCartProduct to ProductInOrderDetailDto, including MainCategory
             CreateMap<ShoppingCartProduct, ProductInOrderDetailDto>()
