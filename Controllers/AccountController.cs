@@ -1,5 +1,4 @@
 using System.ComponentModel.DataAnnotations;
-using BlossomApi.AttributeValidations;
 using BlossomApi.DB;
 using BlossomApi.Models;
 using Microsoft.AspNetCore.Authorization;
@@ -7,6 +6,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Linq;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 namespace BlossomApi.Controllers
 {
@@ -36,37 +36,17 @@ namespace BlossomApi.Controllers
         {
             if (!ModelState.IsValid)
             {
-                var errors = ModelState
-                    .Where(m => m.Value.Errors.Count > 0)
-                    .SelectMany(m => m.Value.Errors.Select(e => new ErrorDetail
-                    {
-                        Field = m.Key,
-                        Error = e.ErrorMessage
-                    }))
-                    .ToList();
-
-                var errorResponse = new ErrorResponse
-                {
-                    Message = "Validation failed",
-                    Errors = errors
-                };
-
-                return UnprocessableEntity(errorResponse); // 422 Unprocessable Entity
+                var errors = ExtractErrorsFromModelState(ModelState);
+                return UnprocessableEntity(errors); // 422 Unprocessable Entity
             }
 
             // Check if the email is already in use
             var existingUser = await _userManager.FindByEmailAsync(model.Email);
             if (existingUser != null)
             {
-                var errorResponse = new ErrorResponse
-                {
-                    Message = "Email already in use",
-                    Errors = new List<ErrorDetail>
-                    {
-                        new ErrorDetail { Field = "Email", Error = "Користувач з такою електронною поштою вже існує." }
-                    }
-                };
-                return Conflict(errorResponse); // 409 Conflict
+                var errors = new Dictionary<string, List<string>>();
+                errors["Email"] = new List<string> { "Користувач з такою електронною поштою вже існує." };
+                return Conflict(errors); // 409 Conflict
             }
 
             var user = new IdentityUser { UserName = model.Email, Email = model.Email };
@@ -74,19 +54,25 @@ namespace BlossomApi.Controllers
 
             if (!result.Succeeded)
             {
-                var errors = result.Errors.Select(e => new ErrorDetail
-                {
-                    Field = GetFieldFromErrorCode(e.Code),
-                    Error = e.Description
-                }).ToList();
+                var errors = new Dictionary<string, List<string>>();
 
-                var errorResponse = new ErrorResponse
+                foreach (var error in result.Errors)
                 {
-                    Message = "User creation failed",
-                    Errors = errors
-                };
+                    var field = GetFieldFromErrorCode(error.Code);
 
-                return UnprocessableEntity(errorResponse); // 422 Unprocessable Entity
+                    if (string.IsNullOrEmpty(field))
+                    {
+                        field = "Password"; // Default to Password if field not identified
+                    }
+
+                    if (!errors.ContainsKey(field))
+                    {
+                        errors[field] = new List<string>();
+                    }
+                    errors[field].Add(error.Description);
+                }
+
+                return UnprocessableEntity(errors); // 422 Unprocessable Entity
             }
 
             var siteUser = new SiteUser
@@ -116,15 +102,9 @@ namespace BlossomApi.Controllers
                 else if (cashback.SiteUserId != siteUser.UserId)
                 {
                     // If cashback is linked to another user, handle accordingly
-                    var errorResponse = new ErrorResponse
-                    {
-                        Message = "Phone number already linked to another account",
-                        Errors = new List<ErrorDetail>
-                        {
-                            new ErrorDetail { Field = "PhoneNumber", Error = "Цей номер телефону вже пов'язаний з іншим обліковим записом." }
-                        }
-                    };
-                    return Conflict(errorResponse); // 409 Conflict
+                    var errors = new Dictionary<string, List<string>>();
+                    errors["PhoneNumber"] = new List<string> { "Цей номер телефону вже пов'язаний з іншим обліковим записом." };
+                    return Conflict(errors); // 409 Conflict
                 }
             }
             else
@@ -153,51 +133,25 @@ namespace BlossomApi.Controllers
         {
             if (!ModelState.IsValid)
             {
-                var errors = ModelState
-                    .Where(m => m.Value.Errors.Count > 0)
-                    .SelectMany(m => m.Value.Errors.Select(e => new ErrorDetail
-                    {
-                        Field = m.Key,
-                        Error = e.ErrorMessage
-                    }))
-                    .ToList();
-
-                var errorResponse = new ErrorResponse
-                {
-                    Message = "Validation failed",
-                    Errors = errors
-                };
-
-                return UnprocessableEntity(errorResponse); // 422 Unprocessable Entity
+                var errors = ExtractErrorsFromModelState(ModelState);
+                return UnprocessableEntity(errors); // 422 Unprocessable Entity
             }
 
             var adminSecret = Environment.GetEnvironmentVariable("ADMIN_SECRET");
             if (string.IsNullOrEmpty(adminSecret) || model.Secret != adminSecret)
             {
-                var errorResponse = new ErrorResponse
-                {
-                    Message = "Invalid admin secret key",
-                    Errors = new List<ErrorDetail>
-                    {
-                        new ErrorDetail { Field = "Secret", Error = "Недійсний секретний ключ адміністратора." }
-                    }
-                };
-                return Unauthorized(errorResponse); // 401 Unauthorized
+                var errors = new Dictionary<string, List<string>>();
+                errors["Secret"] = new List<string> { "Недійсний секретний ключ адміністратора." };
+                return Unauthorized(errors); // 401 Unauthorized
             }
 
             // Check if the email is already in use
             var existingUser = await _userManager.FindByEmailAsync(model.Email);
             if (existingUser != null)
             {
-                var errorResponse = new ErrorResponse
-                {
-                    Message = "Email already in use",
-                    Errors = new List<ErrorDetail>
-                    {
-                        new ErrorDetail { Field = "Email", Error = "Користувач з такою електронною поштою вже існує." }
-                    }
-                };
-                return Conflict(errorResponse); // 409 Conflict
+                var errors = new Dictionary<string, List<string>>();
+                errors["Email"] = new List<string> { "Користувач з такою електронною поштою вже існує." };
+                return Conflict(errors); // 409 Conflict
             }
 
             var user = new IdentityUser { UserName = model.Email, Email = model.Email };
@@ -205,19 +159,25 @@ namespace BlossomApi.Controllers
 
             if (!result.Succeeded)
             {
-                var errors = result.Errors.Select(e => new ErrorDetail
-                {
-                    Field = GetFieldFromErrorCode(e.Code),
-                    Error = e.Description
-                }).ToList();
+                var errors = new Dictionary<string, List<string>>();
 
-                var errorResponse = new ErrorResponse
+                foreach (var error in result.Errors)
                 {
-                    Message = "User creation failed",
-                    Errors = errors
-                };
+                    var field = GetFieldFromErrorCode(error.Code);
 
-                return UnprocessableEntity(errorResponse); // 422 Unprocessable Entity
+                    if (string.IsNullOrEmpty(field))
+                    {
+                        field = "Password"; // Default to Password if field not identified
+                    }
+
+                    if (!errors.ContainsKey(field))
+                    {
+                        errors[field] = new List<string>();
+                    }
+                    errors[field].Add(error.Description);
+                }
+
+                return UnprocessableEntity(errors); // 422 Unprocessable Entity
             }
 
             var siteUser = new SiteUser
@@ -245,15 +205,9 @@ namespace BlossomApi.Controllers
                 }
                 else if (cashback.SiteUserId != siteUser.UserId)
                 {
-                    var errorResponse = new ErrorResponse
-                    {
-                        Message = "Phone number already linked to another account",
-                        Errors = new List<ErrorDetail>
-                        {
-                            new ErrorDetail { Field = "PhoneNumber", Error = "Цей номер телефону вже пов'язаний з іншим обліковим записом." }
-                        }
-                    };
-                    return Conflict(errorResponse); // 409 Conflict
+                    var errors = new Dictionary<string, List<string>>();
+                    errors["PhoneNumber"] = new List<string> { "Цей номер телефону вже пов'язаний з іншим обліковим записом." };
+                    return Conflict(errors); // 409 Conflict
                 }
             }
             else
@@ -289,19 +243,19 @@ namespace BlossomApi.Controllers
         {
             _signInManager.AuthenticationScheme = IdentityConstants.ApplicationScheme;
 
+            if (!ModelState.IsValid)
+            {
+                var errors = ExtractErrorsFromModelState(ModelState);
+                return UnprocessableEntity(errors); // 422 Unprocessable Entity
+            }
+
             var result = await _signInManager.PasswordSignInAsync(login.Email, login.Password, true, lockoutOnFailure: true);
 
             if (!result.Succeeded)
             {
-                var errorResponse = new ErrorResponse
-                {
-                    Message = "Login failed",
-                    Errors = new List<ErrorDetail>
-                    {
-                        new ErrorDetail { Field = string.Empty, Error = "Невдала спроба входу." }
-                    }
-                };
-                return Unauthorized(errorResponse); // 401 Unauthorized
+                var errors = new Dictionary<string, List<string>>();
+                errors["Email"] = new List<string> { "Невдала спроба входу." };
+                return Unauthorized(errors); // 401 Unauthorized
             }
 
             return Ok();
@@ -340,20 +294,30 @@ namespace BlossomApi.Controllers
                 "PasswordRequiresUniqueChars" => "Password",
                 "DuplicateUserName" => "Email",
                 "InvalidUserName" => "Email",
-                _ => string.Empty,
+                _ => "Password", // Default to Password
             };
         }
 
-        public class ErrorResponse
+        private Dictionary<string, List<string>> ExtractErrorsFromModelState(ModelStateDictionary modelState)
         {
-            public string Message { get; set; }
-            public List<ErrorDetail> Errors { get; set; } = new List<ErrorDetail>();
-        }
+            var errors = new Dictionary<string, List<string>>();
 
-        public class ErrorDetail
-        {
-            public string Field { get; set; }
-            public string Error { get; set; }
+            foreach (var key in modelState.Keys)
+            {
+                var fieldKey = key.Contains(".") ? key.Split('.').Last() : key;
+                var state = modelState[key];
+                var fieldErrors = state.Errors.Select(e => e.ErrorMessage).ToList();
+                if (fieldErrors.Count > 0)
+                {
+                    if (!errors.ContainsKey(fieldKey))
+                    {
+                        errors[fieldKey] = new List<string>();
+                    }
+                    errors[fieldKey].AddRange(fieldErrors);
+                }
+            }
+
+            return errors;
         }
 
         public class RegisterModel
