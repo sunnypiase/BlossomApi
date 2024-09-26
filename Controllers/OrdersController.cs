@@ -51,6 +51,61 @@ namespace BlossomApi.Controllers
 
             return Ok(orderDtos);
         }
+        // GET: api/orders/user/history
+        [Authorize]
+        [HttpGet("user/history")]
+        public async Task<IActionResult> GetUserOrderHistory()
+        {
+            var siteUser = await GetCurrentUserAsync();
+            if (siteUser == null)
+            {
+                return Unauthorized();
+            }
+
+            var orders = await _context.Orders
+                .Where(o => o.ShoppingCart.SiteUserId == siteUser.UserId)
+                .ToListAsync();
+
+            var orderDtos = _mapper.Map<List<UserOrderSummaryDto>>(orders);
+
+            return Ok(orderDtos);
+        }
+        // GET: api/orders/{orderId}/products
+        [Authorize]
+        [HttpGet("{orderId}/products")]
+        public async Task<IActionResult> GetOrderProducts(int orderId)
+        {
+            var siteUser = await GetCurrentUserAsync();
+            if (siteUser == null)
+            {
+                return Unauthorized();
+            }
+
+            var order = await _context.Orders
+                .Include(o => o.ShoppingCart)
+                    .ThenInclude(sc => sc.ShoppingCartProducts)
+                        .ThenInclude(scp => scp.Product)
+                            .ThenInclude(p => p.Categories)
+                .FirstOrDefaultAsync(o => o.OrderId == orderId);
+
+            if (order == null)
+            {
+                return NotFound("Order not found.");
+            }
+
+            // Ensure that the user is authorized to view this order
+            if (order.ShoppingCart.SiteUserId != siteUser.UserId)
+            {
+                return Forbid();
+            }
+
+            var products = order.ShoppingCart.ShoppingCartProducts;
+
+            var productDtos = _mapper.Map<List<ProductInOrderDetailDto>>(products);
+
+            return Ok(productDtos);
+        }
+
 
         // GET: api/orders/statuses?statuses=Created&statuses=Processing
         [Authorize(Roles = "Admin")]

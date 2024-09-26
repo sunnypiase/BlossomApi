@@ -83,6 +83,7 @@ namespace BlossomApi.Controllers
             var userId = (await GetCurrentUserAsync())?.UserId;
             var user = await _context.SiteUsers
                 .Include(u => u.FavoriteProducts)
+                .ThenInclude(p => p.Categories)
                 .FirstOrDefaultAsync(u => u.UserId == userId);
             if (user == null) return NotFound("User not found");
 

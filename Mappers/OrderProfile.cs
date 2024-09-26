@@ -3,6 +3,7 @@ using BlossomApi.Dtos.Orders;
 using BlossomApi.Models;
 using BlossomApi.Extensions;
 using System.Linq;
+using BlossomApi.Dtos;
 
 namespace BlossomApi.Mappers
 {
@@ -48,6 +49,18 @@ namespace BlossomApi.Mappers
             CreateMap<OrderStatus, OrderStatusOptionDto>()
                 .ForMember(dest => dest.Status, opt => opt.MapFrom(src => (int)src))
                 .ForMember(dest => dest.StatusName, opt => opt.MapFrom(src => src.ToUkrainianName()));
+
+            CreateMap<Category, CategoryResponseDto>();
+
+            // Mapping from ShoppingCartProduct to ProductInOrderDetailDto, including MainCategory
+            CreateMap<ShoppingCartProduct, ProductInOrderDetailDto>()
+                .ForMember(dest => dest.ProductId, opt => opt.MapFrom(src => src.Product.ProductId))
+                .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Product.Name))
+                .ForMember(dest => dest.Amount, opt => opt.MapFrom(src => src.Quantity))
+                .ForMember(dest => dest.ProductByAmountPrice, opt => opt.MapFrom(src => src.Quantity * src.Product.Price))
+                .ForMember(dest => dest.ImageUrl, opt => opt.MapFrom(src => src.Product.ImagesSerialized)) // Adjust this field to match actual image logic
+                .ForMember(dest => dest.MainCategory, opt => opt.MapFrom(src => src.Product.MainCategory));
+
         }
     }
 }
