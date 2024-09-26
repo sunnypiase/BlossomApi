@@ -48,7 +48,7 @@ namespace BlossomApi.Controllers
             if (existingUser != null)
             {
                 var errors = new Dictionary<string, List<string>>();
-                errors["email"] = new List<string> { "Користувач з такою електронною поштою вже існує." };
+                errors["Email"] = new List<string> { "Користувач з такою електронною поштою вже існує." };
                 return Conflict(new { errors }); // 409 Conflict
             }
 
@@ -65,7 +65,7 @@ namespace BlossomApi.Controllers
 
                     if (string.IsNullOrEmpty(field))
                     {
-                        field = "password"; // Default to password if field not identified
+                        field = "Password"; // Default to Password if field not identified
                     }
 
                     if (!errors.ContainsKey(field))
@@ -106,7 +106,7 @@ namespace BlossomApi.Controllers
                 {
                     // If cashback is linked to another user, handle accordingly
                     var errors = new Dictionary<string, List<string>>();
-                    errors["phoneNumber"] = new List<string> { "Цей номер телефону вже пов'язаний з іншим обліковим записом." };
+                    errors["PhoneNumber"] = new List<string> { "Цей номер телефону вже пов'язаний з іншим обліковим записом." };
                     return Conflict(new { errors }); // 409 Conflict
                 }
             }
@@ -144,7 +144,7 @@ namespace BlossomApi.Controllers
             if (string.IsNullOrEmpty(adminSecret) || model.Secret != adminSecret)
             {
                 var errors = new Dictionary<string, List<string>>();
-                errors["secret"] = new List<string> { "Недійсний секретний ключ адміністратора." };
+                errors["Secret"] = new List<string> { "Недійсний секретний ключ адміністратора." };
                 return Unauthorized(new { errors }); // 401 Unauthorized
             }
 
@@ -153,7 +153,7 @@ namespace BlossomApi.Controllers
             if (existingUser != null)
             {
                 var errors = new Dictionary<string, List<string>>();
-                errors["email"] = new List<string> { "Користувач з такою електронною поштою вже існує." };
+                errors["Email"] = new List<string> { "Користувач з такою електронною поштою вже існує." };
                 return Conflict(new { errors }); // 409 Conflict
             }
 
@@ -170,7 +170,7 @@ namespace BlossomApi.Controllers
 
                     if (string.IsNullOrEmpty(field))
                     {
-                        field = "password"; // Default to password if field not identified
+                        field = "Password"; // Default to Password if field not identified
                     }
 
                     if (!errors.ContainsKey(field))
@@ -209,7 +209,7 @@ namespace BlossomApi.Controllers
                 else if (cashback.SiteUserId != siteUser.UserId)
                 {
                     var errors = new Dictionary<string, List<string>>();
-                    errors["phoneNumber"] = new List<string> { "Цей номер телефону вже пов'язаний з іншим обліковим записом." };
+                    errors["PhoneNumber"] = new List<string> { "Цей номер телефону вже пов'язаний з іншим обліковим записом." };
                     return Conflict(new { errors }); // 409 Conflict
                 }
             }
@@ -257,7 +257,7 @@ namespace BlossomApi.Controllers
             if (!result.Succeeded)
             {
                 var errors = new Dictionary<string, List<string>>();
-                errors["email"] = new List<string> { "Невдала спроба входу." };
+                errors["Email"] = new List<string> { "Невдала спроба входу." };
                 return Unauthorized(new { errors }); // 401 Unauthorized
             }
 
@@ -289,15 +289,15 @@ namespace BlossomApi.Controllers
         {
             return code switch
             {
-                "PasswordTooShort" => "password",
-                "PasswordRequiresNonAlphanumeric" => "password",
-                "PasswordRequiresDigit" => "password",
-                "PasswordRequiresLower" => "password",
-                "PasswordRequiresUpper" => "password",
-                "PasswordRequiresUniqueChars" => "password",
-                "DuplicateUserName" => "email",
-                "InvalidUserName" => "email",
-                _ => "password", // Default to password
+                "PasswordTooShort" => "Password",
+                "PasswordRequiresNonAlphanumeric" => "Password",
+                "PasswordRequiresDigit" => "Password",
+                "PasswordRequiresLower" => "Password",
+                "PasswordRequiresUpper" => "Password",
+                "PasswordRequiresUniqueChars" => "Password",
+                "DuplicateUserName" => "Email",
+                "InvalidUserName" => "Email",
+                _ => "Password", // Default to Password
             };
         }
 
@@ -308,7 +308,8 @@ namespace BlossomApi.Controllers
             foreach (var key in modelState.Keys)
             {
                 var fieldKey = key.Contains(".") ? key.Split('.').Last() : key;
-                fieldKey = char.ToLowerInvariant(fieldKey[0]) + fieldKey.Substring(1); // Convert to lower camel case
+                // Ensure the fieldKey starts with an uppercase letter
+                fieldKey = char.ToUpperInvariant(fieldKey[0]) + fieldKey.Substring(1);
 
                 var state = modelState[key];
                 var fieldErrors = state.Errors.Select(e => e.ErrorMessage).ToList();
