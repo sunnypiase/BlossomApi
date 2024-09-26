@@ -1,12 +1,15 @@
+using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Linq;
+using System.Threading.Tasks;
 using BlossomApi.DB;
 using BlossomApi.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using System.Linq;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Microsoft.EntityFrameworkCore;
 
 namespace BlossomApi.Controllers
 {
@@ -32,12 +35,12 @@ namespace BlossomApi.Controllers
         }
 
         [HttpPost("Register")]
-        public async Task<IActionResult> Register(RegisterModel model)
+        public async Task<IActionResult> Register([FromBody] RegisterModel model)
         {
             if (!ModelState.IsValid)
             {
                 var errors = ExtractErrorsFromModelState(ModelState);
-                return UnprocessableEntity(errors); // 422 Unprocessable Entity
+                return UnprocessableEntity(new { errors }); // 422 Unprocessable Entity
             }
 
             // Check if the email is already in use
@@ -45,8 +48,8 @@ namespace BlossomApi.Controllers
             if (existingUser != null)
             {
                 var errors = new Dictionary<string, List<string>>();
-                errors["Email"] = new List<string> { "Користувач з такою електронною поштою вже існує." };
-                return Conflict(errors); // 409 Conflict
+                errors["email"] = new List<string> { "Користувач з такою електронною поштою вже існує." };
+                return Conflict(new { errors }); // 409 Conflict
             }
 
             var user = new IdentityUser { UserName = model.Email, Email = model.Email };
@@ -62,7 +65,7 @@ namespace BlossomApi.Controllers
 
                     if (string.IsNullOrEmpty(field))
                     {
-                        field = "Password"; // Default to Password if field not identified
+                        field = "password"; // Default to password if field not identified
                     }
 
                     if (!errors.ContainsKey(field))
@@ -72,7 +75,7 @@ namespace BlossomApi.Controllers
                     errors[field].Add(error.Description);
                 }
 
-                return UnprocessableEntity(errors); // 422 Unprocessable Entity
+                return UnprocessableEntity(new { errors }); // 422 Unprocessable Entity
             }
 
             var siteUser = new SiteUser
@@ -103,8 +106,8 @@ namespace BlossomApi.Controllers
                 {
                     // If cashback is linked to another user, handle accordingly
                     var errors = new Dictionary<string, List<string>>();
-                    errors["PhoneNumber"] = new List<string> { "Цей номер телефону вже пов'язаний з іншим обліковим записом." };
-                    return Conflict(errors); // 409 Conflict
+                    errors["phoneNumber"] = new List<string> { "Цей номер телефону вже пов'язаний з іншим обліковим записом." };
+                    return Conflict(new { errors }); // 409 Conflict
                 }
             }
             else
@@ -129,20 +132,20 @@ namespace BlossomApi.Controllers
         }
 
         [HttpPost("RegisterAdmin")]
-        public async Task<IActionResult> RegisterAdmin(RegisterAdminModel model)
+        public async Task<IActionResult> RegisterAdmin([FromBody] RegisterAdminModel model)
         {
             if (!ModelState.IsValid)
             {
                 var errors = ExtractErrorsFromModelState(ModelState);
-                return UnprocessableEntity(errors); // 422 Unprocessable Entity
+                return UnprocessableEntity(new { errors }); // 422 Unprocessable Entity
             }
 
             var adminSecret = Environment.GetEnvironmentVariable("ADMIN_SECRET");
             if (string.IsNullOrEmpty(adminSecret) || model.Secret != adminSecret)
             {
                 var errors = new Dictionary<string, List<string>>();
-                errors["Secret"] = new List<string> { "Недійсний секретний ключ адміністратора." };
-                return Unauthorized(errors); // 401 Unauthorized
+                errors["secret"] = new List<string> { "Недійсний секретний ключ адміністратора." };
+                return Unauthorized(new { errors }); // 401 Unauthorized
             }
 
             // Check if the email is already in use
@@ -150,8 +153,8 @@ namespace BlossomApi.Controllers
             if (existingUser != null)
             {
                 var errors = new Dictionary<string, List<string>>();
-                errors["Email"] = new List<string> { "Користувач з такою електронною поштою вже існує." };
-                return Conflict(errors); // 409 Conflict
+                errors["email"] = new List<string> { "Користувач з такою електронною поштою вже існує." };
+                return Conflict(new { errors }); // 409 Conflict
             }
 
             var user = new IdentityUser { UserName = model.Email, Email = model.Email };
@@ -167,7 +170,7 @@ namespace BlossomApi.Controllers
 
                     if (string.IsNullOrEmpty(field))
                     {
-                        field = "Password"; // Default to Password if field not identified
+                        field = "password"; // Default to password if field not identified
                     }
 
                     if (!errors.ContainsKey(field))
@@ -177,7 +180,7 @@ namespace BlossomApi.Controllers
                     errors[field].Add(error.Description);
                 }
 
-                return UnprocessableEntity(errors); // 422 Unprocessable Entity
+                return UnprocessableEntity(new { errors }); // 422 Unprocessable Entity
             }
 
             var siteUser = new SiteUser
@@ -206,8 +209,8 @@ namespace BlossomApi.Controllers
                 else if (cashback.SiteUserId != siteUser.UserId)
                 {
                     var errors = new Dictionary<string, List<string>>();
-                    errors["PhoneNumber"] = new List<string> { "Цей номер телефону вже пов'язаний з іншим обліковим записом." };
-                    return Conflict(errors); // 409 Conflict
+                    errors["phoneNumber"] = new List<string> { "Цей номер телефону вже пов'язаний з іншим обліковим записом." };
+                    return Conflict(new { errors }); // 409 Conflict
                 }
             }
             else
@@ -246,7 +249,7 @@ namespace BlossomApi.Controllers
             if (!ModelState.IsValid)
             {
                 var errors = ExtractErrorsFromModelState(ModelState);
-                return UnprocessableEntity(errors); // 422 Unprocessable Entity
+                return UnprocessableEntity(new { errors }); // 422 Unprocessable Entity
             }
 
             var result = await _signInManager.PasswordSignInAsync(login.Email, login.Password, true, lockoutOnFailure: true);
@@ -254,11 +257,18 @@ namespace BlossomApi.Controllers
             if (!result.Succeeded)
             {
                 var errors = new Dictionary<string, List<string>>();
-                errors["Email"] = new List<string> { "Невдала спроба входу." };
-                return Unauthorized(errors); // 401 Unauthorized
+                errors["email"] = new List<string> { "Невдала спроба входу." };
+                return Unauthorized(new { errors }); // 401 Unauthorized
             }
 
             return Ok();
+        }
+
+        [HttpPost("Logout")]
+        public async Task<IActionResult> Logout()
+        {
+            await _signInManager.SignOutAsync();
+            return Ok(new { Message = "Вихід успішний" });
         }
 
         [Authorize]
@@ -275,26 +285,19 @@ namespace BlossomApi.Controllers
             return Ok();
         }
 
-        [HttpPost("Logout")]
-        public async Task<IActionResult> Logout()
-        {
-            await _signInManager.SignOutAsync();
-            return Ok(new { Message = "Вихід успішний" });
-        }
-
         private string GetFieldFromErrorCode(string code)
         {
             return code switch
             {
-                "PasswordTooShort" => "Password",
-                "PasswordRequiresNonAlphanumeric" => "Password",
-                "PasswordRequiresDigit" => "Password",
-                "PasswordRequiresLower" => "Password",
-                "PasswordRequiresUpper" => "Password",
-                "PasswordRequiresUniqueChars" => "Password",
-                "DuplicateUserName" => "Email",
-                "InvalidUserName" => "Email",
-                _ => "Password", // Default to Password
+                "PasswordTooShort" => "password",
+                "PasswordRequiresNonAlphanumeric" => "password",
+                "PasswordRequiresDigit" => "password",
+                "PasswordRequiresLower" => "password",
+                "PasswordRequiresUpper" => "password",
+                "PasswordRequiresUniqueChars" => "password",
+                "DuplicateUserName" => "email",
+                "InvalidUserName" => "email",
+                _ => "password", // Default to password
             };
         }
 
@@ -305,6 +308,8 @@ namespace BlossomApi.Controllers
             foreach (var key in modelState.Keys)
             {
                 var fieldKey = key.Contains(".") ? key.Split('.').Last() : key;
+                fieldKey = char.ToLowerInvariant(fieldKey[0]) + fieldKey.Substring(1); // Convert to lower camel case
+
                 var state = modelState[key];
                 var fieldErrors = state.Errors.Select(e => e.ErrorMessage).ToList();
                 if (fieldErrors.Count > 0)
@@ -319,49 +324,50 @@ namespace BlossomApi.Controllers
 
             return errors;
         }
+    }
 
-        public class RegisterModel
-        {
-            [Required(ErrorMessage = "Ім'я користувача є обов'язковим.")]
-            public string Username { get; set; }
+    // Models used in the controller
+    public class RegisterModel
+    {
+        [Required(ErrorMessage = "Ім'я користувача є обов'язковим.")]
+        public string Username { get; set; }
 
-            [Required(ErrorMessage = "Прізвище є обов'язковим.")]
-            public string Surname { get; set; }
+        [Required(ErrorMessage = "Прізвище є обов'язковим.")]
+        public string Surname { get; set; }
 
-            [Required(ErrorMessage = "Електронна пошта є обов'язковою.")]
-            [EmailAddress(ErrorMessage = "Неправильний формат електронної пошти.")]
-            public string Email { get; set; }
+        [Required(ErrorMessage = "Електронна пошта є обов'язковою.")]
+        [EmailAddress(ErrorMessage = "Неправильний формат електронної пошти.")]
+        public string Email { get; set; }
 
-            [Required(ErrorMessage = "Пароль є обов'язковим.")]
-            [DataType(DataType.Password)]
-            public string Password { get; set; }
+        [Required(ErrorMessage = "Пароль є обов'язковим.")]
+        [DataType(DataType.Password)]
+        public string Password { get; set; }
 
-            [Required(ErrorMessage = "Підтвердження паролю є обов'язковим.")]
-            [DataType(DataType.Password)]
-            [Compare("Password", ErrorMessage = "Паролі не співпадають.")]
-            public string ConfirmPassword { get; set; }
+        [Required(ErrorMessage = "Підтвердження паролю є обов'язковим.")]
+        [DataType(DataType.Password)]
+        [Compare("Password", ErrorMessage = "Паролі не співпадають.")]
+        public string ConfirmPassword { get; set; }
 
-            [Required(ErrorMessage = "Номер телефону є обов'язковим.")]
-            [Phone(ErrorMessage = "Неправильний формат номера телефону.")]
-            public string PhoneNumber { get; set; }
+        [Required(ErrorMessage = "Номер телефону є обов'язковим.")]
+        [Phone(ErrorMessage = "Неправильний формат номера телефону.")]
+        public string PhoneNumber { get; set; }
 
-            public string? Secret { get; set; }
-        }
+        public string? Secret { get; set; }
+    }
 
-        public class RegisterAdminModel : RegisterModel
-        {
-            [Required(ErrorMessage = "Секретний ключ адміністратора є обов'язковим.")]
-            public new string Secret { get; set; }
-        }
+    public class RegisterAdminModel : RegisterModel
+    {
+        [Required(ErrorMessage = "Секретний ключ адміністратора є обов'язковим.")]
+        public new string Secret { get; set; }
+    }
 
-        public class LoginRequest
-        {
-            [Required(ErrorMessage = "Електронна пошта є обов'язковою.")]
-            [EmailAddress(ErrorMessage = "Неправильний формат електронної пошти.")]
-            public string Email { get; set; }
+    public class LoginRequest
+    {
+        [Required(ErrorMessage = "Електронна пошта є обов'язковою.")]
+        [EmailAddress(ErrorMessage = "Неправильний формат електронної пошти.")]
+        public string Email { get; set; }
 
-            [Required(ErrorMessage = "Пароль є обов'язковим.")]
-            public string Password { get; set; }
-        }
+        [Required(ErrorMessage = "Пароль є обов'язковим.")]
+        public string Password { get; set; }
     }
 }
