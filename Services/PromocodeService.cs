@@ -1,4 +1,7 @@
-﻿using BlossomApi.DB;
+﻿// PromocodeService.cs
+
+using System.Threading.Tasks;
+using BlossomApi.DB;
 using BlossomApi.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -13,6 +16,7 @@ namespace BlossomApi.Services
             _context = context;
         }
 
+        // Метод для перевірки та застосування промокоду
         public async Task<string> ValidateAndApplyPromocode(string? usedPromocode, Order order)
         {
             if (string.IsNullOrEmpty(usedPromocode))
@@ -39,8 +43,8 @@ namespace BlossomApi.Services
             order.PromocodeId = promocode.PromocodeId;
             order.Promocode = promocode;
             promocode.UsageLeft--;
-            _context.Promocodes.Update(promocode);
 
+            // EF Core відслідковує сутність промокоду, не потрібно викликати Update
             return string.Empty;
         }
     }

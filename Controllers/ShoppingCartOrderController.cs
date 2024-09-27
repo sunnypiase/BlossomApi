@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using BlossomApi.DB;
 using BlossomApi.Models;
-using BlossomApi.Services; // Додано для використання сервісів
+using BlossomApi.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -61,16 +61,21 @@ namespace BlossomApi.Controllers
 
         private async Task<IActionResult> CreateOrderAsync(OrderBaseRequest request, SiteUser? siteUser)
         {
+            // Розпочинаємо транзакцію
             await using var transaction = await _context.Database.BeginTransactionAsync();
             try
             {
                 ShoppingCart? shoppingCart;
+
+                // Визначаємо, чи користувач є гостьовим або авторизованим
                 if (siteUser == null && request is GuestOrderRequest guestRequest)
                 {
+                    // Створюємо новий кошик для гостей та додаємо продукти
                     shoppingCart = await AddProductsToShoppingCart(new ShoppingCart { CreatedDate = DateTime.UtcNow }, guestRequest.Products);
                 }
                 else if (siteUser != null)
                 {
+                    // Отримуємо активний кошик для авторизованих користувачів
                     shoppingCart = await GetActiveShoppingCartAsync(siteUser.UserId);
                 }
                 else
@@ -83,69 +88,80 @@ namespace BlossomApi.Controllers
                     return BadRequest("Не знайдено активного кошика покупок або кошик порожній.");
                 }
 
+                // Створюємо замовлення з запиту
                 var order = CreateOrderFromRequest(request, shoppingCart.ShoppingCartId);
 
-                // Отримання або створення запису кешбеку
+                // Додаємо замовлення до контексту
+                _context.Orders.Add(order);
+
+                // Додаємо інформацію про доставку до контексту
+                var deliveryInfo = new DeliveryInfo
+                {
+                    City = request.DeliveryInfo.City,
+                    DepartmentNumber = request.DeliveryInfo.Department,
+                    Order = order
+                };
+                _context.DeliveryInfos.Add(deliveryInfo);
+
+                // Отримуємо або створюємо кешбек
                 string phoneNumber = request.UserInfo.Phone;
                 var cashback = await _cashbackService.GetOrCreateCashbackAsync(siteUser, phoneNumber);
 
-                // Перевірка та застосування кешбеку
+                // Перевіряємо та застосовуємо кешбек
                 var cashbackError = _cashbackService.ValidateAndApplyCashback(request, order, cashback);
                 if (!string.IsNullOrEmpty(cashbackError))
                 {
                     return BadRequest(cashbackError);
                 }
 
-                // Перевірка та застосування промокоду
+                // Перевіряємо та застосовуємо промокод
                 var promocodeError = await _promocodeService.ValidateAndApplyPromocode(request.UsedPromocode, order);
                 if (!string.IsNullOrEmpty(promocodeError))
                 {
                     return BadRequest(promocodeError);
                 }
 
-                // Розрахунок загальної ціни з урахуванням кешбеку та промокоду
+                // Розраховуємо загальну ціну з урахуванням кешбеку та промокоду
                 CalculateTotalPrice(order, shoppingCart, order.Promocode, cashback);
 
-                // Оновлення залишків товарів
+                // Оновлюємо залишки товарів
                 UpdateProductStock(shoppingCart);
 
-                // Збереження замовлення та оновлення балансу кешбеку
-                await SaveOrderAndCommitTransaction(order, siteUser);
+                // Якщо користувач авторизований, створюємо новий кошик для майбутніх замовлень
+                if (siteUser != null)
+                {
+                    var newShoppingCart = new ShoppingCart { SiteUserId = siteUser.UserId, CreatedDate = DateTime.UtcNow };
+                    _context.ShoppingCarts.Add(newShoppingCart);
+                }
 
-                // Оновлення балансу кешбеку після оформлення замовлення
+                // Оновлюємо баланс кешбеку після замовлення
                 _cashbackService.UpdateCashbackBalance(order, cashback);
 
+                // Зберігаємо всі зміни до бази даних в одному виклику
+                await _context.SaveChangesAsync();
+
+                // Підтверджуємо транзакцію
                 await transaction.CommitAsync();
 
                 return Ok(new { OrderId = order.OrderId });
             }
             catch (InvalidOperationException ex)
             {
+                // Відкат транзакції при виникненні відомих помилок
                 await transaction.RollbackAsync();
                 return BadRequest(ex.Message);
             }
             catch (Exception)
             {
+                // Відкат транзакції при виникненні невідомих помилок
                 await transaction.RollbackAsync();
                 return StatusCode(500, "Сталася помилка під час створення замовлення.");
             }
         }
 
-
-        private async Task SaveOrderAndCommitTransaction(Order order, SiteUser? siteUser)
-        {
-            _context.Orders.Add(order);
-            if (siteUser != null)
-            {
-                // Створення нового кошика покупок для користувача
-                _context.ShoppingCarts.Add(new ShoppingCart { SiteUserId = siteUser.UserId, CreatedDate = DateTime.UtcNow });
-            }
-
-            await _context.SaveChangesAsync();
-        }
-
         private async Task<ShoppingCart?> AddProductsToShoppingCart(ShoppingCart shoppingCart, List<OrderProductRequest> products)
         {
+            // Додаємо новий кошик до контексту
             var addedShoppingCart = _context.ShoppingCarts.Add(shoppingCart).Entity;
             await _context.SaveChangesAsync();
 
@@ -166,10 +182,11 @@ namespace BlossomApi.Controllers
                 shoppingCartProducts.Add(shoppingCartProduct);
             }
 
+            // Додаємо всі продукти до кошика
             await _context.ShoppingCartProducts.AddRangeAsync(shoppingCartProducts);
             await _context.SaveChangesAsync();
 
-            // Перезавантаження кошика з продуктами для забезпечення коректних зв'язків
+            // Перезавантажуємо кошик з продуктами для забезпечення коректних зв'язків
             addedShoppingCart = await _context.ShoppingCarts
                 .Include(sc => sc.ShoppingCartProducts)
                 .ThenInclude(scp => scp.Product)
@@ -194,6 +211,7 @@ namespace BlossomApi.Controllers
         private Product UpdateProductStockAfterAdd(Product product, int requestedAmount)
         {
             int availableAmount = product.AvailableAmount - requestedAmount;
+            product.NumberOfPurchases++;
             if (availableAmount < 0)
             {
                 throw new InvalidOperationException("Недостатня кількість товару на складі.");
@@ -251,6 +269,7 @@ namespace BlossomApi.Controllers
                 Order = order
             };
 
+            // Додаємо DeliveryInfo до контексту
             _context.DeliveryInfos.Add(deliveryInfo);
 
             return order;
@@ -285,7 +304,7 @@ namespace BlossomApi.Controllers
             order.TotalPriceWithDiscount = totalPrice - order.TotalDiscount;
         }
 
-        // Модель запиту для гостьових замовлень, включає використання кешбеку
+        // Моделі
         public class GuestOrderRequest : OrderBaseRequest
         {
             [Required(ErrorMessage = "Список товарів є обов'язковим.")]
@@ -294,7 +313,6 @@ namespace BlossomApi.Controllers
             public decimal CashbackToUse { get; set; } // Сума кешбеку, яку гість хоче використати
         }
 
-        // Модель запиту для замовлень авторизованих користувачів, включає використання кешбеку
         public class AuthenticatedOrderRequest : OrderBaseRequest
         {
             public decimal CashbackToUse { get; set; } // Сума кешбеку, яку користувач хоче використати

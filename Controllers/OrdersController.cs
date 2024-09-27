@@ -173,19 +173,85 @@ namespace BlossomApi.Controllers
                 return BadRequest(ModelState);
             }
 
-            var order = await _context.Orders.FindAsync(orderId);
-            if (order == null)
+            // Розпочинаємо транзакцію
+            await using var transaction = await _context.Database.BeginTransactionAsync();
+            try
             {
-                return NotFound("Замовлення не знайдено.");
+                var order = await _context.Orders
+                    .Include(o => o.ShoppingCart)
+                        .ThenInclude(sc => sc.ShoppingCartProducts)
+                            .ThenInclude(scp => scp.Product)
+                    .FirstOrDefaultAsync(o => o.OrderId == orderId);
+
+                if (order == null)
+                {
+                    return NotFound("Замовлення не знайдено.");
+                }
+
+                // Перевірка дозволених переходів статусів
+                if (!IsValidStatusTransition(order.Status, request.Status))
+                {
+                    return BadRequest($"Неможливо змінити статус з '{order.Status}' на '{request.Status}'.");
+                }
+
+                // Якщо новий статус Declined або Refund, повертаємо кількість товарів на склад
+                if (request.Status == OrderStatus.Declined || request.Status == OrderStatus.Refund)
+                {
+                    foreach (var cartProduct in order.ShoppingCart.ShoppingCartProducts)
+                    {
+                        cartProduct.Product.AvailableAmount += cartProduct.Quantity;
+                        _context.Products.Update(cartProduct.Product);
+                    }
+                }
+
+                // Змінюємо статус замовлення
+                order.Status = request.Status;
+                _context.Orders.Update(order);
+
+                // Зберігаємо всі зміни
+                await _context.SaveChangesAsync();
+
+                // Підтверджуємо транзакцію
+                await transaction.CommitAsync();
+
+                var orderDto = _mapper.Map<OrderDto>(order);
+                return Ok(orderDto);
+            }
+            catch (InvalidOperationException ex)
+            {
+                // Відкат транзакції при відомих помилках
+                await transaction.RollbackAsync();
+                return BadRequest(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                // Відкат транзакції при невідомих помилках
+                await transaction.RollbackAsync();
+                return StatusCode(500, "Сталася помилка під час зміни статусу замовлення.");
+            }
+        }
+
+        private bool IsValidStatusTransition(OrderStatus currentStatus, OrderStatus newStatus)
+        {
+            var allowedTransitions = new Dictionary<OrderStatus, List<OrderStatus>>
+            {
+                { OrderStatus.Created, new List<OrderStatus> { OrderStatus.Accepted, OrderStatus.Declined } },
+                { OrderStatus.Accepted, new List<OrderStatus> { OrderStatus.NeedToShip, OrderStatus.Declined } },
+                { OrderStatus.NeedToShip, new List<OrderStatus> { OrderStatus.Shipped, OrderStatus.Declined } },
+                { OrderStatus.Shipped, new List<OrderStatus> { OrderStatus.Completed, OrderStatus.Refund } },
+                { OrderStatus.Completed, new List<OrderStatus>() }, // Завершений статус - подальші зміни не дозволені
+                { OrderStatus.Declined, new List<OrderStatus>() }, // Відхилений статус - подальші зміни не дозволені
+                { OrderStatus.Refund, new List<OrderStatus>() } // Повернення - подальші зміни не дозволені
+            };
+
+            if (allowedTransitions.ContainsKey(currentStatus))
+            {
+                return allowedTransitions[currentStatus].Contains(newStatus);
             }
 
-            order.Status = request.Status;
-            await _context.SaveChangesAsync();
-
-            var orderDto = _mapper.Map<OrderDto>(order);
-
-            return Ok(orderDto);
+            return false;
         }
+
 
         // GET: api/orders/{orderId}
         [Authorize]

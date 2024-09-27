@@ -1,4 +1,4 @@
-using AutoMapper;
+﻿using AutoMapper;
 using BlossomApi.DB;
 using BlossomApi.Dtos;
 using BlossomApi.Dtos.Product;
@@ -65,8 +65,13 @@ namespace BlossomApi.Controllers
 
             if (product == null)
             {
-                return NotFound();
+                return NotFound("Продукт не знайдено.");
             }
+
+            product.NumberOfViews += 1;
+            _context.Products.Update(product);
+
+            await _context.SaveChangesAsync();
 
             return Ok(_mapper.Map<ProductResponseDto>(product));
         }

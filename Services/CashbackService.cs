@@ -1,5 +1,4 @@
-﻿using System.Threading.Tasks;
-using BlossomApi.DB;
+﻿using BlossomApi.DB;
 using BlossomApi.Models;
 using Microsoft.EntityFrameworkCore;
 using static BlossomApi.Controllers.ShoppingCartOrderController;
@@ -35,7 +34,7 @@ namespace BlossomApi.Services
                         SiteUserId = siteUser.UserId
                     };
                     _context.Cashbacks.Add(cashback);
-                    await _context.SaveChangesAsync();
+                    // Не викликаємо SaveChanges тут
                 }
             }
             else
@@ -53,7 +52,7 @@ namespace BlossomApi.Services
                         SiteUserId = null
                     };
                     _context.Cashbacks.Add(cashback);
-                    await _context.SaveChangesAsync();
+                    // Не викликаємо SaveChanges тут
                 }
             }
 
@@ -87,39 +86,35 @@ namespace BlossomApi.Services
             order.DiscountFromCashback = cashbackToUse;
             cashback.Balance -= cashbackToUse;
 
-            _context.Cashbacks.Update(cashback);
-
+            // EF Core відслідковує сутність кешбеку, не потрібно викликати Update
             return string.Empty;
         }
 
         // Метод для оновлення балансу кешбеку після замовлення
         public void UpdateCashbackBalance(Order order, Cashback cashback)
         {
-            decimal cashbackEarned = order.TotalPriceWithDiscount * 0.03m;
+            decimal cashbackEarned = order.TotalPriceWithDiscount * 0.03m; // 3% кешбек
 
             cashback.Balance += cashbackEarned;
 
-            _context.Cashbacks.Update(cashback);
-
             order.CashbackEarned = cashbackEarned;
 
-            _context.Orders.Update(order);
-            _context.SaveChanges();
+            // EF Core відслідковує сутності кешбеку та замовлення, не потрібно викликати Update
         }
 
-        // Отримання кешбеку за UserId
+        // Метод для отримання кешбеку за UserId
         public async Task<Cashback?> GetCashbackByUserIdAsync(int userId)
         {
             return await _context.Cashbacks.FirstOrDefaultAsync(c => c.SiteUserId == userId);
         }
 
-        // Отримання кешбеку за номером телефону
+        // Метод для отримання кешбеку за номером телефону
         public async Task<Cashback?> GetCashbackByPhoneNumberAsync(string phoneNumber)
         {
             return await _context.Cashbacks.FirstOrDefaultAsync(c => c.PhoneNumber == phoneNumber);
         }
 
-        // Адміністративне коригування балансу кешбеку
+        // Адміністративний метод для коригування балансу кешбеку
         public async Task<(bool Success, string? ErrorMessage)> AdjustCashbackBalanceAsync(string phoneNumber, decimal amount)
         {
             var cashback = await GetCashbackByPhoneNumberAsync(phoneNumber);
@@ -135,9 +130,7 @@ namespace BlossomApi.Services
                 return (false, "Баланс кешбеку не може бути від'ємним.");
             }
 
-            _context.Cashbacks.Update(cashback);
-            await _context.SaveChangesAsync();
-
+            // EF Core відслідковує сутність кешбеку, не потрібно викликати Update
             return (true, null);
         }
     }

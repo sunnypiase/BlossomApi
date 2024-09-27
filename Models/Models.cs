@@ -279,7 +279,9 @@ namespace BlossomApi.Models
 
     public class Order
     {
-        [Key] public int OrderId { get; set; }
+        [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public int OrderId { get; set; }
         public DateTime OrderDate { get; set; }
         public OrderStatus Status { get; set; }
         public string Username { get; set; }

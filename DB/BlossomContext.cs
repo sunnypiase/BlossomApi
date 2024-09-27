@@ -76,6 +76,9 @@ namespace BlossomApi.DB
                 .WithMany()
                 .HasForeignKey(o => o.CashbackId)
                 .OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<Order>()
+                .Property(o => o.OrderId)
+                .ValueGeneratedOnAdd();
 
             // Many-to-one relationship between ShoppingCart and SiteUser
             modelBuilder.Entity<ShoppingCart>()

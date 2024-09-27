@@ -58,7 +58,7 @@ namespace BlossomApi.Mappers
                 .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Product.Name))
                 .ForMember(dest => dest.Amount, opt => opt.MapFrom(src => src.Quantity))
                 .ForMember(dest => dest.ProductByAmountPrice, opt => opt.MapFrom(src => src.Quantity * src.Product.Price))
-                .ForMember(dest => dest.ImageUrl, opt => opt.MapFrom(src => src.Product.Images.FirstOrDefault())) // Adjust this field to match actual image logic
+                .ForMember(dest => dest.ImageUrl, opt => opt.MapFrom(src => src.Product.Images.FirstOrDefault() ?? null)) // Adjust this field to match actual image logic
                 .ForMember(dest => dest.MainCategory, opt => opt.MapFrom(src => src.Product.MainCategory));
 
         }
