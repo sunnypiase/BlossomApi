@@ -58,6 +58,96 @@ namespace BlossomApi.Controllers
 
             return await CreateOrderAsync(request, siteUser);
         }
+        // Новий метод для створення Offline замовлень, доступний лише адміністраторам
+        [Authorize(Roles = "Admin")]
+        [HttpPost("CreateOfflineOrder")]
+        public async Task<IActionResult> CreateOfflineOrder([FromBody] OfflineOrderRequest request)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            // Розпочинаємо транзакцію
+            await using var transaction = await _context.Database.BeginTransactionAsync();
+            try
+            {
+                // Створюємо новий кошик для Offline замовлення без прив'язки до користувача
+                var shoppingCart = await AddProductsToShoppingCart(new ShoppingCart { CreatedDate = DateTime.UtcNow }, request.Products);
+
+                if (shoppingCart == null || !shoppingCart.ShoppingCartProducts.Any())
+                {
+                    return BadRequest("Не вдалося створити кошик або кошик порожній.");
+                }
+
+                // Створюємо замовлення з офлайн параметрами
+                var order = CreateOfflineOrderFromRequest(request, shoppingCart.ShoppingCartId);
+
+                // Додаємо замовлення до контексту
+                _context.Orders.Add(order);
+
+                // Додаємо інформацію про доставку з офлайн параметрами
+                var deliveryInfo = new DeliveryInfo
+                {
+                    City = "Козин",
+                    DepartmentNumber = "Офлайн",
+                    Order = order
+                };
+                _context.DeliveryInfos.Add(deliveryInfo);
+
+                // Отримуємо або створюємо кешбек, якщо вказано
+                var cashback = await _cashbackService.GetOrCreateCashbackAsync(null, request.PhoneNumber ?? string.Empty);
+
+                // Перевіряємо та застосовуємо кешбек, якщо вказано
+                if (request.CashbackToUse > 0)
+                {
+                    var cashbackError = _cashbackService.ValidateAndApplyCashback(request.CashbackToUse, order, cashback);
+                    if (!string.IsNullOrEmpty(cashbackError))
+                    {
+                        return BadRequest(cashbackError);
+                    }
+                }
+
+                // Перевіряємо та застосовуємо промокод, якщо вказано
+                if (!string.IsNullOrEmpty(request.UsedPromocode))
+                {
+                    var promocodeError = await _promocodeService.ValidateAndApplyPromocode(request.UsedPromocode, order);
+                    if (!string.IsNullOrEmpty(promocodeError))
+                    {
+                        return BadRequest(promocodeError);
+                    }
+                }
+
+                // Розраховуємо загальну ціну з урахуванням кешбеку та промокоду
+                CalculateTotalPrice(order, shoppingCart, order.Promocode, cashback);
+
+                // Оновлюємо залишки товарів
+                UpdateProductStock(shoppingCart);
+
+                // Оновлюємо баланс кешбеку після замовлення
+                _cashbackService.UpdateCashbackBalance(order, cashback);
+
+                // Зберігаємо всі зміни до бази даних в одному виклику
+                await _context.SaveChangesAsync();
+
+                // Підтверджуємо транзакцію
+                await transaction.CommitAsync();
+
+                return Ok(new { OrderId = order.OrderId });
+            }
+            catch (InvalidOperationException ex)
+            {
+                // Відкат транзакції при виникненні відомих помилок
+                await transaction.RollbackAsync();
+                return BadRequest(ex.Message);
+            }
+            catch (Exception)
+            {
+                // Відкат транзакції при виникненні невідомих помилок
+                await transaction.RollbackAsync();
+                return StatusCode(500, "Сталася помилка під час створення офлайн замовлення.");
+            }
+        }
 
         private async Task<IActionResult> CreateOrderAsync(OrderBaseRequest request, SiteUser? siteUser)
         {
@@ -108,7 +198,7 @@ namespace BlossomApi.Controllers
                 var cashback = await _cashbackService.GetOrCreateCashbackAsync(siteUser, phoneNumber);
 
                 // Перевіряємо та застосовуємо кешбек
-                var cashbackError = _cashbackService.ValidateAndApplyCashback(request, order, cashback);
+                var cashbackError = _cashbackService.ValidateAndApplyCashback(request.CashbackToUse, order, cashback);
                 if (!string.IsNullOrEmpty(cashbackError))
                 {
                     return BadRequest(cashbackError);
@@ -274,7 +364,23 @@ namespace BlossomApi.Controllers
 
             return order;
         }
+        private Order CreateOfflineOrderFromRequest(OfflineOrderRequest request, int shoppingCartId)
+        {
+            var order = new Order
+            {
+                OrderDate = DateTime.UtcNow,
+                Status = OrderStatus.Offline,
+                Username = string.IsNullOrEmpty(request.Name) ? "Не вказано" : request.Name,
+                Surname = string.IsNullOrEmpty(request.Surname) ? "Не вказано" : request.Surname,
+                Email = string.IsNullOrEmpty(request.Email) ? "Не вказано" : request.Email,
+                PhoneNumber = string.IsNullOrEmpty(request.PhoneNumber) ? "Не вказано" : request.PhoneNumber,
+                DontCallMe = false, // Можна встановити за потребою
+                EcoPackaging = false, // Можна встановити за потребою
+                ShoppingCartId = shoppingCartId
+            };
 
+            return order;
+        }
         private void CalculateTotalPrice(Order order, ShoppingCart shoppingCart, Promocode? promocode, Cashback cashback)
         {
             decimal totalPrice = 0;
@@ -310,12 +416,10 @@ namespace BlossomApi.Controllers
             [Required(ErrorMessage = "Список товарів є обов'язковим.")]
             public List<OrderProductRequest> Products { get; set; }
 
-            public decimal CashbackToUse { get; set; } // Сума кешбеку, яку гість хоче використати
         }
 
         public class AuthenticatedOrderRequest : OrderBaseRequest
         {
-            public decimal CashbackToUse { get; set; } // Сума кешбеку, яку користувач хоче використати
         }
 
         public abstract class OrderBaseRequest
@@ -329,6 +433,8 @@ namespace BlossomApi.Controllers
             public DeliveryInfoRequest DeliveryInfo { get; set; }
 
             public AdditionalInfoRequest? AdditionalInfo { get; set; }
+            public decimal CashbackToUse { get; set; } // Сума кешбеку, яку користувач хоче використати
+
         }
 
         public class OrderProductRequest
@@ -370,6 +476,19 @@ namespace BlossomApi.Controllers
         {
             public bool DontCallMe { get; set; } = false;
             public bool EcoPackaging { get; set; } = false;
+        }
+        public class OfflineOrderRequest
+        {
+            public string? Name { get; set; } // Ім'я
+            public string? Surname { get; set; } // Прізвище
+            [Phone(ErrorMessage = "Неправильний формат номера телефону.")]
+            public string? PhoneNumber { get; set; } // Номер телефону
+            [EmailAddress(ErrorMessage = "Неправильний формат електронної пошти.")]
+            public string? Email { get; set; } // Електронна пошта
+            public string? UsedPromocode { get; set; } // Промокод
+            public decimal CashbackToUse { get; set; } = 0; // Кешбек для використання
+            [Required(ErrorMessage = "Список товарів є обов'язковим.")]
+            public List<OrderProductRequest> Products { get; set; } // Список товарів
         }
     }
 }

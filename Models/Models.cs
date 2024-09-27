@@ -328,7 +328,8 @@ namespace BlossomApi.Models
         NeedToShip, // Admin accepted the order and need to ship it
         Shipped, // Admin shipped the order
         Completed, // User received the order
-        Refund // User refunded the order
+        Refund, // User refunded the order
+        Offline // User made an offline order
     }
 
     public class DeliveryInfo

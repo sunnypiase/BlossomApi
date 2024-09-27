@@ -60,19 +60,8 @@ namespace BlossomApi.Services
         }
 
         // Метод для перевірки та застосування кешбеку
-        public string ValidateAndApplyCashback(OrderBaseRequest request, Order order, Cashback cashback)
+        public string ValidateAndApplyCashback(decimal cashbackToUse, Order order, Cashback cashback)
         {
-            decimal cashbackToUse = 0;
-
-            if (request is GuestOrderRequest guestRequest)
-            {
-                cashbackToUse = guestRequest.CashbackToUse;
-            }
-            else if (request is AuthenticatedOrderRequest authRequest)
-            {
-                cashbackToUse = authRequest.CashbackToUse;
-            }
-
             if (cashbackToUse < 0)
             {
                 return "Сума кешбеку не може бути від'ємною.";
@@ -86,7 +75,6 @@ namespace BlossomApi.Services
             order.DiscountFromCashback = cashbackToUse;
             cashback.Balance -= cashbackToUse;
 
-            // EF Core відслідковує сутність кешбеку, не потрібно викликати Update
             return string.Empty;
         }
 
