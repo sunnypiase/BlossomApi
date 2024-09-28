@@ -49,7 +49,6 @@ namespace BlossomApi.Controllers
         }
 
         // 2. Отримання балансу кешбеку за номером телефону (для гостей)
-        [Authorize(Roles = "Admin")]
         [HttpGet("GetBalanceByPhone")]
         public async Task<IActionResult> GetBalanceByPhone([FromQuery] string phoneNumber)
         {
