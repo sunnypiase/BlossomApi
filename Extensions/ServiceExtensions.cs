@@ -68,8 +68,8 @@ namespace BlossomApi.Extensions
                     builder.WithOrigins(
                             "http://localhost:3000",
                             "https://localhost:3000",
-                            "http://fight-club-ivory.vercel.app",
-                            "https://fight-club-ivory.vercel.app")
+                            "http://blossombeauty.com.ua",
+                            "https://blossombeauty.com.ua")
                         .AllowAnyMethod()
                         .AllowAnyHeader()
                         .AllowCredentials();
