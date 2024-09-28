@@ -230,8 +230,8 @@ namespace BlossomApi.DB
 
             // Seed data
             modelBuilder.Entity<Category>().HasData(DatabaseCategorySeeder.GetCategories());
-            modelBuilder.Entity<Product>().HasData(DatabaseProductSeeder.GetProducts());
-            modelBuilder.Entity<Characteristic>().HasData(DatabaseCharacteristicSeeder.GetCharacteristics());
+            //modelBuilder.Entity<Product>().HasData(DatabaseProductSeeder.GetProducts());
+            //modelBuilder.Entity<Characteristic>().HasData(DatabaseCharacteristicSeeder.GetCharacteristics());
             //modelBuilder.Entity<Review>().HasData(DatabaseReviewSeeder.GetReviews());
 
             // Many-to-one relationship between Order and Promocode
