@@ -13,6 +13,7 @@ public static class OrderStatusExtensions
             OrderStatus.Shipped => "Відправлено",
             OrderStatus.Completed => "Завершено",
             OrderStatus.Refund => "Повернення",
+            OrderStatus.Offline => "Офлайн",
             _ => "Невідомо"
         };
     }
