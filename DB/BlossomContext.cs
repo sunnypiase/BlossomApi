@@ -101,8 +101,8 @@ namespace BlossomApi.DB
                 .UsingEntity<Dictionary<string, object>>(
                     "ProductCategory",
                     j => j.HasOne<Category>().WithMany().HasForeignKey("CategoryId"),
-                    j => j.HasOne<Product>().WithMany().HasForeignKey("ProductId"))
-                .HasData(DatabaseProductCategorySeeder.GetProductCategoryConnections());
+                    j => j.HasOne<Product>().WithMany().HasForeignKey("ProductId"));
+                // .HasData(DatabaseProductCategorySeeder.GetProductCategoryConnections());
 
             // Many-to-many relationship between SiteUser and Product for favorites
             modelBuilder.Entity<SiteUser>()
@@ -215,8 +215,8 @@ namespace BlossomApi.DB
                 .UsingEntity<Dictionary<string, object>>(
                     "ProductCharacteristic",
                     j => j.HasOne<Product>().WithMany().HasForeignKey("ProductId"),
-                    j => j.HasOne<Characteristic>().WithMany().HasForeignKey("CharacteristicId"))
-                .HasData(DatabaseProductCharacteristicSeeder.GetProductCharacteristicConnections());
+                    j => j.HasOne<Characteristic>().WithMany().HasForeignKey("CharacteristicId"));
+                // .HasData(DatabaseProductCharacteristicSeeder.GetProductCharacteristicConnections());
 
             // Many-to-many relationship between Blog and Product
             modelBuilder.Entity<Blog>()
