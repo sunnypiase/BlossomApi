@@ -81,6 +81,55 @@ namespace BlossomApi.Controllers
 
             return Ok(categories);
         }
+        
+        // GET: api/Category/Search
+        [HttpGet("SearchAdditional")]
+        public async Task<ActionResult<IEnumerable<CategoryResponseDto>>> SearchAdditionalCategories([FromQuery] string? searchTerm, int mainCategoryId)
+        {
+            var categoryIds = (await _categoryService.GetAllChildCategoriesAsync(mainCategoryId)).Select(x => x.CategoryId);
+            var categoriesQuery = _context.Categories.AsQueryable().Where(x => categoryIds.Contains(x.CategoryId));
+
+            if (!string.IsNullOrEmpty(searchTerm))
+            {
+                var lowerSearchTerm = searchTerm.ToLower();
+                categoriesQuery = categoriesQuery.Where(c => c.Name.ToLower().Contains(lowerSearchTerm));
+            }
+
+            var categories = await categoriesQuery
+                .Select(c => new CategoryResponseDto
+                {
+                    CategoryId = c.CategoryId,
+                    Name = c.Name,
+                    ParentCategoryId = c.ParentCategoryId
+                })
+                .ToListAsync();
+
+            return Ok(categories);
+        }
+
+        // GET: api/Category/Search
+        [HttpGet("SearchMain")]
+        public async Task<ActionResult<IEnumerable<CategoryResponseDto>>> SearchMainCategories([FromQuery] string? searchTerm)
+        {
+            var categoriesQuery = _context.Categories.AsQueryable().Where(x => x.ParentCategoryId == 0);
+
+            if (!string.IsNullOrEmpty(searchTerm))
+            {
+                var lowerSearchTerm = searchTerm.ToLower();
+                categoriesQuery = categoriesQuery.Where(c => c.Name.ToLower().Contains(lowerSearchTerm));
+            }
+
+            var categories = await categoriesQuery
+                .Select(c => new CategoryResponseDto
+                {
+                    CategoryId = c.CategoryId,
+                    Name = c.Name,
+                    ParentCategoryId = c.ParentCategoryId
+                })
+                .ToListAsync();
+
+            return Ok(categories);
+        }
 
         // PUT: api/Category/5
         [HttpPut("{id}")]
