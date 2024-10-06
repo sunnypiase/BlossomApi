@@ -188,7 +188,7 @@ namespace BlossomApi.Services
 
         private List<string> ParseImageLinks(ExcelRange cell, int row, string columnName, List<string> rowErrors)
         {
-            var links = cell.Text?.Trim().Split(',').Select(link => link.Trim()).ToList() ?? new List<string>();
+            var links = cell.Text?.Trim().Split(',').Select(link => link.Trim()).Where(x => !string.IsNullOrEmpty(x)).ToList() ?? new List<string>();
 
             if (links.Count == 0)
             {
