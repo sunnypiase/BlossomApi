@@ -1,14 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using BlossomApi.DB;
-using BlossomApi.Dtos;
 using BlossomApi.Models;
 using AutoMapper;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using BlossomApi.Dtos.Characteristic;
-using System.Reflection.PortableExecutable;
 
 namespace BlossomApi.Controllers
 {
@@ -51,9 +46,9 @@ namespace BlossomApi.Controllers
         [HttpPost]
         public async Task<ActionResult<CharacteristicDto>> AddCharacteristic(CharacteristicCreateDto characteristicCreateDto)
         {
-            if (await _context.Characteristics.AnyAsync(c => c.Title == characteristicCreateDto.Title && c.Desc == characteristicCreateDto.Desc))
+            if (await _context.Characteristics.AnyAsync(c => c.Title == characteristicCreateDto.Title))
             {
-                return BadRequest("A characteristic with the same title and description already exists.");
+                return BadRequest("A characteristic with the same title already exists.");
             }
 
             var characteristic = _mapper.Map<Characteristic>(characteristicCreateDto);
@@ -62,6 +57,22 @@ namespace BlossomApi.Controllers
 
             var characteristicDto = _mapper.Map<CharacteristicDto>(characteristic);
             return CreatedAtAction(nameof(GetCharacteristicById), new { id = characteristicDto.CharacteristicId }, characteristicDto);
+        }
+
+        // DELETE: api/Characteristic/{id}
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteCharacteristicById(int id)
+        {
+            var characteristic = await _context.Characteristics.FindAsync(id);
+            if (characteristic == null)
+            {
+                return NotFound("Characteristic not found with the given ID.");
+            }
+
+            _context.Characteristics.Remove(characteristic);
+            await _context.SaveChangesAsync();
+
+            return NoContent();
         }
 
         // DELETE: api/Characteristic?title={title}&description={description}
@@ -81,7 +92,7 @@ namespace BlossomApi.Controllers
         }
 
         // DELETE: api/Characteristic/all?title={title}
-        [HttpDelete("byTitle")]
+        [HttpDelete("all")]
         public async Task<IActionResult> DeleteAllCharacteristicsByTitle(string title)
         {
             var characteristics = await _context.Characteristics.Where(c => c.Title == title).ToListAsync();
@@ -100,6 +111,11 @@ namespace BlossomApi.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateCharacteristic(int id, CharacteristicUpdateDto characteristicUpdateDto)
         {
+            if (await _context.Characteristics.AnyAsync(c => c.Title == characteristicUpdateDto.Title && c.CharacteristicId != id))
+            {
+                return BadRequest("A characteristic with the same title already exists.");
+            }
+
             var characteristic = await _context.Characteristics.FindAsync(id);
             if (characteristic == null)
             {
