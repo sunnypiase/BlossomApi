@@ -157,6 +157,46 @@ namespace BlossomApi.Controllers
             return Ok(characteristics);
         }
 
+        // GET: api/Characteristic/search/{name}
+        [HttpGet("search")]
+        public async Task<ActionResult<IEnumerable<CharacteristicDto>>> SearchCharacteristicsByName(string? name)
+        {
+            var characteristics = name != null
+                ? (await _context.Characteristics
+                    .Where(c => c.Title.ToLower().Contains(name.ToLower()))
+                    .ToListAsync())
+                    .DistinctBy(c => c.Title)
+                : (await _context.Characteristics
+                    .ToListAsync())
+                    .DistinctBy(c => c.Title);
+
+            var values = characteristics
+                .Select(c => _mapper.Map<CharacteristicDto>(c))
+                .ToList();
+
+            return Ok(values);
+        }
+
+        // GET: api/Characteristic/{Title}/values
+        [HttpGet("{Title}/values")]
+        public async Task<ActionResult<IEnumerable<DescriptionWithId>>> GetCharacteristicValues(string Title)
+        {
+            var characteristics = await _context.Characteristics
+                .Where(c => c.Title == Title)
+                .ToListAsync();
+
+            if (characteristics == null || characteristics.Count == 0)
+            {
+                return Ok();
+            }
+
+            var values = characteristics
+                .Select(c => new DescriptionWithId { Description = c.Desc, Id = c.CharacteristicId })
+                .ToList();
+
+            return Ok(values);
+        }
+
         private bool CharacteristicExists(int id)
         {
             return _context.Characteristics.Any(c => c.CharacteristicId == id);
