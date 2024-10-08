@@ -111,9 +111,9 @@ namespace BlossomApi.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateCharacteristic(int id, CharacteristicUpdateDto characteristicUpdateDto)
         {
-            if (await _context.Characteristics.AnyAsync(c => c.Title == characteristicUpdateDto.Title && c.CharacteristicId != id))
+            if (await _context.Characteristics.AnyAsync(c => c.Title == characteristicUpdateDto.Title && c.Desc == characteristicUpdateDto.Desc && c.CharacteristicId != id))
             {
-                return BadRequest("A characteristic with the same title already exists.");
+                return BadRequest("A characteristic with the same title and description already exists.");
             }
 
             var characteristic = await _context.Characteristics.FindAsync(id);
