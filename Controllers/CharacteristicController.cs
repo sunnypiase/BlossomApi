@@ -46,9 +46,9 @@ namespace BlossomApi.Controllers
         [HttpPost]
         public async Task<ActionResult<CharacteristicDto>> AddCharacteristic(CharacteristicCreateDto characteristicCreateDto)
         {
-            if (await _context.Characteristics.AnyAsync(c => c.Title == characteristicCreateDto.Title))
+            if (await _context.Characteristics.AnyAsync(c => c.Title == characteristicCreateDto.Title && c.Desc == characteristicCreateDto.Desc))
             {
-                return BadRequest("A characteristic with the same title already exists.");
+                return BadRequest("A characteristic with the same title and description already exists.");
             }
 
             var characteristic = _mapper.Map<Characteristic>(characteristicCreateDto);
