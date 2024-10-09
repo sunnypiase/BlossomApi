@@ -25,7 +25,7 @@ namespace BlossomApi.Controllers
             var filterPanelData = await FetchAdminFilterPanelData();
             if (filterPanelData == null)
             {
-                return NotFound();
+                return NotFound("No data available for filter panel");
             }
             return Ok(filterPanelData);
         }
@@ -34,6 +34,18 @@ namespace BlossomApi.Controllers
         {
             // Fetch all categories and build the category tree
             var categories = await _context.Categories.ToListAsync();
+            if (categories == null || !categories.Any())
+            {
+                return new AdminFilterPanelResponseDto
+                {
+                    Categories = new List<CategoryNode>(),
+                    Brands = new List<FilterPanelOptionDto>(),
+                    Characteristics = new List<FilterPanelCharacteristicDto>(),
+                    MinPrice = 0,
+                    MaxPrice = 0
+                };
+            }
+
             var categoryTree = BuildCategoryTree(categories);
 
             // Fetch all products
@@ -43,8 +55,21 @@ namespace BlossomApi.Controllers
                 .Include(p => p.Brand)
                 .ToListAsync();
 
+            if (products == null || !products.Any())
+            {
+                return new AdminFilterPanelResponseDto
+                {
+                    Categories = categoryTree,
+                    Brands = new List<FilterPanelOptionDto>(),
+                    Characteristics = new List<FilterPanelCharacteristicDto>(),
+                    MinPrice = 0,
+                    MaxPrice = 0
+                };
+            }
+
             // Group characteristics by title and create options
             var characteristics = products
+                .Where(p => p.Characteristics != null)
                 .SelectMany(p => p.Characteristics)
                 .GroupBy(c => c.Title)
                 .Select(g => new FilterPanelCharacteristicDto
@@ -60,26 +85,28 @@ namespace BlossomApi.Controllers
                         .ToList()
                 })
                 .ToList();
-            var brends = products
-                .Where(p => p.Brand != null && p.Brand.Title != null) // Ensure that Brand and Title are not null
+
+            // Group brands by title
+            var brands = products
+                .Where(p => p.Brand != null && !string.IsNullOrEmpty(p.Brand.Title)) // Ensure that Brand and Title are not null
                 .Select(p => p.Brand)
-                .DistinctBy(b => b?.BrandId)
+                .DistinctBy(b => b.BrandId)
                 .Select(g => new FilterPanelOptionDto
                 {
                     Id = g.BrandId,
                     Option = g.Title ?? "Unknown", // Default title if null
-                    ProductsAmount = products?.Count(p => p.Brand != null && p.Brand.Title == g.Title) ?? 0 // Guard against nulls
+                    ProductsAmount = products.Count(p => p.Brand != null && p.Brand.Title == g.Title)
                 })
                 .ToList();
 
             // Determine the minimum and maximum price across all products
-            var minPrice = products?.Min(p => p.Price) ?? 0;
-            var maxPrice = products?.Max(p => p.Price) ?? 0;
+            var minPrice = products.Any() ? products.Min(p => p.Price) : 0;
+            var maxPrice = products.Any() ? products.Max(p => p.Price) : 0;
 
             // Return the filter panel response
             return new AdminFilterPanelResponseDto
             {
-                Brands = brends,
+                Brands = brands,
                 Categories = categoryTree,
                 Characteristics = characteristics,
                 MinPrice = minPrice,
@@ -89,6 +116,11 @@ namespace BlossomApi.Controllers
 
         private List<CategoryNode> BuildCategoryTree(List<Category> categories)
         {
+            if (categories == null || !categories.Any())
+            {
+                return new List<CategoryNode>();
+            }
+
             var categoryDictionary = categories.ToDictionary(c => c.CategoryId, c => new CategoryNode
             {
                 CategoryId = c.CategoryId,
@@ -114,11 +146,12 @@ namespace BlossomApi.Controllers
                 .ToList();
         }
     }
+
     public class AdminFilterPanelResponseDto
     {
-        public List<CategoryNode> Categories { get; set; } // List of root-level categories
-        public List<FilterPanelOptionDto> Brands { get; set; } // List of root-level categories
-        public List<FilterPanelCharacteristicDto> Characteristics { get; set; }
+        public List<CategoryNode> Categories { get; set; } = new List<CategoryNode>(); // List of root-level categories
+        public List<FilterPanelOptionDto> Brands { get; set; } = new List<FilterPanelOptionDto>(); // List of brands
+        public List<FilterPanelCharacteristicDto> Characteristics { get; set; } = new List<FilterPanelCharacteristicDto>(); // Characteristics
         public decimal MinPrice { get; set; }
         public decimal MaxPrice { get; set; }
     }
