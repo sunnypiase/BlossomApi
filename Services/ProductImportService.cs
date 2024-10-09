@@ -46,9 +46,9 @@ namespace BlossomApi.Services
                         AvailableAmount = ParseRequiredInt(worksheet.Cells[row, columnMapping["Залишок"]], row, "Залишок", rowErrors),
                         Description = GetRequiredValue(worksheet.Cells[row, columnMapping["Опис товару"]], row, "Опис товару", rowErrors),
                         Ingridients = GetValueOrNull(worksheet.Cells[row, columnMapping.GetValueOrDefault("Склад")]),
-                        CharacteristicIds = ParseIntList(worksheet.Cells[row, columnMapping.GetValueOrDefault("Характеристики (список ід)")], row, "Характеристики (список ід)", rowErrors),
-                        AdditionalCategoryIds = ParseIntList(worksheet.Cells[row, columnMapping.GetValueOrDefault("Додаткові категорії (список ід)")], row, "Додаткові категорії (список ід)", rowErrors),
-                        ImageUrls = ParseImageLinks(worksheet.Cells[row, columnMapping.GetValueOrDefault("Зображення (посилання)")], row, "Зображення", rowErrors),
+                        // CharacteristicIds = ParseIntList(worksheet.Cells[row, columnMapping.GetValueOrDefault("Характеристики (список ід)")], row, "Характеристики (список ід)", rowErrors),
+                        // AdditionalCategoryIds = ParseIntList(worksheet.Cells[row, columnMapping.GetValueOrDefault("Додаткові категорії (список ід)")], row, "Додаткові категорії (список ід)", rowErrors),
+                        // ImageUrls = ParseImageLinks(worksheet.Cells[row, columnMapping.GetValueOrDefault("Зображення (посилання)")], row, "Зображення", rowErrors),
                         MetaKeys = GetValueOrNull(worksheet.Cells[row, columnMapping.GetValueOrDefault("SEOKeywords")]),
                         MetaDescription = GetValueOrNull(worksheet.Cells[row, columnMapping.GetValueOrDefault("SEODescription")])
                     };
