@@ -7,6 +7,7 @@ using BlossomApi.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
+using Microsoft.AspNetCore.Authorization;
 
 namespace BlossomApi.Controllers
 {
@@ -267,6 +268,68 @@ namespace BlossomApi.Controllers
             await _context.SaveChangesAsync();
 
             return NoContent();
+        }
+
+        [HttpDelete("DeleteAll")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> DeleteAllProducts()
+        {
+            await using var transaction = await _context.Database.BeginTransactionAsync();
+
+            try
+            {
+                var products = await _context.Products
+                    .Include(p => p.Reviews)
+                    .Include(p => p.ShoppingCartProducts)
+                    .Include(p => p.UsersWhoFavorited)
+                    .Include(p => p.Banners)
+                    .Include(p => p.Blogs)
+                    .ToListAsync();
+
+                // Remove related entities
+                foreach (var product in products)
+                {
+                    // Remove images from storage
+                    foreach (var fileName in product.Images.Select(imageUrl => imageUrl.Split('/').Last()))
+                    {
+                        try
+                        {
+                            await _imageService.DeleteImageAsync(fileName);
+                        }
+                        catch (Exception ex)
+                        {
+                            // Log the exception if needed
+                        }
+                    }
+
+                    // Remove reviews
+                    _context.Reviews.RemoveRange(product.Reviews);
+
+                    // Remove ShoppingCartProducts
+                    _context.ShoppingCartProducts.RemoveRange(product.ShoppingCartProducts);
+
+                    // Remove associations with UsersWhoFavorited
+                    product.UsersWhoFavorited.Clear();
+
+                    // Remove associations with Banners and Blogs
+                    product.Banners.Clear();
+                    product.Blogs.Clear();
+                }
+
+                // Remove all products
+                _context.Products.RemoveRange(products);
+
+                await _context.SaveChangesAsync();
+                await transaction.CommitAsync();
+
+                return NoContent();
+            }
+            catch (Exception ex)
+            {
+                await transaction.RollbackAsync();
+                // Log the exception if needed
+                return StatusCode(500, "An error occurred while deleting products.");
+            }
         }
 
         private bool ProductExists(int id)
