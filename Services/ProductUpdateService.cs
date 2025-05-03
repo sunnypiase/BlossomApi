@@ -26,6 +26,7 @@ namespace BlossomApi.Services
             var product = await _context.Products
                 .Include(p => p.Categories)
                 .Include(p => p.Characteristics)
+                .Include(p => p.Brand)
                 .FirstOrDefaultAsync(p => p.ProductId == productId);
 
             if (product == null)

@@ -42,7 +42,7 @@ namespace BlossomApi.Controllers
                 .FirstOrDefaultAsync(u => u.UserId == userId);
             if (user == null) return NotFound("User not found");
 
-            var product = await _shownProductRepository.GetProducts().FirstOrDefaultAsync(x => x.ProductId == productId);
+            var product = await _shownProductRepository.GetProducts().FirstAsync(x => x.ProductId == productId);
             if (product == null) return NotFound("Product not found");
 
             if (user.FavoriteProducts.Any(p => p.ProductId == productId))

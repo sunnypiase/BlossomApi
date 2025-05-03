@@ -40,6 +40,7 @@ namespace BlossomApi.Mappers
             CreateMap<ProductUpdateDto, Product>()
                 .ForMember(dest => dest.MainCategoryId, opt => opt.Ignore())
                 .ForMember(dest => dest.Brand, opt => opt.Ignore())
+                .ForMember(dest => dest.BrandId, opt => opt.Ignore())
                 .ForMember(dest => dest.Images, opt => opt.Ignore())
                 .ForMember(dest => dest.Name, opt => opt.Condition(src => src.Name != null))
                 .ForMember(dest => dest.NameEng, opt => opt.Condition(src => src.NameEng != null))
